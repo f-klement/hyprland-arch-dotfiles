@@ -5,7 +5,7 @@
 /* ---- Configuration ---- */
 configuration {
     modi:                       "drun,run";
-    font:                       "Fira Code SemiBold 12";
+    font:                       "Fira Code SemiBold 14";
     show-icons:                 true;
     display-drun:               "";
 	display-run:                "";
@@ -41,7 +41,7 @@ window {
     enabled:                    true;
     border-radius:              12px;
     border-radius:              12px;
- 	background-image:           url("~/.config/rofi/.current_wallpaper", height);
+    background-image:           url("~/.config/rofi/.current_wallpaper", width);
 }
 
 /* ---- Mainbox ---- */

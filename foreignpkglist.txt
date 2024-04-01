@@ -1,6 +1,4 @@
-auto-cpufreq
 brave-bin
-cava
 ferdium-bin
 kvantum-qt5-git
 kvantum-qt6-git
@@ -16,9 +14,7 @@ python39
 qt5-styleplugins
 qt5ct-kde
 rofi-lbonn-wayland-git
-rstudio-desktop-bin
 sddm-git
-slimbookbattery
 stacer-bin
 stowtui-git
 swaylock-effects
@@ -27,6 +23,7 @@ swww
 ttf-ms-fonts
 visual-studio-code-bin
 wluma
+wdisplays
 wlogout
 yay
 zotero-bin
