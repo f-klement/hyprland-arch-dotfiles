@@ -1,4 +1,4 @@
-#!/bin/bash
+        #!/bin/bash
 # A bash script designed to run only once dotfiles installed
 
 # THIS SCRIPT CAN BE DELETED ONCE SUCCESSFULLY BOOTED!! And also, edit ~/.config/hypr/configs/Settings.conf
@@ -11,7 +11,7 @@ wallpaper=$HOME/Pictures/wallpapers/Fantasy-Landscape.png
 #waybar_style="$HOME/.config/waybar/style/[Pywal] Chroma Tally.css"
 kvantum_theme="Tokyo-Night"
 
-swww="swww img"
+#swww="swww img"
 effect="--transition-bezier .43,1.19,1,.4 --transition-fps 30 --transition-type grow --transition-pos 0.925,0.977 --transition-duration 2"
 
     # Initial symlink for Pywal Dark and Light for Rofi Themes

@@ -17,7 +17,7 @@
     "margin-right": 3,
     
     "modules-left": [
-     "hyprland/workspaces#pacman",
+     "hyprland/workspaces#roman",
      "custom/separator#dot-line",
      "wlr/taskbar",
      //"cpu",

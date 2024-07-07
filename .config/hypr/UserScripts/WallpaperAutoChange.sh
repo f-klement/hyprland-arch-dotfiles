@@ -1,11 +1,11 @@
 #!/bin/bash
-## /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
 # source https://wiki.archlinux.org/title/Hyprland#Using_a_script_to_change_wallpaper_every_X_minutes
 
 # This script will randomly go through the files of a directory, setting it
 # up as the wallpaper at regular intervals
 #
 # NOTE: this script uses bash (not POSIX shell) for the RANDOM variable
+
 
 pywal_refresh=$HOME/.config/hypr/scripts/RefreshNoWaybar.sh
 
