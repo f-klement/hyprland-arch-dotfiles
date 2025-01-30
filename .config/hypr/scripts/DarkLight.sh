@@ -187,14 +187,14 @@ set_custom_gtk_theme "$next_mode"
 # Update theme mode for the next cycle
 update_theme_mode
 
-#sleep 0.5
+sleep 0.5
 # Run remaining scripts
-#${SCRIPTSDIR}/PywalSwww.sh
-#sleep 1
-#${SCRIPTSDIR}/Refresh.sh 
+${SCRIPTSDIR}/PywalSwww.sh
+sleep 1
+${SCRIPTSDIR}/Refresh.sh 
 
 # Display notifications for theme and icon changes
-#notify-send -u normal -i "$notif" "Themes in $next_mode Mode"
+notify-send -u normal -i "$notif" "Themes in $next_mode Mode"
 
 exit 0
 
