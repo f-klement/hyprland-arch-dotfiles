@@ -63,6 +63,9 @@ alias pscpu='ps auxf | sort -nr -k 3'
 # get error messages from journalctl
 alias jctl="journalctl -p 3 -xb"
 
+alias wire-up='wg-quick up wg0'
+alias wire-down='wg-quick down wg0'
+
 #####  starship
 
 eval "$(starship init bash)"
