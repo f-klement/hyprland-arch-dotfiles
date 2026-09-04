@@ -112,6 +112,23 @@ hl.window_rule({ name = "pip-size",    match = pipMatch, size = "25% 25%" })
 hl.window_rule({ name = "pip-move",    match = pipMatch, move = "72% 7%" })
 
 ------------------------------------
+---- LAYER RULES ----
+------------------------------------
+
+-- Frosted-glass rofi: the rasi files already set a translucent background
+-- (rgba alpha ~0.9); this is what actually blurs the desktop behind it --
+-- rofi is a layer-shell surface, so it needs a layer rule, not a window
+-- rule. (The old WindowRules.conf had a commented-out attempt at this
+-- using `layerrule = blur,class:^([Rr]ofi)$` -- mixing windowrule's
+-- class: syntax into a layerrule, which was never valid; layer rules
+-- match by namespace.)
+hl.layer_rule({
+    name  = "rofi-blur",
+    match = { namespace = "rofi" },
+    blur  = true,
+})
+
+------------------------------------
 ---- MISC (from the shipped example config) ----
 ------------------------------------
 

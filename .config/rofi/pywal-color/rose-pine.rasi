@@ -1,0 +1,22 @@
+/*
+ * Rose Pine (Moon variant) color scheme for rofi -- the toggle target for
+ * the waybar theme-toggle button (see scripts/DarkLight.sh), matched to
+ * the palette already baked into waybar/style/Rose Pine.css so both
+ * surfaces agree.
+ *
+ * Slightly transparent + frosted, same as tokyo-night.rasi -- blur is
+ * applied via a Hyprland layer rule (see windowrules.lua), not here.
+ */
+
+* {
+    background:                    rgba(38, 35, 58, 0.90);
+    background90:                  rgba(38, 35, 58, 0.90);
+    background-alt:                #393552;
+    foreground:                    #e0def4;
+    selected-normal-background:    #31748f;
+    selected-normal-foreground:    #e0def4;
+    active-background:             #9ccfd8;
+    active-foreground:             #26233a;
+    urgent-background:             #eb6f92;
+    urgent-foreground:             #26233a;
+}

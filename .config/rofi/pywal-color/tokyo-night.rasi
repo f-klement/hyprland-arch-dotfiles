@@ -18,8 +18,11 @@
  */
 
 * {
-    background:                    #1a1b26;
-    background90:                  #1a1b26e6; /* ~90% opacity, was the typo'd @backrgound90 */
+    /* Slightly transparent + frosted (blur applied via a Hyprland layer
+       rule matched on rofi's layer-shell namespace, see windowrules.lua --
+       rofi's own CSS can only set alpha, not blur what's behind it) */
+    background:                    rgba(26, 27, 38, 0.90);
+    background90:                  rgba(26, 27, 38, 0.90); /* was the typo'd @backrgound90 */
     background-alt:                #24283b;
     foreground:                    #c0caf5;
     selected-normal-background:    #7aa2f7;
