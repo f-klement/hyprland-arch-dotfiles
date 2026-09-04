@@ -11,8 +11,14 @@ hypr_config_path="$HOME/.config/hypr"
 swaync_style="$HOME/.config/swaync/style.css"
 SCRIPTSDIR="$HOME/.config/hypr/scripts"
 notif="$HOME/.config/swaync/images/bell.png"
-dark_rofi_pywal="$HOME/.cache/wal/colors-rofi-dark.rasi"
-light_rofi_pywal="$HOME/.cache/wal/colors-rofi-light.rasi"
+# Was ~/.cache/wal/colors-rofi-{dark,light}.rasi -- pywal has never
+# actually generated those (no ~/.cache/wal at all on this system), so
+# this symlink swap was pointing rofi at files that never existed, on top
+# of every rofi config's own @import already being a dangling symlink for
+# the same reason. Fixed rofi color files instead, see
+# ~/.config/rofi/pywal-color/tokyo-{night,day}.rasi.
+dark_rofi_pywal="$HOME/.config/rofi/pywal-color/tokyo-night.rasi"
+light_rofi_pywal="$HOME/.config/rofi/pywal-color/tokyo-day.rasi"
 
 pkill swaybg
 

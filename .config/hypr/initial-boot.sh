@@ -26,8 +26,10 @@ effect="--transition-bezier .43,1.19,1,.4 --transition-fps 30 --transition-type 
 
 if [ ! -f "$marker" ]; then
 
-    # Initial symlink for Pywal Dark and Light for Rofi Themes
-    ln -sf "$HOME/.cache/wal/colors-rofi-dark.rasi" "$HOME/.config/rofi/pywal-color/pywal-theme.rasi" > /dev/null 2>&1 &
+    # Was symlinked to ~/.cache/wal/colors-rofi-dark.rasi (pywal-generated,
+    # never actually existed on this system -- dangling symlink, every rofi
+    # surface failed to load its theme). Fixed Tokyo Night file instead.
+    ln -sf "$HOME/.config/rofi/pywal-color/tokyo-night.rasi" "$HOME/.config/rofi/pywal-color/pywal-theme.rasi" > /dev/null 2>&1 &
 
     # initiate GTK dark mode and apply icon and cursor theme
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark > /dev/null 2>&1 &

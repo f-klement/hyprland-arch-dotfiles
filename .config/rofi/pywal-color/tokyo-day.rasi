@@ -1,0 +1,18 @@
+/*
+ * Fixed Tokyo Day (light) color scheme for rofi -- see tokyo-night.rasi for
+ * the full explanation. DarkLight.sh symlinks pywal-theme.rasi to whichever
+ * of these two matches the current mode.
+ */
+
+* {
+    background:                    #d5d6db;
+    background90:                  #d5d6dbe6;
+    background-alt:                #e1e2e7;
+    foreground:                    #343b58;
+    selected-normal-background:    #34548a;
+    selected-normal-foreground:    #d5d6db;
+    active-background:             #485e30;
+    active-foreground:             #d5d6db;
+    urgent-background:             #8c4351;
+    urgent-foreground:             #d5d6db;
+}

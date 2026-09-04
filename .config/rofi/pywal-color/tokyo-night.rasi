@@ -1,0 +1,31 @@
+/*
+ * Fixed Tokyo Night color scheme for rofi.
+ *
+ * This replaces pywal-generated colors as the target of pywal-theme.rasi.
+ * pywal has never actually run on this system (~/.cache/wal doesn't
+ * exist), so pywal-theme.rasi was a DANGLING symlink to a file that never
+ * existed -- every rofi surface that @imports it (all 8 config-*.rasi
+ * variants) has been failing with "Failed to open theme: ... No such file
+ * or directory" and rendering completely unstyled this whole time. That
+ * was very likely the single biggest source of "rofi looks inconsistent" --
+ * it wasn't drifting with pywal, it was silently broken.
+ *
+ * Also: even had pywal been running, its colors are derived from whatever
+ * wallpaper is currently active -- and the wallpaper auto-changer picks a
+ * new random one every 30 minutes, which is fundamentally at odds with a
+ * stable "Tokyo Night" identity. Fixed colors here instead; see
+ * tokyo-day.rasi for the light counterpart DarkLight.sh switches to.
+ */
+
+* {
+    background:                    #1a1b26;
+    background90:                  #1a1b26e6; /* ~90% opacity, was the typo'd @backrgound90 */
+    background-alt:                #24283b;
+    foreground:                    #c0caf5;
+    selected-normal-background:    #7aa2f7;
+    selected-normal-foreground:    #1a1b26;
+    active-background:             #9ece6a;
+    active-foreground:             #1a1b26;
+    urgent-background:             #f7768e;
+    urgent-foreground:             #1a1b26;
+}
