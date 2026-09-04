@@ -1,19 +1,15 @@
 #!/bin/bash
 ## Theme toggle (waybar's custom/light_dark module, left-click)
-## Tokyo Night <-> Rose Pine
+## Tokyo Night <-> Rose Pine (Moon)
 ##
-## This used to be a real dark/light-mode switch: GTK theme, icon theme,
-## Kvantum, qt5ct/qt6ct color scheme, and rofi all got re-picked by
-## searching for "*Dark*"/"*Light*"-keyword-matching installed themes
-## (randomly, when more than one matched). That's rebuilt here as a
-## deterministic two-way toggle between two specific identities instead,
-## per request, but there's a real scope limit: there's no Rose Pine GTK
-## theme, icon theme, Kvantum theme, or qt5ct/qt6ct color scheme installed
-## on this system -- only a waybar stylesheet and (now) a rofi color file.
-## So this toggles waybar + rofi + wallpaper mood + notification tint;
-## GTK/icons/Kvantum/Qt stay on Tokyo Night in both states. Say the word
-## if you want me to source and install proper Rose Pine GTK/icon/Kvantum
-## theme packages to close that gap for real.
+## Now a full identity switch: waybar, rofi, wallpaper mood, notification
+## tint, GTK3/GTK4 theme+accent, icon theme, Kvantum, and qt5ct/qt6ct
+## color scheme. Rose Pine assets were sourced straight from the official
+## rose-pine GitHub org (github.com/rose-pine/gtk, github.com/rose-pine/
+## kvantum) and installed to ~/.themes, ~/.icons, ~/.config/Kvantum,
+## ~/.config/gtk-4.0 -- no AUR/sudo needed, those ship plain theme files.
+## The one thing intentionally left alone: cursor stays Dracula in both
+## states, by request from earlier in this theming pass.
 
 wallpaper_base_path="$HOME/Pictures/wallpapers/Dynamic-Wallpapers"
 dark_wallpapers="$wallpaper_base_path/Dark"
@@ -45,16 +41,45 @@ if [ "$next" = "tokyo-night" ]; then
     wallpaper_dir="$dark_wallpapers"
     noti_bg="rgba(26, 27, 38, 0.85)"
     noti_bg_alt="#16161e"
+    gtk_theme="Tokyonight-Dark-BL-LB"
+    icon_theme="Tela-purple-dark"
+    kvantum_theme="Tokyo-Night"
+    qt_color_scheme="Tokyo-Night.conf"
+    gtk4_accent="$HOME/.config/gtk-4.0/tokyo-night-accent.css"
+    color_scheme="prefer-dark"
 else
     waybar_style="$HOME/.config/waybar/style/Rose Pine.css"
     rofi_theme="$HOME/.config/rofi/pywal-color/rose-pine.rasi"
     wallpaper_dir="$light_wallpapers"
     noti_bg="rgba(38, 35, 58, 0.85)"
     noti_bg_alt="#26233a"
+    gtk_theme="oomox-rose-pine-moon"
+    icon_theme="oomox-rose-pine-moon"
+    kvantum_theme="rose-pine-moon-pine"
+    qt_color_scheme="Rose-Pine-Moon.conf"
+    gtk4_accent="$HOME/.config/gtk-4.0/rose-pine-moon-accent.css"
+    color_scheme="prefer-dark" # both palettes are dark; there's no Rose Pine Dawn (light) asset installed
 fi
 
 ln -sf "$waybar_style" "$HOME/.config/waybar/style.css"
 ln -sf "$rofi_theme" "$HOME/.config/rofi/pywal-color/pywal-theme.rasi"
+ln -sf "$gtk4_accent" "$HOME/.config/gtk-4.0/gtk.css"
+
+# GTK (both the gsettings/dconf path GTK4+libadwaita apps read via the xdg
+# desktop portal, and gtk-3.0/settings.ini, which GTK3 apps read directly
+# -- there's no gnome-settings-daemon on this system keeping the two in
+# sync automatically, so both need setting)
+gsettings set org.gnome.desktop.interface color-scheme "$color_scheme"
+gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
+gsettings set org.gnome.desktop.interface icon-theme "$icon_theme"
+sed -i "s/^gtk-theme-name=.*/gtk-theme-name=$gtk_theme/" "$HOME/.config/gtk-3.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
+sed -i "s/^gtk-icon-theme-name=.*/gtk-icon-theme-name=$icon_theme/" "$HOME/.config/gtk-3.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
+
+# Kvantum + qt5ct/qt6ct
+kvantummanager --set "$kvantum_theme"
+sed -i "s|^color_scheme_path=.*$|color_scheme_path=$HOME/.config/qt5ct/colors/$qt_color_scheme|" "$HOME/.config/qt5ct/qt5ct.conf"
+sed -i "s|^color_scheme_path=.*$|color_scheme_path=$HOME/.config/qt6ct/colors/$qt_color_scheme|" "$HOME/.config/qt6ct/qt6ct.conf"
+sed -i "s/^icon_theme=.*/icon_theme=$icon_theme/" "$HOME/.config/qt5ct/qt5ct.conf" "$HOME/.config/qt6ct/qt6ct.conf"
 
 # Notification tint (both palettes are dark-ish, so this is a color swap,
 # not a real light/dark contrast switch)
