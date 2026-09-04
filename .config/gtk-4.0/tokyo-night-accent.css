@@ -1,0 +1,23 @@
+/* GTK4/libadwaita named-color accent override for Tokyo Night, matching
+   the same convention as rose-pine-moon-accent.css (from rose-pine/gtk)
+   so the DarkLight.sh toggle has a real counterpart to switch back to. */
+
+@define-color accent_bg_color #7aa2f7;
+@define-color accent_fg_color #1a1b26;
+@define-color accent_color #7aa2f7;
+
+@define-color destructive_bg_color #f7768e;
+@define-color destructive_fg_color #1a1b26;
+@define-color destructive_color #f7768e;
+
+@define-color success_bg_color #9ece6a;
+@define-color success_fg_color #1a1b26;
+@define-color success_color #9ece6a;
+
+@define-color warning_bg_color #e0af68;
+@define-color warning_fg_color #1a1b26;
+@define-color warning_color #e0af68;
+
+@define-color error_bg_color #db4b4b;
+@define-color error_fg_color #1a1b26;
+@define-color error_color #db4b4b;
