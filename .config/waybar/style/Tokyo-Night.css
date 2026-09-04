@@ -163,6 +163,10 @@ tooltip label {
     border-radius: 8px;
 }
 
+#custom-lock {
+    padding-right: 10px;
+}
+
 #temperature.critical {
     background-color: #db4b4b; /* Tokyo Night red (error) */
 }

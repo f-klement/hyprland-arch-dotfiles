@@ -16,7 +16,7 @@ local scriptsDir   = home .. "/.config/hypr/scripts"
 local userScripts  = home .. "/.config/hypr/UserScripts"
 
 local files    = "dolphin"
-local browser  = "librewolf"
+local browser  = "brave"
 local term     = "kitty"
 local mail     = "thunderbird"
 local editor   = "codium"
