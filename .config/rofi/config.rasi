@@ -39,7 +39,7 @@ window {
     fullscreen:                 false;
     enabled:                    true;
     border-radius:              12px;
-	background-image:           url("~/.config/rofi/.current_wallpaper", width);
+	background-color:            @background;
  	
 }
 
