@@ -9,8 +9,8 @@
 @define-color color7 #c0caf5; /* Tokyo Night fg */
 
 @define-color noti-border-color @color2;
-@define-color noti-bg rgba(0, 0, 0, 0.8);
-@define-color noti-bg-alt #111111;
+@define-color noti-bg rgba(26, 27, 38, 0.85);
+@define-color noti-bg-alt #16161e;
 @define-color noti-bg-hover @color2;
 @define-color text-color @color2;
 @define-color text-color-alt @color7;

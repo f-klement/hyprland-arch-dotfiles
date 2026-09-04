@@ -65,6 +65,7 @@ alias jctl="journalctl -p 3 -xb"
 
 alias wire-up='wg-quick up wg0'
 alias wire-down='wg-quick down wg0'
+alias yayx='yay -Syu --noconfirm && sudo flatpak update -y && sudo snap refresh'
 
 #####  starship
 
@@ -83,7 +84,17 @@ if [ -f /home/florian/.config/synth-shell/better-history.sh ] && [ -n "$(echo $-
 fi
 #send logs
 alias paste="curl -F 'clbin=<-' https://clbin.com"
+alias dc="docker compose"
 
 eval "$(zoxide init --cmd cd bash)"
 [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
 eval "$(atuin init bash)"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+. "$HOME/.local/bin/env"
+
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
