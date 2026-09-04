@@ -15,9 +15,19 @@ if [[ $# -lt 1 ]] || [[ ! -d $1   ]]; then
 	exit 1
 fi
 
+# NOTE: this whole script was written for `swww`, but that binary doesn't
+# exist on this system at all -- what's actually installed is `awww`
+# (a separate, CLI-compatible-ish successor project; the daemon is a
+# standalone `awww-daemon` binary, not `awww init`). Every `swww img` call
+# below has been silently failing with "command not found" this whole
+# time, which is why the 30-min wallpaper rotation never visibly did
+# anything. Renamed throughout, and the daemon is now started explicitly
+# since awww (unlike swww) doesn't auto-spawn it on first use.
+awww query > /dev/null 2>&1 || { awww-daemon & disown; sleep 0.3; }
+
 # Edit below to control the images transition
-export SWWW_TRANSITION_FPS=60
-export SWWW_TRANSITION_TYPE=simple
+export AWWW_TRANSITION_FPS=60
+export AWWW_TRANSITION_TYPE=simple
 
 # This controls (in seconds) when to switch to the next image
 INTERVAL=1800
@@ -29,9 +39,9 @@ while true; do
 		done \
 		| sort -n | cut -d':' -f2- \
 		| while read -r img; do
-			swww img "$img" 
+			awww img "$img"
 			$pywal_refresh
 			sleep $INTERVAL
-			
+
 		done
 done

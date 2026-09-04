@@ -12,7 +12,7 @@ FPS=30
 TYPE="wipe"
 DURATION=1
 BEZIER=".43,1.19,1,.4"
-SWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION"
+AWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION"
 
 # Check if swaybg is running
 if pidof swaybg > /dev/null; then
@@ -40,7 +40,10 @@ menu() {
   printf "$RANDOM_PIC_NAME\n"
 }
 
-swww query || swww init
+# NOTE: this used to be `swww` -- that binary isn't installed on this
+# system, `awww` is (see WallpaperAutoChange.sh for the full story). awww
+# also has no `init` subcommand; the daemon is its own binary.
+awww query > /dev/null 2>&1 || { awww-daemon & disown; sleep 0.3; }
 
 main() {
   choice=$(menu | ${rofi_command})
@@ -52,7 +55,7 @@ main() {
 
   # Random choice case
   if [ "$choice" = "$RANDOM_PIC_NAME" ]; then
-    swww img "${wallDIR}/${RANDOM_PIC}" $SWWW_PARAMS
+    awww img "${wallDIR}/${RANDOM_PIC}" $AWWW_PARAMS
     exit 0
   fi
 
@@ -67,7 +70,7 @@ main() {
   done
 
   if [[ $pic_index -ne -1 ]]; then
-    swww img "${wallDIR}/${PICS[$pic_index]}" $SWWW_PARAMS
+    awww img "${wallDIR}/${PICS[$pic_index]}" $AWWW_PARAMS
   else
     echo "Image not found."
     exit 1

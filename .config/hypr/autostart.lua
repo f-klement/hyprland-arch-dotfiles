@@ -40,11 +40,18 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
 
+    -- Wallpaper daemon. The config was written for `swww`, which isn't
+    -- installed on this system at all -- `awww` is (a separate,
+    -- CLI-compatible-ish successor; see WallpaperAutoChange.sh for the
+    -- full story). Unlike swww, awww doesn't auto-spawn its daemon on
+    -- first use, so it needs an explicit start here.
+    hl.exec_cmd("awww-daemon")
+
     -- Wallpaper: single mechanism now (see keybinds.lua / SUPER+W for the
-    -- manual one-shot picker). This loop sets an initial wallpaper itself
-    -- on its very first iteration, then rotates every 30 min -- the old
-    -- config's extra one-shot `waypaper --random` at startup was fighting
-    -- it for the first wallpaper and wasn't adding anything.
+    -- manual picker). This loop sets an initial wallpaper itself on its
+    -- very first iteration, then rotates every 30 min -- the old config's
+    -- extra one-shot `waypaper --random` at startup was fighting it for
+    -- the first wallpaper and wasn't adding anything.
     hl.exec_cmd(userScripts .. "/WallpaperAutoChange.sh " .. wallDir)
 
     -- Cursor stays on Dracula-cursors (kept as-is, by request -- everything

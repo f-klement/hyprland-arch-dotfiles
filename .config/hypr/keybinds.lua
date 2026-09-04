@@ -38,10 +38,17 @@ hl.bind(combo(mainMod, "D"),         hl.dsp.exec_cmd(files))
 hl.bind(combo(mainMod, "M"),         hl.dsp.exec_cmd(mail))
 hl.bind(combo(mainMod, "B"),         hl.dsp.exec_cmd(browser))
 hl.bind(combo(mainMod, "O"),         hl.dsp.exec_cmd("obsidian"))
-hl.bind(combo(mainMod, "W"),         hl.dsp.exec_cmd("waypaper --random --backend swww"))
+hl.bind(combo(mainMod, "W"),         hl.dsp.exec_cmd(userScripts .. "/WallpaperSelect.sh"))
 -- ^ old bind referenced an undefined $waypapers (missing the final "s" on
--- the variable that was actually defined) so SUPER+W silently did nothing;
--- fixed to launch the picker directly.
+-- the variable that was actually defined) so SUPER+W silently did nothing.
+-- Last fix pointed it at `waypaper --random --backend swww` instead, which
+-- turned out to be doubly broken: waypaper crashes outright (missing
+-- Python module `screeninfo`), and "swww" isn't even the installed
+-- wallpaper daemon on this system (it's `awww`, see WallpaperAutoChange.sh
+-- for the full story). Pointed at WallpaperSelect.sh instead -- an
+-- interactive rofi picker that actually works now that its own awww
+-- references are fixed too, and is a strict upgrade over a blind random
+-- pick anyway.
 hl.bind("CTRL + Escape", hl.dsp.exec_cmd("stacer"))
 
 hl.bind(combo(mainMod, "ALT + Space"), hl.dsp.exec_cmd("pkill rofi || rofi -show drun -modi drun,filebrowser,run,window"))

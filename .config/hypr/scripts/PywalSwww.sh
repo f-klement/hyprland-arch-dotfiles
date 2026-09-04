@@ -2,33 +2,26 @@
 ## /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
 # Pywal Colors for current wallpaper
 
-# Define the path to the swww cache directory
-cache_dir="$HOME/.cache/swww/"
+# NOTE: this used to read swww's cache at ~/.cache/swww/<output>, a plain
+# file containing just the image path. swww isn't installed on this system
+# -- `awww` is, and its cache layout is different: ~/.cache/awww/<version>/
+# <output>, and each file's content is "<resize-opts> <image-path>" (space
+# separated), not just the bare path.
+cache_root="$HOME/.cache/awww"
 
-# Get a list of monitor outputs
-monitor_outputs=($(ls "$cache_dir"))
+# Find any per-output cache file under the (version-namespaced) cache dir
+cache_file=$(find "$cache_root" -mindepth 2 -maxdepth 2 -type f 2>/dev/null | head -n1)
 
-# Initialize a flag to determine if the ln command was executed
 ln_success=false
 
-# Loop through monitor outputs
-for output in "${monitor_outputs[@]}"; do
-    # Construct the full path to the cache file
-    cache_file="$cache_dir$output"
+if [ -n "$cache_file" ] && [ -f "$cache_file" ]; then
+    # Last whitespace-separated field on the line is the image path
+    wallpaper_path=$(awk '{print $NF}' "$cache_file")
 
-    # Check if the cache file exists for the current monitor output
-    if [ -f "$cache_file" ]; then
-        # Get the wallpaper path from the cache file
-        wallpaper_path=$(cat "$cache_file")
-
-        # Copy the wallpaper to the location Rofi can access
-        if ln -sf "$wallpaper_path" "$HOME/.config/rofi/.current_wallpaper"; then
-            ln_success=true  # Set the flag to true upon successful execution
-        fi
-
-        break  # Exit the loop after processing the first found monitor output
+    if [ -n "$wallpaper_path" ] && ln -sf "$wallpaper_path" "$HOME/.config/rofi/.current_wallpaper"; then
+        ln_success=true
     fi
-done
+fi
 
 # Check the flag before executing further commands
 if [ "$ln_success" = true ]; then

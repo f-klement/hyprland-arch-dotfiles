@@ -5,15 +5,20 @@ hl.env("CLUTTER_BACKEND", "wayland")
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
--- Was "qt5ct" -- but the qt5ct package isn't installed on this system at
--- all, so every Qt app has been failing to load that platformtheme plugin
--- and silently falling back to an unthemed default (no Kvantum, no dark
--- palette). qt6ct IS installed and already has a full Tokyo Night config
--- at ~/.config/qt6ct/qt6ct.conf (style=kvantum, Tokyo-Night color scheme)
--- that's simply never been invoked. This is very likely the main reason
--- KDE/Qt apps haven't been respecting the theme.
--- If you still run any Qt5 apps, `sudo pacman -S qt5ct kvantum` installs
--- their Qt5 counterparts -- ask and I can wire that in too.
+-- Was "qt5ct" -- but the qt5ct package wasn't installed at the time, so
+-- every Qt app was failing to load that platformtheme plugin and silently
+-- falling back to an unthemed default (no Kvantum, no dark palette).
+-- qt6ct is installed and has a full Tokyo Night config at
+-- ~/.config/qt6ct/qt6ct.conf (style=kvantum) -- set as the session default
+-- since virtually every real app on this Plasma 6 system is Qt6.
+--
+-- qt5ct is now installed too (also pre-configured for Tokyo Night, see
+-- ~/.config/qt5ct/qt5ct.conf) but can't just be added as a second value
+-- here -- QT_QPA_PLATFORMTHEME has no fallback-list syntax, and Qt5 vs Qt6
+-- apps each only look in their own major-version's plugin directory, so
+-- one global env var can only ever serve one major version. For any Qt5
+-- app you actually run, launch it through scripts/Qt5App.sh instead (or
+-- I can wire a specific app in as a keybind/window rule once you name it).
 hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("QT_SCALE_FACTOR", "1")
 hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")

@@ -16,11 +16,12 @@ light_rofi_pywal="$HOME/.cache/wal/colors-rofi-light.rasi"
 
 pkill swaybg
 
-# Initialize swww if needed
-swww query || swww init
+# Was `swww` -- not installed on this system, `awww` is (also no `init`
+# subcommand; awww-daemon is its own binary).
+awww query > /dev/null 2>&1 || { awww-daemon & disown; sleep 0.3; }
 
-# Set swww options
-swww="swww img"
+# Set awww options
+setwallpaper() { awww img "$1" $effect; }
 effect="--transition-bezier .43,1.19,1,.4 --transition-fps 60 --transition-type grow --transition-pos 0.925,0.977 --transition-duration 2"
 
 # Determine current theme mode
@@ -81,7 +82,7 @@ else
     next_wallpaper="$(find "${light_wallpapers}" -type f \( -iname "*.jpg" -o -iname "*.png" \) -print0 | shuf -n1 -z | xargs -0)"
 fi
 
-# Update wallpaper using swww command
+# Update wallpaper using awww (via the setwallpaper() helper defined above)
 setwallpaper "${next_wallpaper}"
 
 
