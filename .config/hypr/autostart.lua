@@ -47,15 +47,17 @@ hl.on("hyprland.start", function()
     -- it for the first wallpaper and wasn't adding anything.
     hl.exec_cmd(userScripts .. "/WallpaperAutoChange.sh " .. wallDir)
 
-    -- Cursor theme (Tokyo Night set, see UserSettings comment for theme
-    -- rationale; Bibata-Modern-Ice is the closest installed cursor set --
-    -- there's no dedicated Tokyo Night cursor theme installed here).
+    -- Cursor stays on Dracula-cursors (kept as-is, by request -- everything
+    -- else converged on Tokyo Night, but not the cursor).
     -- NOTE: the old line was `exec-once = hyperctl setcursor ...` --
     -- "hyperctl" is a typo for "hyprctl", so this was silently failing
     -- every single boot and hyprcursor was never actually being told to
     -- switch; only the GTK-side gsettings call below was taking effect.
-    hl.exec_cmd("hyprctl setcursor Bibata-Modern-Ice 24")
-    hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-theme Bibata-Modern-Ice")
+    -- Also fixed "Dracula-cursor" -> "Dracula-cursors" (plural) to match
+    -- the theme's actual Name= (the singular form doesn't exist as an
+    -- installed theme, so hyprctl would look up a set that doesn't exist).
+    hl.exec_cmd("hyprctl setcursor Dracula-cursors 24")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-theme Dracula-cursors")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface cursor-size 24")
 
     hl.exec_cmd("XDG_MENU_PREFIX=arch- kbuildsycoca6")

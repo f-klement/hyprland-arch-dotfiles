@@ -33,12 +33,12 @@ if [ ! -f "$marker" ]; then
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark > /dev/null 2>&1 &
     gsettings set org.gnome.desktop.interface gtk-theme Tokyonight-Dark-BL-LB > /dev/null 2>&1 &
     gsettings set org.gnome.desktop.interface icon-theme Tokyonight-Dark > /dev/null 2>&1 &
-    # Was Dracula-cursor -- switched to Bibata-Modern-Ice so cursor matches
-    # the rest of the Tokyo Night set (there's no dedicated Tokyo Night
-    # cursor theme installed; Bibata is the closest neutral fit already
-    # on this machine). Kept in sync with autostart.lua and hyprland.conf's
-    # old `hyperctl setcursor` line, which was also typo'd and never fired.
-    gsettings set org.gnome.desktop.interface cursor-theme Bibata-Modern-Ice > /dev/null 2>&1 &
+    # Cursor stays on Dracula-cursors by request (the rest of the desktop
+    # converged on Tokyo Night, cursor intentionally didn't). Fixed the
+    # missing "s" though -- the installed theme's real name is
+    # "Dracula-cursors" (plural); "Dracula-cursor" doesn't exist as an
+    # installed theme name, so that lookup would have silently failed too.
+    gsettings set org.gnome.desktop.interface cursor-theme Dracula-cursors > /dev/null 2>&1 &
     gsettings set org.gnome.desktop.interface cursor-size 24 > /dev/null 2>&1 &
 
     # initiate kvantum theme
