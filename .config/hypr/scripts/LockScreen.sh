@@ -1,7 +1,6 @@
 #!/bin/bash
-## /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
-# For Swaylock
+## For hyprlock (was swaylock-effects)
 
-CONFIG="$HOME/.config/swaylock/config"
-
-sleep 0.5s; swaylock --config ${CONFIG} & disown
+# hyprlock reads ~/.config/hypr/hyprlock.conf automatically, no --config
+# flag needed (unlike swaylock).
+pidof hyprlock || { sleep 0.5s; hyprlock & disown; }

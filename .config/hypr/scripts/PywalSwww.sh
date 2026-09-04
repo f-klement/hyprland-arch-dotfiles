@@ -1,33 +1,29 @@
 #!/bin/bash
 ## /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
 # Pywal Colors for current wallpaper
+#
+# Was reading swww's, then awww's, cache to figure out the current
+# wallpaper. Now on hyprpaper, which callers already know the path for
+# (they just set it) -- pass it as $1. Falls back to asking hyprpaper
+# directly if called with no argument.
 
-# NOTE: this used to read swww's cache at ~/.cache/swww/<output>, a plain
-# file containing just the image path. swww isn't installed on this system
-# -- `awww` is, and its cache layout is different: ~/.cache/awww/<version>/
-# <output>, and each file's content is "<resize-opts> <image-path>" (space
-# separated), not just the bare path.
-cache_root="$HOME/.cache/awww"
+wallpaper_path="$1"
 
-# Find any per-output cache file under the (version-namespaced) cache dir
-cache_file=$(find "$cache_root" -mindepth 2 -maxdepth 2 -type f 2>/dev/null | head -n1)
+if [ -z "$wallpaper_path" ]; then
+    # Best-effort fallback: ask hyprpaper what's currently active and take
+    # the first monitor's wallpaper path.
+    wallpaper_path=$(hyprctl hyprpaper listactive 2>/dev/null | head -n1 | sed 's/^.*= //')
+fi
 
 ln_success=false
 
-if [ -n "$cache_file" ] && [ -f "$cache_file" ]; then
-    # Last whitespace-separated field on the line is the image path
-    wallpaper_path=$(awk '{print $NF}' "$cache_file")
-
-    if [ -n "$wallpaper_path" ] && ln -sf "$wallpaper_path" "$HOME/.config/rofi/.current_wallpaper"; then
+if [ -n "$wallpaper_path" ] && [ -f "$wallpaper_path" ]; then
+    if ln -sf "$wallpaper_path" "$HOME/.config/rofi/.current_wallpaper"; then
         ln_success=true
     fi
 fi
 
-# Check the flag before executing further commands
 if [ "$ln_success" = true ]; then
-    # execute pywal
-    # wal -i "$wallpaper_path"
-
     # execute pywal skipping tty and terminal changes
     wal -i "$wallpaper_path" -s -t &
 fi

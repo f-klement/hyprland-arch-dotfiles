@@ -20,6 +20,11 @@ local function float_rule(name, class_pat)
 end
 
 float_rule("float-polkit-kde",        "org.kde.polkit-kde-authentication-agent-1")
+-- Guessed class name for hyprpolkitagent's auth dialog (autostart.lua now
+-- runs this instead of the KDE agent) -- UNVERIFIED, hyprpolkitagent isn't
+-- installed yet. Check the real class with `hyprctl clients` while a
+-- polkit prompt is showing after installing, and fix this if it's wrong.
+float_rule("float-hyprpolkitagent",   "hyprpolkitagent")
 float_rule("float-nm-editor",         "nm-connection-editor")
 float_rule("float-blueman",           "blueman-manager")
 float_rule("float-pavucontrol",       "pavucontrol")

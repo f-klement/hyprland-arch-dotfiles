@@ -16,13 +16,16 @@ light_rofi_pywal="$HOME/.cache/wal/colors-rofi-light.rasi"
 
 pkill swaybg
 
-# Was `swww` -- not installed on this system, `awww` is (also no `init`
-# subcommand; awww-daemon is its own binary).
-awww query > /dev/null 2>&1 || { awww-daemon & disown; sleep 0.3; }
-
-# Set awww options
-setwallpaper() { awww img "$1" $effect; }
+# Was `swww`, then briefly `awww` -- this machine now runs hyprpaper
+# (Hyprland's own wallpaper daemon, started via autostart.lua) instead.
+# No transition support (hard cut), unlike swww/awww -- the `effect`
+# variable is now unused but left for reference.
 effect="--transition-bezier .43,1.19,1,.4 --transition-fps 60 --transition-type grow --transition-pos 0.925,0.977 --transition-duration 2"
+setwallpaper() {
+    hyprctl hyprpaper preload "$1" > /dev/null
+    hyprctl hyprpaper wallpaper ",$1" > /dev/null
+    hyprctl hyprpaper unload all > /dev/null
+}
 
 # Determine current theme mode
 if [ "$(cat $HOME/.cache/.theme_mode)" = "Light" ]; then
@@ -190,7 +193,7 @@ update_theme_mode
 
 sleep 0.5
 # Run remaining scripts
-${SCRIPTSDIR}/PywalSwww.sh
+${SCRIPTSDIR}/PywalSwww.sh "$next_wallpaper"
 sleep 1
 ${SCRIPTSDIR}/Refresh.sh 
 

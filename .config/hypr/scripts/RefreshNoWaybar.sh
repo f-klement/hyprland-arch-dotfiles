@@ -25,16 +25,14 @@ for _prs in "${_ps[@]}"; do
     fi
 done
 
-# Pywal refresh
-${SCRIPTSDIR}/PywalSwww.sh &
+# Pywal refresh ($1, if given, is the wallpaper path -- forwarded so
+# PywalSwww.sh doesn't have to guess it back from a daemon cache)
+${SCRIPTSDIR}/PywalSwww.sh "$1" &
 
 # Relaunching rainbow borders if the script exists
 sleep 1
 if file_exists "${UserScripts}/RainbowBorders.sh"; then
     ${UserScripts}/RainbowBorders.sh &
 fi
-
-# for cava-pywal (note, need to manually restart cava once wallpaper changes)
-ln -sf "$HOME/.cache/wal/cava-colors" "$HOME/.config/cava/config" || true
 
 exit 0

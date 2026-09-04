@@ -16,19 +16,22 @@ if [ "$HYPRGAMEMODE" = 1 ] ; then
         keyword general:gaps_out 0;\
         keyword general:border_size 1;\
         keyword decoration:rounding 0"
-    awww kill
+    pkill hyprpaper
     notify-send -e -u low -i "$notif" "gamemode enabled. All animations off"
     exit
 else
-	# Was `swww` -- not installed on this system, `awww` is (also no
-	# `init` subcommand; awww-daemon is its own binary).
-	awww-daemon & disown
+	# Was `swww`, then briefly `awww` -- this machine now runs hyprpaper
+	# (Hyprland's own wallpaper daemon) instead. No IPC "kill", just the
+	# process; it reloads from hyprpaper.conf on restart.
+	CURRENT_WALL=$(readlink -f "$HOME/.config/rofi/.current_wallpaper")
+	hyprpaper & disown
 	sleep 0.3
-	awww img "$HOME/.config/rofi/.current_wallpaper"
+	hyprctl hyprpaper preload "$CURRENT_WALL" > /dev/null
+	hyprctl hyprpaper wallpaper ",$CURRENT_WALL" > /dev/null
 	sleep 0.1
-	${SCRIPTSDIR}/PywalSwww.sh
+	${SCRIPTSDIR}/PywalSwww.sh "$CURRENT_WALL"
 	sleep 0.5
-	${SCRIPTSDIR}/Refresh.sh	 
+	${SCRIPTSDIR}/Refresh.sh
     notify-send -e -u normal -i "$notif" "gamemode disabled. All animations normal"
     exit
 fi

@@ -7,17 +7,16 @@ SCRIPTSDIR="$HOME/.config/hypr/scripts"
 # WALLPAPERS PATH
 wallDIR="$HOME/Pictures/wallpapers"
 
-# Transition config
-FPS=30
-TYPE="wipe"
-DURATION=1
-BEZIER=".43,1.19,1,.4"
-AWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION"
-
 # Check if swaybg is running
 if pidof swaybg > /dev/null; then
   pkill swaybg
 fi
+
+set_wallpaper() {
+  hyprctl hyprpaper preload "$1" > /dev/null
+  hyprctl hyprpaper wallpaper ",$1" > /dev/null
+  hyprctl hyprpaper unload all > /dev/null
+}
 
 # Retrieve image files
 PICS=($(ls "${wallDIR}" | grep -E ".jpg$|.jpeg$|.png$|.gif$"))
@@ -40,11 +39,6 @@ menu() {
   printf "$RANDOM_PIC_NAME\n"
 }
 
-# NOTE: this used to be `swww` -- that binary isn't installed on this
-# system, `awww` is (see WallpaperAutoChange.sh for the full story). awww
-# also has no `init` subcommand; the daemon is its own binary.
-awww query > /dev/null 2>&1 || { awww-daemon & disown; sleep 0.3; }
-
 main() {
   choice=$(menu | ${rofi_command})
 
@@ -55,8 +49,9 @@ main() {
 
   # Random choice case
   if [ "$choice" = "$RANDOM_PIC_NAME" ]; then
-    awww img "${wallDIR}/${RANDOM_PIC}" $AWWW_PARAMS
-    exit 0
+    set_wallpaper "${wallDIR}/${RANDOM_PIC}"
+    picked="${wallDIR}/${RANDOM_PIC}"
+    return
   fi
 
   # Find the index of the selected file
@@ -70,7 +65,8 @@ main() {
   done
 
   if [[ $pic_index -ne -1 ]]; then
-    awww img "${wallDIR}/${PICS[$pic_index]}" $AWWW_PARAMS
+    set_wallpaper "${wallDIR}/${PICS[$pic_index]}"
+    picked="${wallDIR}/${PICS[$pic_index]}"
   else
     echo "Image not found."
     exit 1
@@ -86,6 +82,6 @@ fi
 main
 
 sleep 0.5
-${SCRIPTSDIR}/PywalSwww.sh
+${SCRIPTSDIR}/PywalSwww.sh "$picked"
 sleep 0.2
 ${SCRIPTSDIR}/Refresh.sh

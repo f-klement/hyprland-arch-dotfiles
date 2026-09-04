@@ -6,7 +6,6 @@
 -- and (unlike a bare top-level hl.exec_cmd call) does NOT re-run on
 -- `hyprctl reload`.
 
-local scriptsDir   = os.getenv("HOME") .. "/.config/hypr/scripts"
 local userScripts  = os.getenv("HOME") .. "/.config/hypr/UserScripts"
 local wallDir      = os.getenv("HOME") .. "/Pictures/wallpapers"
 
@@ -15,8 +14,10 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
 
-    -- Polkit agent
-    hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1")
+    -- Polkit agent (was the KDE one; hyprpolkitagent is the Hypr-ecosystem
+    -- native equivalent -- lighter, no KDE Frameworks pulled in just for
+    -- this. Needs `sudo pacman -S hyprpolkitagent`.)
+    hl.exec_cmd("hyprpolkitagent")
 
     -- Bar, tray, notifications
     hl.exec_cmd("waybar -c " .. os.getenv("HOME") .. "/.dotfiles/.config/waybar/config")
@@ -27,7 +28,11 @@ hl.on("hyprland.start", function()
 
     -- Backup + misc daemons
     hl.exec_cmd("/Storage/Data/run_backup.sh")
-    hl.exec_cmd("wlsunset -l 48.2 -L 16.3")
+    -- Was wlsunset -l 48.2 -L 16.3 (real lat/long solar calculation).
+    -- hyprsunset has no lat/long mode -- see hyprsunset.conf for the
+    -- fixed-time-profile trade-off this swap made. Needs
+    -- `sudo pacman -S hyprsunset`.
+    hl.exec_cmd("hyprsunset")
     hl.exec_cmd("tuxedo-control-center")
     hl.exec_cmd("batsignal -b")
 
@@ -40,12 +45,12 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
 
-    -- Wallpaper daemon. The config was written for `swww`, which isn't
-    -- installed on this system at all -- `awww` is (a separate,
-    -- CLI-compatible-ish successor; see WallpaperAutoChange.sh for the
-    -- full story). Unlike swww, awww doesn't auto-spawn its daemon on
-    -- first use, so it needs an explicit start here.
-    hl.exec_cmd("awww-daemon")
+    -- Wallpaper daemon. Was written for `swww`, briefly moved to `awww`
+    -- (neither installed/right long-term) -- now hyprpaper, the Hypr
+    -- ecosystem's own minimal wallpaper daemon. No transition/crossfade
+    -- support (hard cut only), by design -- that trade-off was made
+    -- deliberately. Needs `sudo pacman -S hyprpaper`.
+    hl.exec_cmd("hyprpaper")
 
     -- Wallpaper: single mechanism now (see keybinds.lua / SUPER+W for the
     -- manual picker). This loop sets an initial wallpaper itself on its
@@ -69,8 +74,11 @@ hl.on("hyprland.start", function()
 
     hl.exec_cmd("XDG_MENU_PREFIX=arch- kbuildsycoca6")
 
-    -- Lock on idle only (see UserScripts/WallpaperAutoChange.sh's pywal
-    -- refresh for why there's no separate DPMS-off timeout configured here
-    -- -- kept identical to the previous behaviour)
-    hl.exec_cmd("swayidle -w timeout 900 " .. scriptsDir .. "/LockScreen.sh")
+    -- Idle handling: was swayidle with lock-only at 15min (no DPMS-off, no
+    -- suspend -- meaning an idle unplugged laptop just stayed fully lit
+    -- and awake indefinitely). Now hypridle, staggered per hypridle.conf:
+    -- lock at 15min, screen off at 20min, suspend at 30min. Needs
+    -- `sudo pacman -S hypridle hyprlock` (hypridle's lock_cmd calls
+    -- hyprlock, see hypridle.conf/hyprlock.conf).
+    hl.exec_cmd("hypridle")
 end)

@@ -9,20 +9,14 @@ PICS=($(find ${wallDIR} -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.p
 RANDOMPICS=${PICS[ $RANDOM % ${#PICS[@]} ]}
 
 
-# Transition config
-FPS=60
-TYPE="random"
-DURATION=1
-BEZIER=".43,1.19,1,.4"
-AWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
+# Was `swww`, then briefly `awww` -- this machine now runs hyprpaper
+# (Hyprland's own wallpaper daemon, started via autostart.lua) instead.
+# No transition support (hard cut), unlike swww/awww.
+hyprctl hyprpaper preload "${RANDOMPICS}" > /dev/null
+hyprctl hyprpaper wallpaper ",${RANDOMPICS}" > /dev/null
+hyprctl hyprpaper unload all > /dev/null
 
-# Was `swww` -- not installed on this system, `awww` is (also no `init`
-# subcommand; awww-daemon is its own binary).
-awww query > /dev/null 2>&1 || { awww-daemon & disown; sleep 0.3; }
-awww img ${RANDOMPICS} $AWWW_PARAMS
-
-
-${scriptsDir}/PywalSwww.sh
+${scriptsDir}/PywalSwww.sh "${RANDOMPICS}"
 sleep 1
-${scriptsDir}/Refresh.sh 
+${scriptsDir}/Refresh.sh
 

@@ -15,20 +15,13 @@ if [[ $# -lt 1 ]] || [[ ! -d $1   ]]; then
 	exit 1
 fi
 
-# NOTE: this whole script was written for `swww`, but that binary doesn't
-# exist on this system at all -- what's actually installed is `awww`
-# (a separate, CLI-compatible-ish successor project; the daemon is a
-# standalone `awww-daemon` binary, not `awww init`). Every `swww img` call
-# below has been silently failing with "command not found" this whole
-# time, which is why the 30-min wallpaper rotation never visibly did
-# anything. Renamed throughout, and the daemon is now started explicitly
-# since awww (unlike swww) doesn't auto-spawn it on first use.
-awww query > /dev/null 2>&1 || { awww-daemon & disown; sleep 0.3; }
-
-# Edit below to control the images transition
-export AWWW_TRANSITION_FPS=60
-export AWWW_TRANSITION_TYPE=simple
-
+# NOTE: this whole script was written for `swww`, then briefly moved to
+# `awww` -- neither ended up being the final answer. This machine now runs
+# hyprpaper (Hyprland's own official, minimal wallpaper daemon) instead,
+# started via exec-once in autostart.lua. hyprpaper has no crossfade/wipe
+# transition support (hard cut only) -- that trade-off was made
+# deliberately when switching to it.
+#
 # This controls (in seconds) when to switch to the next image
 INTERVAL=1800
 
@@ -39,8 +32,10 @@ while true; do
 		done \
 		| sort -n | cut -d':' -f2- \
 		| while read -r img; do
-			awww img "$img"
-			$pywal_refresh
+			hyprctl hyprpaper preload "$img" > /dev/null
+			hyprctl hyprpaper wallpaper ",$img" > /dev/null
+			hyprctl hyprpaper unload all > /dev/null
+			$pywal_refresh "$img"
 			sleep $INTERVAL
 
 		done
