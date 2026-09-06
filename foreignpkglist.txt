@@ -1,6 +1,5 @@
 acpilight
 aic94xx-firmware
-appimagelauncher-bin
 ast-firmware
 brave-bin
 downgrade
@@ -12,17 +11,13 @@ galaxybudsclient-bin
 grub-customizer
 hyprcursor-dracula-kde-git
 kvantum-qt6-git
-libpamac-full
 libreoffice-extension-languagetool
 librewolf-bin
 litehtml0.9
-marktext-bin
 mkinitcpio-firmware
 nwg-look-bin
 ocrmypdf
 onlyoffice-bin
-pamac-all
-pamac-cli
 pandoc-bin
 powertop-auto-tune
 python-fpdf2

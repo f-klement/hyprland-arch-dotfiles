@@ -21,7 +21,6 @@ btop
 btrfs-progs
 calibre
 cava
-clamav
 cliphist
 cronie
 cups
