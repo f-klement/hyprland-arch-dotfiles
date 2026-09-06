@@ -26,14 +26,35 @@ sudo pacman -S --needed $(cat pkglist.txt)
 yay -S --needed $(cat foreignpkglist.txt)
 
 # Install specific Flatpak apps
-flatpak install com.usebottles.bottles -y
+flatpak install flathub com.usebottles.bottles -y
 flatpak install flathub com.github.tchx84.Flatseal -y
+flatpak install flathub com.protonvpn.www -y
+flatpak install flathub me.proton.Pass -y
+# Steam itself is NOT installed via any package manager on this machine --
+# it's the self-updating client under ~/.local/share/Steam, installed by
+# running Valve's own install script/binary by hand. Nothing to bootstrap
+# here; install Steam manually, then use it (or protonup-qt) to fetch
+# Proton-GE, which shows up as the
+# com.valvesoftware.Steam.CompatibilityTool.Proton-GE Flatpak extension --
+# also not something `flatpak install` can fetch on its own.
 
 # Locale and Keyboard Layouts
-sudo cp locale.gen /etc/locale.gen
+#
+# BUG FOUND (2026-09-06): this cp'd a locale.gen out of the repo, but no
+# locale.gen was ever actually committed here -- only vconsole.conf and
+# 00-keyboard.conf exist. This step has been broken since the very first
+# commit; running bootstrap.sh fresh today fails right here. Guarded so a
+# fresh checkout without one just skips the step instead of aborting the
+# whole script -- add locale.gen back to the repo if you want this
+# re-enabled unconditionally.
+if [ -f locale.gen ]; then
+    sudo cp locale.gen /etc/locale.gen
+    sudo locale-gen
+else
+    echo "locale.gen not found in repo -- skipping (see bootstrap.sh comment)"
+fi
 sudo cp vconsole.conf /etc/vconsole.conf
 sudo cp 00-keyboard.conf /etc/X11/xorg.conf.d/
-sudo locale-gen
 
 
 echo "Migration complete! \n Use stow . to symlink the dotfiles once you are settled in"

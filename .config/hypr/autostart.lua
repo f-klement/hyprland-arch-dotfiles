@@ -18,7 +18,25 @@ hl.on("hyprland.start", function()
     -- Polkit agent (was the KDE one; hyprpolkitagent is the Hypr-ecosystem
     -- native equivalent -- lighter, no KDE Frameworks pulled in just for
     -- this. Needs `sudo pacman -S hyprpolkitagent`.)
-    hl.exec_cmd("hyprpolkitagent")
+    --
+    -- BUG FOUND (2026-09-06): this called the bare binary name, but
+    -- hyprpolkitagent (like most polkit agents) installs to
+    -- /usr/lib/hyprpolkitagent/hyprpolkitagent, not anywhere on $PATH --
+    -- so `exec_cmd("hyprpolkitagent")` was a silent "command not found"
+    -- every single login, same shape as the old `hyperctl` typo elsewhere
+    -- in this file. No polkit agent ever ran, so privileged GUI prompts
+    -- (gnome-disks mount/format, virt-manager, pamac) had nothing to ask
+    -- through. The package ships a proper systemd --user unit
+    -- (hyprpolkitagent.service, PartOf=graphical-session.target) with its
+    -- own Restart=on-failure -- going through systemd instead of a raw
+    -- exec_cmd also means it won't get double-launched later if this
+    -- session ever moves to UWSM (which activates graphical-session.target
+    -- itself, and the unit's WantedBy would then start it a second way).
+    -- `systemctl --user enable hyprpolkitagent.service` was run once
+    -- outside this file to persist that for any path that does activate
+    -- graphical-session.target; this line is what actually starts it on
+    -- this plain (non-UWSM) session, where that target is never reached.
+    hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
 
     -- Bar, tray, notifications
     hl.exec_cmd("waybar -c " .. os.getenv("HOME") .. "/.dotfiles/.config/waybar/config")
