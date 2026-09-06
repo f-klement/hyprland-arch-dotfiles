@@ -13,7 +13,11 @@
   "project_panel": {
     "button": true,
     "dock": "left",
-    "default_width": 240
+    "default_width": 240,
+    // Zed persists per-workspace panel state, which can leave the tree
+    // collapsed even though starts_open defaults to true. Pinned so it is
+    // always open on a fresh workspace. Toggle: ctrl-shift-e.
+    "starts_open": true
   },
 
   // Agent / threads panel off entirely.
