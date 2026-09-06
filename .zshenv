@@ -5,7 +5,12 @@
 export MOZ_ENABLE_WAYLAND=1
 export GDK_BACKEND=wayland,x11
 export CLUTTER_BACKEND=wayland
-export QT_QPA_PLATFORM=wayland
+# Matches hypr/env.lua's QT_QPA_PLATFORM -- that file deliberately keeps
+# the ";xcb" fallback for Qt apps that don't do native Wayland. This is
+# sourced by every zsh instance (including ones inside a terminal), so a
+# stricter value here was silently overriding Hyprland's for anything
+# launched from a shell prompt.
+export QT_QPA_PLATFORM="wayland;xcb"
 
 # --- Terminal ---
 export TERM=xterm-color
