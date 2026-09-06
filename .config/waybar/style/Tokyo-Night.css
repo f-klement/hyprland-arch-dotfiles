@@ -58,6 +58,8 @@ tooltip label {
     background-color: rgba(0, 0, 0, 0.8);
     border: 0px solid #7aa2f7;
     border-radius: 10px;
+    padding-right: 2px;
+    padding-left: 2px;
 }
 
 .modules-left {
@@ -74,9 +76,10 @@ tooltip label {
     box-shadow: none;
 	text-shadow: none;
     padding: 0px;
+    border-bottom: 2px;
+    border-color: #7aa2f7; /* Tokyo Night blue -- Rose Pine's thickness, this theme's accent */
+    border-style: solid;
     border-radius: 9px;
-    margin-top: 3px;
-    margin-bottom: 3px;
     padding-left: 3px;
     padding-right: 3px;
     animation: gradient_f 20s ease-in infinite;
@@ -86,10 +89,8 @@ tooltip label {
 #workspaces button.active {
     color: #bb9af7; /* Tokyo Night magenta */
     border-radius: 15px 15px 15px 15px;
-    margin-left: 3px;
     padding-left: 12px;
     padding-right: 12px;
-    margin-right: 3px;
     animation: gradient_f 20s ease-in infinite;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
@@ -145,6 +146,7 @@ tooltip label {
 #custom-menu,
 #custom-power_vertical,
 #custom-power,
+#custom-power_mode,
 #custom-speaker,
 #custom-updater,
 #custom-weather,
@@ -159,8 +161,9 @@ tooltip label {
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
     color: #bb9af7; /* Tokyo Night magenta */
-    padding: 1px 4px;
-    border-radius: 8px;
+    background-color: transparent;
+    padding: 3px 6px;
+    border-radius: 10px;
 }
 
 #custom-lock {
@@ -177,12 +180,29 @@ tooltip label {
     }
 }
 
+/* Was missing entirely -- Rose Pine has a base #taskbar button rule with
+   this same border/padding/radius, Tokyo Night only had .active/:hover, so
+   taskbar buttons fell back to unstyled default chrome (part of the
+   "different thickness" between the two themes). Added to match. */
+#taskbar button {
+    box-shadow: none;
+    text-shadow: none;
+    padding: 0px;
+    border-bottom: 2px;
+    border-color: #7aa2f7; /* Tokyo Night blue -- Rose Pine's thickness, this theme's accent */
+    border-style: solid;
+    border-radius: 10px;
+    padding-left: 3px;
+    padding-right: 3px;
+    color: #565f89; /* Tokyo Night comment/muted, matches workspace button */
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
 #taskbar button.active {
     background-color: #3b4261; /* Tokyo Night selection */
-    margin-left: 3px;
     padding-left: 12px;
     padding-right: 12px;
-    margin-right: 3px;
     animation: gradient_f 20s ease-in infinite;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }

@@ -488,7 +488,21 @@
     "interval" : 86400, // once every day
     "tooltip": true
 },
-      
+
+// Power mode: auto / performance / power saver (left-click cycles).
+// Auto follows AC/battery and only toggles Hyprland's blur -- tccd keeps
+// switching its own CPU/fan profile natively either way. Right-click opens
+// the existing TCC profile picker for a manual hardware-profile override.
+"custom/power_mode": {
+    "return-type": "json",
+    "exec": "~/.config/hypr/scripts/PowerMode.sh --status",
+    "on-click": "~/.config/hypr/scripts/PowerMode.sh --cycle",
+    "on-click-right": "~/.config/hypr/scripts/powerprofiles.sh",
+    "signal": 8,
+    "interval": 15, // fallback poll, in case AC/battery changes while nothing else triggers a redraw
+    "tooltip": true
+},
+
 "custom/lock": {
     "format": "󰌾{}",
     "exec": "echo ; echo 󰷛  screen lock",

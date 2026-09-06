@@ -7,6 +7,7 @@
 -- `hyprctl reload`.
 
 local userScripts  = os.getenv("HOME") .. "/.config/hypr/UserScripts"
+local scriptsDir   = os.getenv("HOME") .. "/.config/hypr/scripts"
 local wallDir      = os.getenv("HOME") .. "/Pictures/wallpapers"
 
 hl.on("hyprland.start", function()
@@ -26,14 +27,24 @@ hl.on("hyprland.start", function()
     -- the old config exec'd it anyway, which just silently failed every boot)
     hl.exec_cmd("swaync")
 
-    -- Backup + misc daemons
-    hl.exec_cmd("/Storage/Data/run_backup.sh")
+    -- Misc daemons
+    -- run_backup.sh autostart disabled by request (2026-09-06) -- was
+    -- launched both from here and from the XDG autostart .desktop
+    -- (~/.config/autostart/run_backup.sh.desktop, now Hidden=true), so
+    -- both had to go to actually stop it running at login.
     -- Was wlsunset -l 48.2 -L 16.3 (real lat/long solar calculation).
     -- hyprsunset has no lat/long mode -- see hyprsunset.conf for the
     -- fixed-time-profile trade-off this swap made. Needs
     -- `sudo pacman -S hyprsunset`.
     hl.exec_cmd("hyprsunset")
-    hl.exec_cmd("tuxedo-control-center")
+    -- NOTE: was `tuxedo-control-center` (no flag) -- that launches the full
+    -- Electron window in the foreground on every login, duplicating what
+    -- the tray already does. The tray-only autostart entry
+    -- (~/.config/autostart/tuxedo-control-center-tray.desktop, which runs
+    -- `tuxedo-control-center --tray`) already covers this in the
+    -- background, so the redundant foreground launch was dropped here.
+    -- The actual power-profile daemon (tccd.service) is a separate
+    -- systemd system service, unaffected by this.
     hl.exec_cmd("batsignal -b")
 
     -- Clipboard history. The old config started THREE watchers: one
@@ -81,4 +92,9 @@ hl.on("hyprland.start", function()
     -- `sudo pacman -S hypridle hyprlock` (hypridle's lock_cmd calls
     -- hyprlock, see hypridle.conf/hyprlock.conf).
     hl.exec_cmd("hypridle")
+
+    -- AC/battery-aware power tuning (blur + tccd profile). Long-running
+    -- watcher, not a one-shot -- see the script header for what it does and
+    -- why (power-draw investigation, 2026-09-06).
+    hl.exec_cmd(scriptsDir .. "/PowerAutoTune.sh")
 end)

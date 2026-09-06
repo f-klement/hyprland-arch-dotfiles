@@ -37,9 +37,17 @@ hl.config({
         dim_strength = 0.1,
 
         blur = {
+            -- Tuned down from passes=2 (2026-09-06, power-draw pass): each
+            -- extra pass roughly doubles the blur cost, and xray stops it
+            -- from also blurring stacked windows behind the blurred one
+            -- (only the wallpaper) -- softer to render, barely different to
+            -- look at. This is the "AC" baseline; PowerAutoTune.sh (see
+            -- autostart.lua) turns blur off entirely on battery and
+            -- restores exactly this config on AC.
             enabled           = true,
             size              = 8,
-            passes            = 2,
+            passes            = 1,
+            xray              = true,
             new_optimizations = true,
         },
     },

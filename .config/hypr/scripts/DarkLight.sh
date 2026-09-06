@@ -27,17 +27,20 @@ setwallpaper() {
     hyprctl hyprpaper unload all > /dev/null
 }
 
-# Determine next state
+# Determine next state. Tokyo Night is the default: an empty/missing
+# state_file (fresh install, cache cleared) or anything other than an
+# explicit saved "tokyo-night" resolves to tokyo-night, not rose-pine.
 current=$(cat "$state_file" 2>/dev/null)
-if [ "$current" = "rose-pine" ]; then
-    next="tokyo-night"
-else
+if [ "$current" = "tokyo-night" ]; then
     next="rose-pine"
+else
+    next="tokyo-night"
 fi
 
 if [ "$next" = "tokyo-night" ]; then
     waybar_style="$HOME/.config/waybar/style/Tokyo-Night.css"
     rofi_theme="$HOME/.config/rofi/pywal-color/tokyo-night.rasi"
+    kitty_theme="tokyo-night.conf"
     wallpaper_dir="$dark_wallpapers"
     noti_bg="rgba(26, 27, 38, 0.85)"
     noti_bg_alt="#16161e"
@@ -50,6 +53,7 @@ if [ "$next" = "tokyo-night" ]; then
 else
     waybar_style="$HOME/.config/waybar/style/Rose Pine.css"
     rofi_theme="$HOME/.config/rofi/pywal-color/rose-pine.rasi"
+    kitty_theme="rose-pine-moon.conf"
     wallpaper_dir="$light_wallpapers"
     noti_bg="rgba(38, 35, 58, 0.85)"
     noti_bg_alt="#26233a"
@@ -63,6 +67,7 @@ fi
 
 ln -sf "$waybar_style" "$HOME/.config/waybar/style.css"
 ln -sf "$rofi_theme" "$HOME/.config/rofi/pywal-color/pywal-theme.rasi"
+ln -sf "$kitty_theme" "$HOME/.dotfiles/.config/kitty/theme.conf"
 ln -sf "$gtk4_accent" "$HOME/.config/gtk-4.0/gtk.css"
 
 # GTK (both the gsettings/dconf path GTK4+libadwaita apps read via the xdg

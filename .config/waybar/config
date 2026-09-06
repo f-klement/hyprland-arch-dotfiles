@@ -38,7 +38,9 @@
      "clock",
      "custom/separator#dot-line",
      "custom/light_dark",
-     "custom/separator#dot-line", 
+     "custom/separator#dot-line",
+     "custom/power_mode",
+     "custom/separator#dot-line",
      "custom/lock"
      //],
      //"custom/separator#dot-line"

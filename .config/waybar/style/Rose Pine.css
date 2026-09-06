@@ -30,6 +30,35 @@ tooltip {
     border-width: 0px;
 }
 
+/*-----module groups----*/
+/* Rose Pine had no group containers at all -- every module carried its own
+   background/border below, which is what made each icon read as its own
+   floating pill instead of the fused three-block look Tokyo Night and Light
+   already have. Added to match. */
+.modules-right {
+    background-color: rgba(38, 35, 58, 0.8);
+    border: 0px solid @wb-act-bg;
+    border-radius: 10px;
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+.modules-center {
+    background-color: rgba(38, 35, 58, 0.8);
+    border: 0px solid @wb-act-bg;
+    border-radius: 10px;
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+.modules-left {
+    background-color: rgba(38, 35, 58, 0.8);
+    border: 0px solid @wb-act-bg;
+    border-radius: 10px;
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
 #workspaces button {
     box-shadow: none;
 	text-shadow: none;
@@ -125,6 +154,7 @@ tooltip {
 #custom-menu,
 #custom-power_vertical,
 #custom-power,
+#custom-power_mode,
 #custom-swaync,
 #custom-updater,
 #custom-swaync,
@@ -141,11 +171,8 @@ tooltip {
 #custom-weather.snowyIcyNight,
 #custom-weather.sunnyDay {
     color: @main-fg;
-    background: @main-bg;
+    background-color: transparent;
     opacity: 1;
-	border-bottom: 2px;
-	border-color: #2B5D34;
-	border-style: solid;
 	border-radius: 10px;
 	padding-top: 3px;
 	padding-bottom: 3px;
