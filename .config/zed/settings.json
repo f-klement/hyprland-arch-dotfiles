@@ -1,7 +1,7 @@
 // Zed settings.
 //
-// Panels: only the project panel (file tree) keeps a status-bar toggle, docked
-// right. Agent/threads, collaboration, outline, git and debugger panels are
+// Panels: only the file tree keeps a status-bar toggle, docked left.
+// Agent/threads, collaboration, outline, git and debugger panels are
 // switched off. Terminal and git are still reachable from the command palette
 // and their keybindings; only their status-bar buttons are hidden.
 //
@@ -9,10 +9,10 @@
 // from the active Omarchy theme by the theme-set hook, so Zed follows
 // `omarchy theme set` instead of freezing on one palette.
 {
-  // The one panel that keeps a toggle.
+  // The file tree, and the only panel with a status-bar toggle.
   "project_panel": {
     "button": true,
-    "dock": "right",
+    "dock": "left",
     "default_width": 240
   },
 
@@ -49,20 +49,6 @@
     "button": false
   },
 
-  "ssh_connections": [
-    {
-      "host": "pelican",
-      "args": [],
-      "projects": [
-        {
-          "paths": [
-            "/home/francisdrake"
-          ]
-        }
-      ]
-    }
-  ],
-
   "window_decorations": "client",
   "title_bar": {
     "button_layout": "platform_default",
@@ -81,9 +67,6 @@
   "telemetry": {
     "diagnostics": false,
     "metrics": false
-  },
-  "session": {
-    "trust_all_worktrees": true
   },
   "base_keymap": "VSCode",
   "minimap": {
