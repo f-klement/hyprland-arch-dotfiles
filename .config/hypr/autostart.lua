@@ -26,6 +26,10 @@ hl.on("hyprland.start", function()
     -- swaync is the notification daemon in use (mako isn't installed --
     -- the old config exec'd it anyway, which just silently failed every boot)
     hl.exec_cmd("swaync")
+    -- Internet radio, tray-only (no window). Custom icon in
+    -- radiotray-ng.json points at the active icon theme's own
+    -- internet-radio-symbolic glyph so it blends in next to nm-applet.
+    hl.exec_cmd("radiotray-ng")
 
     -- Misc daemons
     -- run_backup.sh autostart disabled by request (2026-09-06) -- was
