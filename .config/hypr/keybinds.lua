@@ -19,7 +19,7 @@ local files    = "dolphin"
 local browser  = "brave"
 local term     = "kitty"
 local mail     = "thunderbird"
-local editor   = "codium"
+local editor   = "zeditor"
 
 -- helper just for readability below; builds "MOD1 + MOD2 + KEY"
 local function combo(mods, k)
