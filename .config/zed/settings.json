@@ -1,15 +1,54 @@
-// Zed settings
+// Zed settings.
 //
-// For information on how to configure Zed, see the Zed
-// documentation: https://zed.dev/docs/configuring-zed
+// Panels: only the project panel (file tree) keeps a status-bar toggle, docked
+// right. Agent/threads, collaboration, outline, git and debugger panels are
+// switched off. Terminal and git are still reachable from the command palette
+// and their keybindings; only their status-bar buttons are hidden.
 //
-// To see all of Zed's default settings without changing your
-// custom settings, run `zed: open default settings` from the
-// command palette (cmd-shift-p / ctrl-shift-p)
+// "theme" is "Omazed" rather than a fixed theme name: Omazed is regenerated
+// from the active Omarchy theme by the theme-set hook, so Zed follows
+// `omarchy theme set` instead of freezing on one palette.
 {
-  "terminal": {
-    "font_size": 13.0
+  // The one panel that keeps a toggle.
+  "project_panel": {
+    "button": true,
+    "dock": "right",
+    "default_width": 240
   },
+
+  // Agent / threads panel off entirely.
+  "agent": {
+    "enabled": false,
+    "button": false
+  },
+
+  // Collaboration off.
+  "collaboration_panel": {
+    "button": false
+  },
+
+  // Remaining panels: no status-bar buttons.
+  "outline_panel": {
+    "button": false
+  },
+  "git_panel": {
+    "button": false
+  },
+  "debugger": {
+    "button": false
+  },
+
+  // Edit predictions / inline AI completions off.
+  "edit_predictions": {
+    "provider": "none"
+  },
+  "show_edit_predictions": false,
+
+  "terminal": {
+    "font_size": 13.0,
+    "button": false
+  },
+
   "ssh_connections": [
     {
       "host": "pelican",
@@ -23,18 +62,7 @@
       ]
     }
   ],
-  "project_panel": {
-    "default_width": 220.0,
-    "dock": "left"
-  },
-  "agent": {
-    "dock": "right",
-    "favorite_models": [],
-    "model_parameters": []
-  },
-  "outline_panel": {
-    "dock": "left"
-  },
+
   "window_decorations": "client",
   "title_bar": {
     "button_layout": "platform_default",
@@ -61,17 +89,67 @@
   "minimap": {
     "show": "never"
   },
-  "agent_servers": {
-    "claude-acp": {
-      "type": "registry"
-    }
-  },
   "icon_theme": "Catppuccin Macchiato",
   "ui_font_size": 16,
   "buffer_font_size": 15,
-  "theme": {
-    "mode": "dark",
-    "light": "One Light",
-    "dark": "Tokyo Night Storm",
+  "theme": "Omazed",
+
+  // Extensions Zed installs on its own at startup. TypeScript, TSX, JSX, JSON
+  // and YAML are built in, so they need nothing here.
+  "auto_install_extensions": {
+    // React / TypeScript
+    "biome": true,
+    "emmet": true,
+
+    // Containers. Podman reads the same syntax, and Containerfile is mapped to
+    // the Dockerfile grammar under "file_types" below.
+    "dockerfile": true,
+    "docker-compose": true,
+
+    // Shell, SSH, Kubernetes, GitLab.
+    // basher (bash-language-server) is listed but Zed 1.16.2 declines to
+    // install it and logs no reason; the registry serves it fine at every
+    // wasm-api version, and a manual drop into extensions/installed was
+    // removed again on next start. Left here so it lands if a future Zed
+    // fixes that. Shell Script syntax highlighting is built in regardless --
+    // only the LSP (completions, shellcheck diagnostics) is missing.
+    "basher": true,
+    "ssh-config": true,
+    "helm": true,
+    "gitlab-ci-ls": true,
+
+    // Supporting formats
+    "env": true,
+    "git-firefly": true,
+
+    // Provides the icon theme selected above
+    "catppuccin-icons": true
   },
+
+  // Podman names its build files Containerfile; without this they open as
+  // plain text instead of using the Dockerfile grammar.
+  "file_types": {
+    "Dockerfile": ["Containerfile", "Containerfile.*", "Dockerfile.*"]
+  },
+
+  // Schema validation for the YAML that is not already covered by a dedicated
+  // language server. gitlab-ci-ls handles .gitlab-ci.yml itself.
+  "lsp": {
+    "yaml-language-server": {
+      "settings": {
+        "yaml": {
+          "keyOrdering": false,
+          "schemas": {
+            "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone-strict/all.json": [
+              "k8s/**/*.yaml",
+              "k8s/**/*.yml",
+              "manifests/**/*.yaml",
+              "manifests/**/*.yml",
+              "**/*.k8s.yaml"
+            ]
+          }
+        }
+      }
+    }
+  }
 }
