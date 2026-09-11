@@ -81,15 +81,15 @@ light.color=#7dcfff
 mid.light.color=#7dcfff
 dark.color=#414868
 mid.color=#414868
-highlight.color=#2ac3de
-inactive.highlight.color=#2ac3de
+highlight.color=#7aa2f7
+inactive.highlight.color=#7aa2f7
 text.color=#a9b1d6
 window.text.color=#a9b1d6
 button.text.color=#a9b1d6
 disabled.text.color=#565f89
 tooltip.text.color=#a9b1d6
-highlight.text.color=#414868
-link.color=#2ac3de
+highlight.text.color=#1a1b26
+link.color=#7dcfff
 link.visited.color=#73daca
 
 [ItemView]
@@ -272,7 +272,7 @@ frame.left=1
 frame.right=1
 frame.expansion=0
 text.normal.color=#a9b1d6
-text.focus.color=#2ac3de
+text.focus.color=#7aa2f7
 text.press.color=#a9b1d6
 text.toggle.color=#a9b1d6
 indicator.element=harrow
@@ -294,8 +294,8 @@ frame.left=4
 frame.right=4
 text.normal.color=#a9b1d6
 text.focus.color=#a9b1d6
-text.press.color=#2ac3de
-text.toggle.color=#2ac3de
+text.press.color=#7aa2f7
+text.toggle.color=#7aa2f7
 text.bold=false
 
 [MenuBar]

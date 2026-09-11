@@ -15,7 +15,10 @@ local mainMod      = "SUPER"
 local scriptsDir   = home .. "/.config/hypr/scripts"
 local userScripts  = home .. "/.config/hypr/UserScripts"
 
-local files    = "dolphin"
+-- Was bare "dolphin" -- see scripts/KdeApp.sh for why it needs
+-- QT_QPA_PLATFORMTHEME=kde specifically (not the session-wide qt6ct) to
+-- render its file list correctly.
+local files    = scriptsDir .. "/KdeApp.sh dolphin"
 local browser  = "brave"
 local term     = "kitty"
 local mail     = "thunderbird"

@@ -126,6 +126,20 @@ sed -i "s/^icon_theme=.*/icon_theme=$icon_theme/" "$HOME/.config/qt5ct/qt5ct.con
 plasma-apply-colorscheme "$kde_color_scheme" >/dev/null 2>&1
 kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
 
+# Still wasn't enough on its own -- Dolphin's file list kept rendering an
+# unstyled light-gray row background (found via screenshot + pixel
+# sampling) despite kdeglobals now being correct. Root cause turned out to
+# be QT_QPA_PLATFORMTHEME=qt6ct itself: it's a solid generic Qt platform
+# theme but doesn't fully replicate the native KDEPlasmaPlatformTheme6
+# plugin's KColorScheme integration that KDE Frameworks widgets (like
+# Dolphin's KItemListView) actually read from. Dolphin is now launched via
+# scripts/KdeApp.sh, which sets QT_QPA_PLATFORMTHEME=kde instead -- but
+# that plugin looks at kdeglobals' [KDE] widgetStyle for which widget
+# *style* to use, and with none set it fell back to Breeze instead of
+# Kvantum. This is the other half: without it, Dolphin would have the
+# right colors but the wrong (unstyled Breeze) widget shapes.
+kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle kvantum
+
 # Notification tint (both palettes are dark-ish, so this is a color swap,
 # not a real light/dark contrast switch)
 sed -i "/@define-color noti-bg/s/rgba([0-9]*,\s*[0-9]*,\s*[0-9]*,\s*[0-9.]*);/${noti_bg};/" "${swaync_style}"
