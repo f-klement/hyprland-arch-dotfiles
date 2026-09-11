@@ -651,11 +651,7 @@
     },
     "return-type": "json",
     "exec-if": "which swaync-client",
-    // -u/-unbuffered on both so each update streams through immediately
-    // rather than sitting in a block buffer. Blanks the count instead of
-    // showing a "0" when there's nothing to report (request 2026-09-11) --
-    // swaync-client always includes a numeric "text", there's no flag for
-    // this, so it's filtered here rather than in format/format-icons.
+    // blank the count instead of showing "0" when idle
     "exec": "swaync-client -swb | sed -u 's/\"text\": \"0\"/\"text\": \"\"/'",
     "on-click": "sleep 0.1 && swaync-client -t -sw",
     "on-click-right": "swaync-client -d -sw",
