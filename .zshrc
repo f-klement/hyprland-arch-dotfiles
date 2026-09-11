@@ -114,3 +114,15 @@ eval "$(zoxide init --cmd cd zsh)"
 # Starship (Prompt)
 # This MUST be last to ensure it controls the prompt.
 eval "$(starship init zsh)"
+
+work() {
+    local vm=debian-work uri=qemu:///system
+    case "$1" in
+        stop)   virsh -c $uri shutdown $vm ;;
+        status) virsh -c $uri domstate $vm ;;
+        *)
+            [ "$(virsh -c $uri domstate $vm)" = running ] || virsh -c $uri start $vm
+            virt-viewer --connect $uri --attach --full-screen --wait --reconnect $vm & disown
+            ;;
+    esac
+}
