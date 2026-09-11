@@ -5,9 +5,9 @@
 	"last-station-notifications" : true,
 	"notification-verbose" : true,
 	"notifications" : true,
-	"radiotray-ng-notification" : "/home/florian/.config/radiotray-ng/icons/radio-on.svg",
-	"radiotray-ng-off" : "/home/florian/.config/radiotray-ng/icons/radio-off.svg",
-	"radiotray-ng-on" : "/home/florian/.config/radiotray-ng/icons/radio-on.svg",
+	"radiotray-ng-notification" : "radiotray-ng-on",
+	"radiotray-ng-off" : "radiotray-ng-off",
+	"radiotray-ng-on" : "radiotray-ng-on",
 	"split-title" : true,
 	"volume-level" : 100
 }
