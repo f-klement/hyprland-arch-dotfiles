@@ -38,6 +38,29 @@ flatpak install flathub me.proton.Pass -y
 # com.valvesoftware.Steam.CompatibilityTool.Proton-GE Flatpak extension --
 # also not something `flatpak install` can fetch on its own.
 
+# Default shell: zsh (already in pkglist.txt, just needs to be set)
+if [ "$SHELL" != "$(command -v zsh)" ]; then
+    chsh -s "$(command -v zsh)" "$USER"
+fi
+
+# nvm / uv / bun -- not in the official repos, installed via upstream scripts
+if [ ! -d "$HOME/.nvm" ]; then
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+fi
+if [ ! -f "$HOME/.local/bin/uv" ]; then
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+if [ ! -d "$HOME/.bun" ]; then
+    curl -fsSL https://bun.sh/install | bash
+fi
+
+# Podman rootless + Docker CLI compat (podman/podman-docker are in pkglist.txt)
+grep -q "^$USER:" /etc/subuid || sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER"
+sudo loginctl enable-linger "$USER"
+systemctl --user enable --now podman.socket
+sudo mkdir -p /etc/containers/registries.conf.d
+sudo cp containers/registries.conf.d/*.conf /etc/containers/registries.conf.d/
+
 # Locale and Keyboard Layouts
 #
 # BUG FOUND (2026-09-06): this cp'd a locale.gen out of the repo, but no

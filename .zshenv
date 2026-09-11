@@ -27,6 +27,14 @@ if [ -f "$HOME/.local/bin/env" ]; then
   . "$HOME/.local/bin/env"
 fi
 
+# --- Podman/docker compat ---
+# podman-docker's own DOCKER_HOST setup only runs via /etc/zsh/zprofile,
+# which is login-shell-only -- kitty launches zsh non-login, so DOCKER_HOST
+# was never set in normal terminals. .zshenv runs for every shell.
+if [ -f /etc/profile.d/podman-docker.sh ]; then
+  . /etc/profile.d/podman-docker.sh
+fi
+
 # --- Zsh-native PATH management ---
 # 'typeset -U path' ensures each directory appears only once (Unique).
 # 'path' is a Zsh array that is automatically tied to the $PATH variable.

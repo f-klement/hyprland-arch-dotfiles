@@ -199,7 +199,6 @@ slurp
 snapper
 solaar
 spectacle
-spice-vdagent
 starship
 stow
 svgpart
@@ -228,7 +227,6 @@ unzip
 usbutils
 vim
 virt-manager
-virt-viewer
 wacomtablet
 wallutils
 waybar
