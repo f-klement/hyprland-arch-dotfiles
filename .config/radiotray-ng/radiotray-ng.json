@@ -1,13 +1,13 @@
 {
 	"bookmarks" : "/home/florian/.config/radiotray-ng/bookmarks.json",
-	"last-station" : "Space Station Soma",
-	"last-station-group" : "Techno / Electronic",
+	"last-station" : "Chillits Radio",
+	"last-station-group" : "Specials / Live",
 	"last-station-notifications" : true,
 	"notification-verbose" : true,
 	"notifications" : true,
-	"radiotray-ng-notification" : "radiotray-ng-on",
-	"radiotray-ng-off" : "radiotray-ng-off",
-	"radiotray-ng-on" : "radiotray-ng-on",
+	"radiotray-ng-notification" : "radiotray-custom-on",
+	"radiotray-ng-off" : "radiotray-custom-off",
+	"radiotray-ng-on" : "radiotray-custom-on",
 	"split-title" : true,
 	"volume-level" : 100
 }

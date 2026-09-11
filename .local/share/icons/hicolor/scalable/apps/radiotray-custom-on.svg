@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" version="1.1">
+ <!-- Custom earbud-in-a-circle glyph (request 2026-09-11) -- replaces the
+      earlier ring+stem "internet-radio-symbolic" glyph, which read as a
+      stop/prohibited sign at 15px in the bar. Full opacity = playing. -->
+ <circle cx="8" cy="8" r="6.25" fill="none" stroke="#ededf5" stroke-width="1.1"/>
+ <ellipse cx="6.6" cy="6.5" rx="2.15" ry="2.5" fill="#ededf5" transform="rotate(-20 6.6 6.5)"/>
+ <path d="M 8.3 8.1 C 9.6 9.2 10.3 10.2 10.1 11.6" fill="none" stroke="#ededf5" stroke-width="1.3" stroke-linecap="round"/>
+</svg>
