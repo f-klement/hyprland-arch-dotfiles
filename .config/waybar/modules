@@ -506,11 +506,10 @@
 },
       
 "tray": {
-    // reverse-direction added (2026-09-11) to try to push radiotray-ng to
-    // the outer edge of the tray cluster (waybar has no per-icon pinning,
-    // this is the only ordering lever the tray module has -- see
-    // waybar-tray(5)). Direction is a guess since I can't see the bar --
-    // tell me if this is backwards and I'll flip it.
+    // reverse-direction (2026-09-11): flipped false->true after confirming
+    // with a full waybar restart (config-reload alone does NOT reorder
+    // already-registered tray icons -- see waybar-tray(5) beta caveats).
+    // false was tested and confirmed wrong; true is the preferred order.
     "icon-size": 15,
     "spacing": 8,
     "reverse-direction": true,
