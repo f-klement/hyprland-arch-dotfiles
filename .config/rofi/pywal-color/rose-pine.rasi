@@ -6,6 +6,15 @@
  *
  * Slightly transparent + frosted, same as tokyo-night.rasi -- blur is
  * applied via a Hyprland layer rule (see windowrules.lua), not here.
+ *
+ * REBUILT (2026-09-11): selected-normal-background/active-background were
+ * pine (#31748f) and foam (#9ccfd8) -- neither is the accent this system
+ * actually settled on for Rose Pine Moon. kitty's url_color and
+ * gtk-4.0/rose-pine-moon-accent.css's accent_bg_color both use iris
+ * (#c4a7e7); unified to that here too, with accent_fg_color's exact
+ * #232136 for text drawn on top of it (the window background below stays
+ * #26233a -- that's a deliberately different, separately-established
+ * value already shared with swaync's noti-bg-alt, see DarkLight.sh).
  */
 
 * {
@@ -13,10 +22,11 @@
     background90:                  rgba(38, 35, 58, 0.90);
     background-alt:                #393552;
     foreground:                    #e0def4;
-    selected-normal-background:    #31748f;
-    selected-normal-foreground:    #e0def4;
-    active-background:             #9ccfd8;
-    active-foreground:             #26233a;
+    foreground-alt:                #6e6a86;
+    selected-normal-background:    #c4a7e7;
+    selected-normal-foreground:    #232136;
+    active-background:             #c4a7e7;
+    active-foreground:             #232136;
     urgent-background:             #eb6f92;
-    urgent-foreground:             #26233a;
+    urgent-foreground:             #232136;
 }

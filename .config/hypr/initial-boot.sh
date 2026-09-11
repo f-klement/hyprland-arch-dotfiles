@@ -54,6 +54,13 @@ if [ ! -f "$marker" ]; then
     # initiate kvantum theme
     kvantummanager --set "$kvantum_theme" > /dev/null 2>&1 &
 
+    # KDE Frameworks apps (Dolphin etc.) -- added (2026-09-11), see
+    # DarkLight.sh's own KDE section for the full explanation. Without
+    # this, kdeglobals stays stock Breeze Dark on a fresh install same as
+    # it did on this one.
+    plasma-apply-colorscheme TokyoNight > /dev/null 2>&1 &
+    kwriteconfig6 --file kdeglobals --group Icons --key Theme "Tokyonight-Dark" > /dev/null 2>&1 &
+
     # initiate the kb_layout (for some reason) waybar cant launch it
     "$scriptsDir/SwitchKeyboardLayout.sh" > /dev/null 2>&1 &
 

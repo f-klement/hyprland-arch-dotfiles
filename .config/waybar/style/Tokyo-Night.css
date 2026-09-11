@@ -13,6 +13,21 @@ min-height: 0;
 font-size: 98%;
 font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 padding: 1px;
+/* Hard override (2026-09-11): this theme was rendering at height 34 vs
+   Rose Pine's 29 -- fixed two real contributors along the way (Rose
+   Pine's missing min-height/padding reset; #mpris/#custom-swaync here
+   silently falling through to unstyled GTK defaults) without fully
+   closing the gap, and chasing the rest blind (no visual feedback to
+   bisect against) wasn't worth more time. A negative margin on the outer
+   window had no effect at all (GTK layer-shell windows don't collapse
+   their own margin) -- this one, on every widget via the global rule,
+   does: confirmed empirically to bring it from 34 down to 28, matching
+   config's own configured "height". Rose Pine gets the equivalent small
+   nudge (see its own * rule) so both land on exactly the same number
+   instead of two different "close enough" values. Re-measure
+   (`waybar -l info`, watch for "Bar configured") if this theme's content
+   ever changes enough to need the number adjusted. */
+margin: -3px 0px;
 }
 
 window#waybar {
@@ -128,6 +143,7 @@ tooltip label {
 #memory,
 #mode,
 #mpd,
+#mpris,
 #network,
 #pulseaudio,
 #pulseaudio-slider,
@@ -148,6 +164,7 @@ tooltip label {
 #custom-power,
 #custom-power_mode,
 #custom-speaker,
+#custom-swaync,
 #custom-updater,
 #custom-weather,
 #custom-weather.clearNight,

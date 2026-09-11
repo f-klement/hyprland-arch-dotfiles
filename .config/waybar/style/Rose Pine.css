@@ -13,6 +13,18 @@
 * {
 	font-family: "JetBrainsMono Nerd Font";
 	font-weight: bold;
+	/* min-height/padding added (2026-09-11) to match Tokyo-Night.css --
+	   this rule was missing them entirely, so nothing reset GTK's default
+	   widget min-height and the bar rendered visibly taller switching to
+	   Rose Pine than Tokyo Night's explicit "min-height: 0; padding: 1px;"
+	   reset gave it. Unified on Tokyo Night's slimmer value. */
+	min-height: 0;
+	padding: 1px;
+	/* Small nudge to land on exactly the same rendered height as
+	   Tokyo-Night.css (both target 28, matching config's own configured
+	   "height") rather than two different "close enough" values -- see
+	   that file's own * rule for the full story. */
+	margin: -1px 0px;
 	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
 	font-size: 97%;
 	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';

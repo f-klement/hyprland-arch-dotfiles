@@ -57,6 +57,7 @@ if [ "$next" = "tokyo-night" ]; then
     kvantum_theme="Tokyo-Night"
     qt_color_scheme="Tokyo-Night.conf"
     gtk4_accent="$HOME/.config/gtk-4.0/tokyo-night-accent.css"
+    kde_color_scheme="TokyoNight"
     color_scheme="prefer-dark"
 else
     waybar_style="$HOME/.config/waybar/style/Rose Pine.css"
@@ -70,10 +71,22 @@ else
     kvantum_theme="rose-pine-moon-pine"
     qt_color_scheme="Rose-Pine-Moon.conf"
     gtk4_accent="$HOME/.config/gtk-4.0/rose-pine-moon-accent.css"
+    kde_color_scheme="RosePineMoon"
     color_scheme="prefer-dark" # both palettes are dark; there's no Rose Pine Dawn (light) asset installed
 fi
 
-ln -sf "$waybar_style" "$HOME/.config/waybar/style.css"
+# waybar/style.css: was `ln -sf` (symlink-swap). Changed to a content copy
+# (2026-09-11) -- waybar/config now has "reload_style_on_change": true,
+# which hot-reloads the bar without a restart (verified via
+# `waybar -l debug`: it watches the *resolved* target file, so swapping
+# which file the symlink points to was invisible to it -- neither file's
+# content ever changed. Overwriting style.css's own content in place is
+# what it actually detects, confirmed by "Reloading style, file changed"
+# in the debug log). This is also why the idle_inhibitor ("caffeine"
+# toggle) survives a theme switch now: no waybar restart means no
+# idle_inhibitor module getting recreated from scratch. See below for the
+# matching change to the final refresh (skips waybar entirely now).
+cp "$waybar_style" "$HOME/.config/waybar/style.css"
 ln -sf "$rofi_theme" "$HOME/.config/rofi/pywal-color/pywal-theme.rasi"
 ln -sf "$kitty_theme" "$HOME/.dotfiles/.config/kitty/theme.conf"
 ln -sf "$gtk4_accent" "$HOME/.config/gtk-4.0/gtk.css"
@@ -94,6 +107,25 @@ sed -i "s|^color_scheme_path=.*$|color_scheme_path=$HOME/.config/qt5ct/colors/$q
 sed -i "s|^color_scheme_path=.*$|color_scheme_path=$HOME/.config/qt6ct/colors/$qt_color_scheme|" "$HOME/.config/qt6ct/qt6ct.conf"
 sed -i "s/^icon_theme=.*/icon_theme=$icon_theme/" "$HOME/.config/qt5ct/qt5ct.conf" "$HOME/.config/qt6ct/qt6ct.conf"
 
+# KDE Frameworks apps (Dolphin, Ark, systemsettings, ...) -- added
+# (2026-09-11). These read ~/.config/kdeglobals for their color scheme via
+# KColorScheme, which is completely separate from qt6ct/Kvantum (Kvantum
+# controls widget *style* -- button shapes, scrollbars, menu chrome --
+# kdeglobals controls the actual color *palette* KDE-aware widgets use).
+# kdeglobals had never been touched by any of this system's theming: it
+# was still stock Breeze Dark defaults, with an [Icons] Theme= pointing at
+# the same phantom "Tela-purple-dark" fixed above for everything else --
+# very likely the main reason Dolphin specifically looked out of place
+# even with Kvantum/qt6ct otherwise correct. plasma-apply-colorscheme is
+# the proper tool (not hand-editing kdeglobals with sed): it applies every
+# relevant kdeglobals section from one of the two schemes in
+# ~/.local/share/color-schemes/ (TokyoNight.colors, RosePineMoon.colors --
+# built to match this system's established palette, same hex values as
+# kitty/gtk-4.0's accent files) and notifies running KDE apps live via
+# KGlobalSettings, no restart needed for most of them.
+plasma-apply-colorscheme "$kde_color_scheme" >/dev/null 2>&1
+kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
+
 # Notification tint (both palettes are dark-ish, so this is a color swap,
 # not a real light/dark contrast switch)
 sed -i "/@define-color noti-bg/s/rgba([0-9]*,\s*[0-9]*,\s*[0-9]*,\s*[0-9.]*);/${noti_bg};/" "${swaync_style}"
@@ -108,8 +140,18 @@ echo "$next" > "$state_file"
 
 sleep 0.5
 ${SCRIPTSDIR}/PywalSwww.sh "$next_wallpaper"
-sleep 1
-${SCRIPTSDIR}/Refresh.sh
+
+# Was Refresh.sh, which also kills and relaunches waybar -- no longer
+# needed (see the style.css comment above) and that restart was exactly
+# what reset the idle_inhibitor on every theme switch. rofi and swaync
+# still need a real restart: rofi picks up pywal-theme.rasi's new symlink
+# target on next launch (no running instance to hot-reload), and swaync
+# has no equivalent watch-and-reload for its own style.css.
+pkill rofi 2>/dev/null
+sleep 0.3
+pkill swaync 2>/dev/null
+sleep 0.5
+swaync > /dev/null 2>&1 &
 
 notify-send -u normal -i "$notif" "Theme: $next"
 

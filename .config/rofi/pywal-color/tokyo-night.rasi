@@ -15,6 +15,15 @@
  * new random one every 30 minutes, which is fundamentally at odds with a
  * stable "Tokyo Night" identity. Fixed colors here instead; see
  * tokyo-day.rasi for the light counterpart DarkLight.sh switches to.
+ *
+ * REBUILT (2026-09-11): active-background was #9ece6a (green) while
+ * selected-normal-background was #7aa2f7 (blue) -- two different accent
+ * colors doing the same visual job (border/highlight) depending on which
+ * widget you were looking at. Every other themed surface on this system
+ * (kitty's url_color, gtk-4.0/tokyo-night-accent.css's accent_bg_color)
+ * settled on #7aa2f7 as *the* Tokyo Night accent -- unified to that single
+ * color here too. See theme/base.rasi for the structural redesign that
+ * consumes these.
  */
 
 * {
@@ -25,9 +34,10 @@
     background90:                  rgba(26, 27, 38, 0.90); /* was the typo'd @backrgound90 */
     background-alt:                #24283b;
     foreground:                    #c0caf5;
+    foreground-alt:                #565f89;
     selected-normal-background:    #7aa2f7;
     selected-normal-foreground:    #1a1b26;
-    active-background:             #9ece6a;
+    active-background:             #7aa2f7;
     active-foreground:             #1a1b26;
     urgent-background:             #f7768e;
     urgent-foreground:             #1a1b26;
