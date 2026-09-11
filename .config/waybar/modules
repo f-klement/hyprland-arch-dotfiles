@@ -204,16 +204,61 @@
 },
       
 "bluetooth": {
-    "format": "",
+    // Rewritten (2026-09-11): the old block only ever defined
+    // format-disabled and format-connected -- format defaulted to "" (an
+    // intentionally-empty fallback), so the very common "powered on, idle,
+    // nothing connected" state, and the radio-off state produced by the
+    // menu's own toggle below, both fell through to that empty default and
+    // the icon just disappeared. Now every state waybar-bluetooth(5)
+    // recognizes (on/off/disabled/no-controller/connected) has its own
+    // icon, so the module always shows something and is never a dead end.
+    // All icons below are glyphs already proven to render in this exact
+    // font/config (reused from this module's own original format-disabled/
+    // format-connected and from pulseaudio's format-bluetooth) rather than
+    // new codepoints, to avoid guessing wrong and getting tofu boxes.
+    //
+    // Tooltip was just " {device_alias}" by default, which is only
+    // meaningful when a device is actually connected -- blank/unhelpful
+    // the rest of the time. Now uses {controller_alias}/{controller_address}
+    // (the adapter itself) as the baseline, so hovering always tells you
+    // which adapter you have and its state, not just silence.
+    "format": "󰂰",
+    "format-on": "󰂰",
+    "format-off": "󰂳",
     "format-disabled": "󰂳",
+    "format-no-controller": "󰂳",
     "format-connected": "󰂱 {num_connections}",
-    "tooltip-format": " {device_alias}",
-    "tooltip-format-connected": "{device_enumerate}",
-    "tooltip-format-enumerate-connected": " {device_alias} 󰂄{device_battery_percentage}%",
+    "tooltip-format": "{controller_alias}  {controller_address}",
+    "tooltip-format-off": "{controller_alias}  {controller_address}\nPowered off",
+    "tooltip-format-disabled": "Bluetooth disabled",
+    "tooltip-format-no-controller": "No bluetooth controller found",
+    "tooltip-format-connected": "{controller_alias}  {controller_address}\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "󰂰 {device_alias}  {device_address}",
+    "tooltip-format-enumerate-connected-battery": "󰂰 {device_alias}  {device_address}  󰂄{device_battery_percentage}%",
     "tooltip": true,
+    // Consolidated (2026-09-11): blueman-tray's own SNI icon (org.blueman.Tray)
+    // was showing up as a second bluetooth icon in waybar's tray module,
+    // duplicating this one -- disabled at the source (blueman's StatusIcon
+    // plugin, see gsettings org.blueman.general plugin-list) since this
+    // module already shows more out of the box (connected count, per-device
+    // battery %, adapter info on hover).
+    //
+    // Left-click opens the full manager (safe, no side effect). The radio
+    // toggle used to be a bare left-click -- a single stray click disabled
+    // bluetooth outright with no confirmation, and combined with the format
+    // bug above, left no visible icon to click to undo it. Moved behind a
+    // real right-click menu (waybar's native menu/menu-file/menu-actions,
+    // see menus/bluetooth_menu.xml) instead, so toggling takes two
+    // deliberate actions -- open the menu, then pick the entry.
     "on-click": "blueman-manager",
+    "menu": "on-click-right",
+    "menu-file": "$HOME/.config/waybar/menus/bluetooth_menu.xml",
+    "menu-actions": {
+        "toggle": "~/.config/hypr/scripts/BluetoothToggle.sh",
+        "manager": "blueman-manager"
+    },
 },
-     
+
 "clock": {
     "interval": 1,
     //"format": " {:%I:%M %p}", // AM PM format
@@ -353,14 +398,49 @@
     "format": "{ifname}",
     "format-wifi": "{icon}",
     "format-ethernet": "󰌘",
-    "format-disconnected": "󰌙", 
-    "tooltip-format": "{ipaddr}  {bandwidthUpBytes}  {bandwidthDownBytes}",
+    "format-disconnected": "󰌙",
+    // Was missing entirely -- waybar-network(5) uses format-disabled
+    // specifically for "rfkill is blocking wlan interfaces" (the "rfkill"
+    // option defaults to true), which is exactly the state the menu's
+    // toggle below produces. Without it defined, that state fell through
+    // to the bare "format" above ("{ifname}"), which is blank once the
+    // interface is radio-blocked -- so the icon just vanished
+    // (2026-09-11 report). Reusing the disconnected glyph rather than a
+    // new codepoint.
+    "format-disabled": "󰌙",
+    "tooltip-format": "{ipaddr}  {bandwidthUpBytes}  {bandwidthDownBytes}",
     "format-linked": "󰈁 {ifname} (No IP)",
     "tooltip-format-wifi": "{essid} {icon} {signalStrength}%",
     "tooltip-format-ethernet": "{ifname} 󰌘",
     "tooltip-format-disconnected": "󰌙 Disconnected",
+    "tooltip-format-disabled": "󰌙 Wi-Fi disabled",
     "max-length": 50,
-    "format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"]
+    "format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"],
+    // Consolidated (2026-09-11): nm-applet's own SNI tray icon was
+    // showing up as a second network icon in waybar's tray module,
+    // duplicating this one -- nm-applet isn't autostarted anymore at all
+    // (no flag makes it register invisibly, see hypr/autostart.lua for why)
+    // since this module already shows more out of the box (essid, signal
+    // strength, ipaddr, live bandwidth) than the applet icon ever did.
+    //
+    // Went through two more iterations of click behavior the same day:
+    // 1) bare left-click toggled the radio via rfkill (AirplaneMode.sh) --
+    //    a single stray click disabled Wi-Fi with no confirmation, and
+    //    rfkill operates below NetworkManager, so re-enabling didn't
+    //    reliably reconnect (NM's own state fell out of sync with it).
+    // 2) moved the toggle behind waybar's native right-click menu (see the
+    //    now-unused menus/network_menu.xml) and made left-click open
+    //    nm-connection-editor -- safer, but nm-connection-editor is a
+    //    connection-*profile* editor, not a live network picker, so it had
+    //    nothing useful for the everyday case (switch SSID, check signal).
+    // Settled on NetworkMenu.sh (rofi): a live SSID list with signal/lock
+    // status, one click to (re)connect, and the toggle now goes through
+    // `nmcli radio wifi` instead of rfkill, so it stays in sync with
+    // NetworkManager and reconnects properly. Right-click still opens the
+    // full editor directly for anything actually needing profile-level
+    // configuration.
+    "on-click": "~/.config/hypr/scripts/NetworkMenu.sh",
+    "on-click-right": "nm-connection-editor",
 },
   
 "network#speed": {
@@ -426,8 +506,14 @@
 },
       
 "tray": {
+    // reverse-direction added (2026-09-11) to try to push radiotray-ng to
+    // the outer edge of the tray cluster (waybar has no per-icon pinning,
+    // this is the only ordering lever the tray module has -- see
+    // waybar-tray(5)). Direction is a guess since I can't see the bar --
+    // tell me if this is backwards and I'll flip it.
     "icon-size": 15,
     "spacing": 8,
+    "reverse-direction": true,
 },
       
 "wireplumber": {
@@ -442,8 +528,15 @@
 
 
 "wlr/taskbar" : {
-    "format": "{icon}(title:.1}",
-    "icon-theme": "Tela",
+    // Fixed (2026-09-11): "(title:.1}" had an opening paren instead of a
+    // brace, an unmatched-bracket format string that was throwing a parse
+    // error into waybar's log on every single taskbar re-render (multiple
+    // times a second). icon-theme was "Tela" -- not installed either (see
+    // hypr/scripts/DarkLight.sh for the "Tela-purple-dark" version of the
+    // same bug) -- switched to Tokyonight-Dark, the icon set actually
+    // installed and used everywhere else now.
+    "format": "{icon}{title:.1}",
+    "icon-theme": "Tokyonight-Dark",
     "icon-size": 15,
     "tooltip":false,
     "tooltip-format": "{title:.1}",

@@ -40,7 +40,19 @@ hl.on("hyprland.start", function()
 
     -- Bar, tray, notifications
     hl.exec_cmd("waybar -c " .. os.getenv("HOME") .. "/.dotfiles/.config/waybar/config")
-    hl.exec_cmd("nm-applet --indicator")
+    -- Same-day back-and-forth on this one (2026-09-11):
+    -- 1) dropped nm-applet entirely -- it was a second network icon next to
+    --    waybar's own native "network" module, and no flag stops it from
+    --    registering a tray icon (network-manager-applet 1.36 dropped the
+    --    old GtkStatusIcon fallback, so --indicator is a no-op now).
+    -- 2) replaced its interaction with a custom rofi menu on the native
+    --    module (NetworkMenu.sh) -- functional, but nm-applet's own native
+    --    dropdown (real icons, signal bars, submenus) was just nicer, and
+    --    that turned out to matter more than the duplicate icon. Reverted:
+    --    nm-applet is back, and waybar's native "network" module is
+    --    disabled in waybar/config's modules-right (module definition left
+    --    in waybar/modules, unused, rather than deleted).
+    hl.exec_cmd("nm-applet")
     -- swaync is the notification daemon in use (mako isn't installed --
     -- the old config exec'd it anyway, which just silently failed every boot)
     hl.exec_cmd("swaync")

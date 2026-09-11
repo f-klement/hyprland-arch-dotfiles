@@ -54,7 +54,11 @@
      "tray",
      "mpris", 
      //"custom/separator#dot-line",
-     "network",
+     // Reverted (2026-09-11): back to nm-applet as the sole network
+     // indicator/menu -- its own native dropdown (icons, signal bars,
+     // submenus) beat the custom rofi menu built to replace it, and that
+     // was worth accepting its tray icon back for. See autostart.lua.
+     //"network",
      "bluetooth",
      "custom/separator#dot-line", 
      "battery",

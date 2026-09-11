@@ -83,5 +83,9 @@ main
 
 sleep 0.5
 ${SCRIPTSDIR}/PywalSwww.sh "$picked"
-sleep 0.2
-${SCRIPTSDIR}/Refresh.sh
+
+# Refresh.sh (pkill+relaunch waybar/rofi/swaync) was dropped here (2026-09-11)
+# -- same reasoning as WallpaperRandom.sh: waybar/rofi colors are static per
+# theme identity now, not wallpaper-derived, so restarting them for a plain
+# wallpaper change did nothing useful except reset waybar's idle_inhibitor
+# ("caffeine" toggle) back off. See WallpaperRandom.sh for the full story.

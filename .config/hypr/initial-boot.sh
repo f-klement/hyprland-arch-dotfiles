@@ -34,10 +34,15 @@ if [ ! -f "$marker" ]; then
     # initiate GTK dark mode and apply icon and cursor theme
     gsettings set org.gnome.desktop.interface color-scheme prefer-dark > /dev/null 2>&1 &
     gsettings set org.gnome.desktop.interface gtk-theme Tokyonight-Dark-BL-LB > /dev/null 2>&1 &
-    # Was "Tokyonight-Dark" here -- the icon theme actually live on this
-    # system (and now what DarkLight.sh's tokyo-night state uses too) is
-    # "Tela-purple-dark". Matched for consistency.
-    gsettings set org.gnome.desktop.interface icon-theme Tela-purple-dark > /dev/null 2>&1 &
+    # CORRECTION (2026-09-11): the note this replaced had it backwards --
+    # "Tela-purple-dark" isn't installed on this system at all (checked
+    # ~/.icons, /usr/share/icons, and pacman: nothing). "Tokyonight-Dark" is
+    # the icon theme that's actually there (~/.icons/Tokyonight-Dark), and
+    # was correct originally; DarkLight.sh's tokyo-night state has been
+    # fixed back to match rather than the other way around. Apps were
+    # silently falling back to Adwaita/breeze icons this whole time --
+    # likely the main visible cause of "icons look out of place".
+    gsettings set org.gnome.desktop.interface icon-theme Tokyonight-Dark > /dev/null 2>&1 &
     # Cursor stays on Dracula-cursors by request (the rest of the desktop
     # converged on Tokyo Night, cursor intentionally didn't). Fixed the
     # missing "s" though -- the installed theme's real name is

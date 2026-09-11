@@ -45,7 +45,15 @@ if [ "$next" = "tokyo-night" ]; then
     noti_bg="rgba(26, 27, 38, 0.85)"
     noti_bg_alt="#16161e"
     gtk_theme="Tokyonight-Dark-BL-LB"
-    icon_theme="Tela-purple-dark"
+    # BUG FOUND (2026-09-11): "Tela-purple-dark" isn't installed anywhere on
+    # this system (not in ~/.icons, not in /usr/share/icons, not a package) --
+    # every app was silently falling back to its toolkit's default icon set
+    # (Adwaita/breeze) instead, which is very likely what read as "GTK/Qt
+    # apps don't match the theme": window chrome and colors were correct,
+    # but every icon was the wrong theme's. "Tokyonight-Dark" (an actual
+    # installed Suru-based icon set, ~/.icons/Tokyonight-Dark) is what's
+    # really there and is the correct counterpart to gtk_theme above.
+    icon_theme="Tokyonight-Dark"
     kvantum_theme="Tokyo-Night"
     qt_color_scheme="Tokyo-Night.conf"
     gtk4_accent="$HOME/.config/gtk-4.0/tokyo-night-accent.css"

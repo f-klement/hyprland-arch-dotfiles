@@ -1,0 +1,13 @@
+[Unit]
+Description=Detect and repair libvirt's default NAT network after host uplink flaps
+Documentation=file://%h/.config/hypr/scripts/QemuNetworkWatchdog.sh
+After=graphical-session.target libvirtd.service
+
+[Service]
+Type=simple
+ExecStart=%h/.config/hypr/scripts/QemuNetworkWatchdog.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
