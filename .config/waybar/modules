@@ -637,8 +637,8 @@
 },
 
 "custom/swaync": {
-    "tooltip":true,     
-    "format": "{icon} {}",
+    "tooltip":true,
+    "format": "{icon} {text}",
     "format-icons": {
       "notification": "<span foreground='red'><sup></sup></span>",
       "none": "",
