@@ -45,7 +45,6 @@ fd
 feh
 ffmpegthumbs
 filelight
-firefox
 firewalld
 flatpak-kcm
 foot
