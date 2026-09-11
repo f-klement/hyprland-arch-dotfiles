@@ -10,7 +10,7 @@ sudo pacman -S stow git
 
 mkdir .dotfiles
 cd .dotfiles
-git clone https://github.com/klementf95/dotfiles .
+git clone https://github.com/f-klement/hyprland-arch-dotfiles .
 chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
