@@ -1,10 +1,4 @@
-# Private key material -- never track these
-.ssh/id_rsa
-.ssh/id_ed25519*
-!.ssh/id_ed25519*.pub
-.ssh/id_ecdsa*
-!.ssh/id_ecdsa*.pub
-.ssh/id_dsa*
-!.ssh/id_dsa*.pub
-.ssh/*private_key*
-.ssh/*.pem
+# .ssh is no longer managed by this repo/stow -- it lives directly as
+# plain files at ~/.ssh. Ignore it outright so it can never be re-added
+# by accident (e.g. a stray `git add .` or `stow .`).
+.ssh/
