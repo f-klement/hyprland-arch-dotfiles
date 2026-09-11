@@ -642,16 +642,21 @@
     "format-icons": {
       "notification": "<span foreground='red'><sup></sup></span>",
       "none": "",
-      "dnd-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-none": "",
+      "dnd-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-none": "",
       "inhibited-notification": "<span foreground='red'><sup></sup></span>",
       "inhibited-none": "",
-      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-inhibited-none": ""
+      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-inhibited-none": ""
     },
     "return-type": "json",
     "exec-if": "which swaync-client",
-    "exec": "swaync-client -swb",
+    // -u/-unbuffered on both so each update streams through immediately
+    // rather than sitting in a block buffer. Blanks the count instead of
+    // showing a "0" when there's nothing to report (request 2026-09-11) --
+    // swaync-client always includes a numeric "text", there's no flag for
+    // this, so it's filtered here rather than in format/format-icons.
+    "exec": "swaync-client -swb | sed -u 's/\"text\": \"0\"/\"text\": \"\"/'",
     "on-click": "sleep 0.1 && swaync-client -t -sw",
     "on-click-right": "swaync-client -d -sw",
     "escape": true,
