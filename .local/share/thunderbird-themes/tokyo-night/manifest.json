@@ -1,0 +1,53 @@
+{
+    "manifest_version": 2,
+    "name": "Tokyo Night",
+    "version": "1.0.0",
+    "description": "Matches this system's Tokyo Night identity (kitty, waybar, GTK, Kvantum, kdeglobals -- see ~/.dotfiles).",
+    "author": "florian",
+    "applications": {
+        "gecko": {
+            "id": "tokyo-night@florian.theme",
+            "strict_min_version": "78.0"
+        }
+    },
+    "theme": {
+        "colors": {
+            "frame": "#1a1b26",
+            "frame_inactive": "#1a1b26",
+            "button_background_active": "#24283b",
+            "button_background_hover": "#24283b",
+            "icons": "",
+            "icons_attention": "#f7768e",
+            "popup": "#1a1b26",
+            "popup_border": "#292e42",
+            "popup_highlight": "#7aa2f7",
+            "popup_highlight_text": "#1a1b26",
+            "popup_text": "#c0caf5",
+            "sidebar": "#16161e",
+            "sidebar_border": "#292e42",
+            "sidebar_highlight": "#7aa2f7",
+            "sidebar_highlight_border": "#7aa2f7",
+            "sidebar_highlight_text": "#1a1b26",
+            "sidebar_text": "#c0caf5",
+            "tab_background_separator": "rgba(255, 255, 255, 0.06)",
+            "tab_background_text": "#565f89",
+            "tab_line": "#7aa2f7",
+            "tab_loading": "#7aa2f7",
+            "tab_selected": "#24283b",
+            "tab_text": "#c0caf5",
+            "toolbar": "#1a1b26",
+            "toolbar_bottom_separator": "#292e42",
+            "toolbar_field": "#24283b",
+            "toolbar_field_border": "#292e42",
+            "toolbar_field_border_focus": "#7aa2f7",
+            "toolbar_field_focus": "#1a1b26",
+            "toolbar_field_highlight": "#7aa2f7",
+            "toolbar_field_highlight_text": "#1a1b26",
+            "toolbar_field_text": "#c0caf5",
+            "toolbar_field_text_focus": "#c0caf5",
+            "toolbar_text": "#c0caf5",
+            "toolbar_top_separator": "#292e42",
+            "toolbar_vertical_separator": "#292e42"
+        }
+    }
+}

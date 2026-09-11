@@ -58,6 +58,7 @@ if [ "$next" = "tokyo-night" ]; then
     qt_color_scheme="Tokyo-Night.conf"
     gtk4_accent="$HOME/.config/gtk-4.0/tokyo-night-accent.css"
     kde_color_scheme="TokyoNight"
+    tb_userchrome="$HOME/.dotfiles/.local/share/thunderbird-themes/tokyo-night/userChrome.css"
     color_scheme="prefer-dark"
 else
     waybar_style="$HOME/.config/waybar/style/Rose Pine.css"
@@ -72,6 +73,7 @@ else
     qt_color_scheme="Rose-Pine-Moon.conf"
     gtk4_accent="$HOME/.config/gtk-4.0/rose-pine-moon-accent.css"
     kde_color_scheme="RosePineMoon"
+    tb_userchrome="$HOME/.dotfiles/.local/share/thunderbird-themes/rose-pine-moon/userChrome.css"
     color_scheme="prefer-dark" # both palettes are dark; there's no Rose Pine Dawn (light) asset installed
 fi
 
@@ -139,6 +141,26 @@ kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
 # Kvantum. This is the other half: without it, Dolphin would have the
 # right colors but the wrong (unstyled Breeze) widget shapes.
 kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle kvantum
+
+# Thunderbird (2026-09-11): was still on "Purple Praline", a light AMO
+# theme, completely unrelated to the rest of this desktop's identity.
+# Tried building a proper WebExtension theme first (manifest.json in the
+# same directory as the userChrome.css files linked below) -- got it
+# fully, correctly installed and active per Thunderbird's own addon
+# database (extensions.json: active=true, userDisabled=false), confirmed
+# across multiple clean restarts and a startupCache wipe, and it still
+# never actually rendered. Left installed but inactive rather than
+# fighting it further. userChrome.css (toolkit.legacyUserProfileCustomizations
+# .stylesheets=true, set once in the profile's user.js) is what's real --
+# found the right selectors by launching Thunderbird repeatedly with
+# bright throwaway colors and screenshotting to see what lit up, same
+# approach as everything else fixed by actually looking this session.
+# Requires closing Thunderbird first -- it doesn't watch userChrome.css
+# for changes the way waybar now does for style.css.
+tb_profile="$HOME/.thunderbird/uwfxwrvr.default-release"
+if [ -d "$tb_profile/chrome" ]; then
+    ln -sf "$tb_userchrome" "$tb_profile/chrome/userChrome.css"
+fi
 
 # Notification tint (both palettes are dark-ish, so this is a color swap,
 # not a real light/dark contrast switch)

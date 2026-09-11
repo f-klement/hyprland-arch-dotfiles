@@ -1,0 +1,105 @@
+/* Tokyo Night userChrome.css -- matches this system's established Tokyo
+ * Night identity (kitty, waybar, GTK, Kvantum, kdeglobals -- see
+ * ~/.dotfiles). Confirmed selectors: launched Thunderbird repeatedly with
+ * bright throwaway colors (red/lime/blue/magenta) on candidate selectors
+ * and screenshotted to see what actually lit up, rather than guessing --
+ * see git history for the elimination process.
+ *
+ * Not a WebExtension theme: manifest.json/tokyo-night@florian.theme (in
+ * this same directory) is a real, correctly-structured Thunderbird theme
+ * that never actually rendered -- addon manager state was 100% correct
+ * (active: true, userDisabled: false, confirmed in extensions.json) but
+ * the UI stayed on the old theme regardless, through multiple restarts
+ * and a startupCache wipe. Left installed but inactive rather than
+ * deleted (kept for reference / in case a future Thunderbird version
+ * fixes whatever this was); userChrome.css is what's actually wired up.
+ */
+
+:root {
+    background-color: #1a1b26 !important;
+    color: #c0caf5 !important;
+}
+
+#titlebar,
+toolbar,
+#unifiedToolbar,
+#tabmail-tabs {
+    background: #1a1b26 !important;
+    color: #c0caf5 !important;
+    border-color: #292e42 !important;
+}
+
+#folderPane,
+#folderTree {
+    background: #16161e !important;
+    color: #c0caf5 !important;
+}
+
+#folderTree > treechildren::-moz-tree-row(selected) {
+    background: #7aa2f7 !important;
+    color: #1a1b26 !important;
+}
+
+#tabmail-tabs .tab-background[selected="true"] {
+    background: #24283b !important;
+}
+
+#tabmail-tabs .tab-background {
+    border-color: #292e42 !important;
+}
+
+toolbarbutton,
+.toolbarbutton-1 {
+    color: #c0caf5 !important;
+}
+
+toolbarbutton:hover,
+.toolbarbutton-1:hover {
+    background: #24283b !important;
+}
+
+menupopup,
+panel {
+    background: #1a1b26 !important;
+    color: #c0caf5 !important;
+    border: 1px solid #292e42 !important;
+}
+
+menuitem:hover,
+menuitem[_moz-menuactive="true"] {
+    background: #7aa2f7 !important;
+    color: #1a1b26 !important;
+}
+
+textbox,
+.textbox-input,
+#searchInput {
+    background: #24283b !important;
+    color: #c0caf5 !important;
+    border-color: #292e42 !important;
+}
+
+button {
+    background: #24283b !important;
+    color: #c0caf5 !important;
+    border-color: #292e42 !important;
+}
+
+button:hover {
+    background: #292e42 !important;
+}
+
+button.primary,
+button[default="true"] {
+    background: #7aa2f7 !important;
+    color: #1a1b26 !important;
+}
+
+#unifiedToolbar,
+#unifiedToolbar > *,
+.thread-pane-toolbar,
+#threadPaneHeaderBar,
+#threadPaneHeaderBar > * {
+    background: #1a1b26 !important;
+    color: #c0caf5 !important;
+}

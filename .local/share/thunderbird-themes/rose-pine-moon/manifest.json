@@ -1,0 +1,53 @@
+{
+    "manifest_version": 2,
+    "name": "Rose Pine Moon",
+    "version": "1.0.0",
+    "description": "Matches this system's Rose Pine Moon identity (kitty, waybar, GTK, Kvantum, kdeglobals -- see ~/.dotfiles).",
+    "author": "florian",
+    "applications": {
+        "gecko": {
+            "id": "rose-pine-moon@florian.theme",
+            "strict_min_version": "78.0"
+        }
+    },
+    "theme": {
+        "colors": {
+            "frame": "#232136",
+            "frame_inactive": "#232136",
+            "button_background_active": "#2a273f",
+            "button_background_hover": "#2a273f",
+            "icons": "",
+            "icons_attention": "#eb6f92",
+            "popup": "#232136",
+            "popup_border": "#393552",
+            "popup_highlight": "#c4a7e7",
+            "popup_highlight_text": "#232136",
+            "popup_text": "#e0def4",
+            "sidebar": "#2a273f",
+            "sidebar_border": "#393552",
+            "sidebar_highlight": "#c4a7e7",
+            "sidebar_highlight_border": "#c4a7e7",
+            "sidebar_highlight_text": "#232136",
+            "sidebar_text": "#e0def4",
+            "tab_background_separator": "rgba(255, 255, 255, 0.06)",
+            "tab_background_text": "#6e6a86",
+            "tab_line": "#c4a7e7",
+            "tab_loading": "#c4a7e7",
+            "tab_selected": "#2a273f",
+            "tab_text": "#e0def4",
+            "toolbar": "#232136",
+            "toolbar_bottom_separator": "#393552",
+            "toolbar_field": "#2a273f",
+            "toolbar_field_border": "#393552",
+            "toolbar_field_border_focus": "#c4a7e7",
+            "toolbar_field_focus": "#232136",
+            "toolbar_field_highlight": "#c4a7e7",
+            "toolbar_field_highlight_text": "#232136",
+            "toolbar_field_text": "#e0def4",
+            "toolbar_field_text_focus": "#e0def4",
+            "toolbar_text": "#e0def4",
+            "toolbar_top_separator": "#393552",
+            "toolbar_vertical_separator": "#393552"
+        }
+    }
+}

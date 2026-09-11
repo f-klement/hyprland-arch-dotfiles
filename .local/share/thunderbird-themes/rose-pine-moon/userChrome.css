@@ -1,0 +1,93 @@
+/* Rose Pine Moon userChrome.css -- see tokyo-night/userChrome.css (same
+ * directory tree) for the full story on why this exists instead of the
+ * WebExtension theme (manifest.json right here, installed but inactive --
+ * never actually rendered despite correct addon-manager state). */
+
+:root {
+    background-color: #232136 !important;
+    color: #e0def4 !important;
+}
+
+#titlebar,
+toolbar,
+#unifiedToolbar,
+#tabmail-tabs {
+    background: #232136 !important;
+    color: #e0def4 !important;
+    border-color: #393552 !important;
+}
+
+#folderPane,
+#folderTree {
+    background: #2a273f !important;
+    color: #e0def4 !important;
+}
+
+#folderTree > treechildren::-moz-tree-row(selected) {
+    background: #c4a7e7 !important;
+    color: #232136 !important;
+}
+
+#tabmail-tabs .tab-background[selected="true"] {
+    background: #2a273f !important;
+}
+
+#tabmail-tabs .tab-background {
+    border-color: #393552 !important;
+}
+
+toolbarbutton,
+.toolbarbutton-1 {
+    color: #e0def4 !important;
+}
+
+toolbarbutton:hover,
+.toolbarbutton-1:hover {
+    background: #2a273f !important;
+}
+
+menupopup,
+panel {
+    background: #232136 !important;
+    color: #e0def4 !important;
+    border: 1px solid #393552 !important;
+}
+
+menuitem:hover,
+menuitem[_moz-menuactive="true"] {
+    background: #c4a7e7 !important;
+    color: #232136 !important;
+}
+
+textbox,
+.textbox-input,
+#searchInput {
+    background: #2a273f !important;
+    color: #e0def4 !important;
+    border-color: #393552 !important;
+}
+
+button {
+    background: #2a273f !important;
+    color: #e0def4 !important;
+    border-color: #393552 !important;
+}
+
+button:hover {
+    background: #393552 !important;
+}
+
+button.primary,
+button[default="true"] {
+    background: #c4a7e7 !important;
+    color: #232136 !important;
+}
+
+#unifiedToolbar,
+#unifiedToolbar > *,
+.thread-pane-toolbar,
+#threadPaneHeaderBar,
+#threadPaneHeaderBar > * {
+    background: #232136 !important;
+    color: #e0def4 !important;
+}
