@@ -5,7 +5,6 @@ export GDK_BACKEND=wayland,x11
 export CLUTTER_BACKEND=wayland
 export QT_QPA_PLATFORM=wayland
 
-export PATH="$PATH:/home/arch/.local/bin"
 #eval "$(register-python-argcomplete pip)"
 
 ### ARCHIVE EXTRACTION
@@ -67,10 +66,6 @@ alias wire-up='wg-quick up wg0'
 alias wire-down='wg-quick down wg0'
 alias yayx='yay -Syu --noconfirm && sudo flatpak update -y && sudo snap refresh'
 
-#####  starship
-
-eval "$(starship init bash)"
-
 ##-----------------------------------------------------
 ## synth-shell-prompt.sh
 if [ -f /home/florian/.config/synth-shell/synth-shell-prompt.sh ] && [ -n "$(echo $- | grep i)" ]; then
@@ -94,10 +89,35 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-. "$HOME/.local/bin/env"
+# uv. Guarded to match .zshenv -- this errored on every shell startup on
+# any machine where uv hasn't been installed yet (bootstrap.sh now
+# installs it, but this should survive running before that anyway).
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+# BUG FOUND (2026-09-11): unguarded, this prepended $BUN_INSTALL/bin to
+# PATH again on every single source of this file -- harmless once, but
+# .bashrc gets sourced more than once per session more often than you'd
+# think (a login shell's /etc/profile chain, any script that does
+# `bash -i`, nested shells). Verified: two sources back-to-back left 4
+# copies of ~/.bun/bin in PATH. Guarded the same way .local/bin/env
+# already guards itself, so re-sourcing is idempotent.
+case ":$PATH:" in
+	*":$BUN_INSTALL/bin:"*) ;;
+	*) export PATH="$BUN_INSTALL/bin:$PATH" ;;
+esac
+
+##-----------------------------------------------------
+## starship
+# Moved to last (2026-09-11), matching .zshrc's own explicit comment on
+# why: "This MUST be last to ensure it controls the prompt." Bash's copy
+# ran BEFORE synth-shell-prompt.sh, which (when present) also sets
+# PS1/PROMPT_COMMAND -- had synth-shell actually been installed (it
+# isn't right now, see the guarded [ -f ... ] above, which is why this
+# went unnoticed), it would have silently clobbered starship's prompt
+# every single shell. zsh's config already had this right; bash's just
+# never got the same fix ported over.
+eval "$(starship init bash)"
 
 work() {
     local vm=debian-work uri=qemu:///system
