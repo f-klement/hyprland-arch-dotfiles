@@ -196,6 +196,20 @@ tooltip {
   background-color: @red;
 }
 
+/* DND states use the plain bell glyph (not crossed-out) -- dimmed via
+   opacity instead so it still reads as "muted" at a glance. (request
+   2026-09-11) -- BUG FOUND same day: this rule first went into
+   waybar/style.css directly, but that file is a generated copy
+   (DarkLight.sh does `cp "$waybar_style" style.css` on every theme
+   toggle) -- it got silently wiped on the next toggle. Belongs in the
+   actual source files DarkLight.sh copies from instead. */
+#custom-swaync.dnd-none,
+#custom-swaync.dnd-notification,
+#custom-swaync.dnd-inhibited-none,
+#custom-swaync.dnd-inhibited-notification {
+    opacity: 0.5;
+}
+
 #custom-power {
 	padding-right: 1px;
 }
