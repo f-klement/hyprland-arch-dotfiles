@@ -98,3 +98,15 @@ export NVM_DIR="$HOME/.nvm"
 
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+work() {
+    local vm=debian-work uri=qemu:///system
+    case "$1" in
+        stop)   virsh -c $uri shutdown $vm ;;
+        status) virsh -c $uri domstate $vm ;;
+        *)
+            [ "$(virsh -c $uri domstate $vm)" = running ] || virsh -c $uri start $vm
+            virt-viewer --connect $uri --attach --full-screen --wait --reconnect $vm & disown
+            ;;
+    esac
+}
