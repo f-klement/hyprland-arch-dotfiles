@@ -6,7 +6,8 @@
 ## "Performance"/"Power saver" here only force Hyprland's blur -- tccd's own
 ## AC/battery profile switching (/etc/tcc/settings) is untouched and keeps
 ## managing CPU/fan/etc regardless of this toggle. For a manual TCC profile
-## override, right-click opens the existing powerprofiles.sh rofi menu.
+## override use the battery module's power pane (UserScripts/PowerPane.py);
+## right-click here opens the full TUXEDO Control Center.
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/PowerModeCommon.sh"
 notif="$HOME/.config/swaync/images/bell.png"
@@ -41,12 +42,15 @@ status() {
                      if is_on_battery; then label="Auto (on battery, blur off)"; else label="Auto (on AC, blur on)"; fi
                      ;;
     esac
-    printf '{"text":"%s","tooltip":"Power mode: %s\\nLeft-click: cycle auto \\u2192 performance \\u2192 power saver\\nRight-click: pick a TCC profile","class":"%s"}\n' \
+    printf '{"text":"%s","tooltip":"Power mode: %s\\nLeft-click: cycle auto \\u2192 performance \\u2192 power saver\\nRight-click: TUXEDO Control Center","class":"%s"}\n' \
         "$icon" "$label" "$mode"
 }
 
 case "$1" in
     --cycle)  cycle ;;
     --status) status ;;
-    *) echo "usage: $(basename "$0") --status|--cycle" >&2; exit 1 ;;
+    --set)    # auto|performance|powersave, used by UserScripts/PowerPane.py
+              case "$2" in auto|performance|powersave) ;; *) echo "bad mode: $2" >&2; exit 1 ;; esac
+              echo "$2" > "$MODE_FILE"; apply_current; pkill -RTMIN+8 waybar 2>/dev/null ;;
+    *) echo "usage: $(basename "$0") --status|--cycle|--set MODE" >&2; exit 1 ;;
 esac

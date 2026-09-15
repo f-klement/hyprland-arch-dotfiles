@@ -48,8 +48,9 @@
      "custom/separator#dot-line",
      "custom/light_dark",
      "custom/separator#dot-line",
-     "custom/power_mode",
-     "custom/separator#dot-line",
+     // custom/power_mode dropped (2026-09-15): everything it did (auto /
+     // performance / power-saver blur mode, TCC profile override, opening
+     // TUXEDO Control Center) is in the battery module's power pane.
      "custom/lock"
      //],
      //"custom/separator#dot-line"
@@ -72,11 +73,10 @@
      "custom/separator#dot-line", 
      "battery",
      "custom/separator#dot-line", 
-     "backlight",
-     "custom/separator#dot-line",
+     // backlight + pulseaudio#microphone dropped (2026-09-15): brightness
+     // and mic live in the quick-settings pane behind "pulseaudio" now, and
+     // the mic mute state is shown inside that module's format.
      "pulseaudio",
-     //"custom/separator#dot-line",
-     "pulseaudio#microphone",
      //"custom/separator#dot-line",
      //"keyboard-state",
      "custom/separator#dot-line",

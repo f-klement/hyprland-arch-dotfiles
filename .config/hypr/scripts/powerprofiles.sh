@@ -23,9 +23,16 @@ profiles_json=$(busctl --system -j call "$BUS_DEST" "$BUS_PATH" "$BUS_IFACE" Get
 custom_json=$(busctl --system -j call "$BUS_DEST" "$BUS_PATH" "$BUS_IFACE" GetCustomProfilesJSON 2>/dev/null \
   | jq -r '.data[0]')
 
+# BUG FIXED (2026-09-15): this piped the two arrays through `fromjson?`,
+# but `jq -r '.data[0]'` above had already unwrapped the JSON string into
+# a real array -- fromjson on an array errors, `?` swallowed it, the list
+# came out empty and the script blamed tccd ("Couldn't reach tccd") even
+# though the D-Bus calls had succeeded. The built-in profiles also carry
+# internal ids as names (__profile_silent__), prettied up here.
 mapfile -t choices < <(
   { echo "$profiles_json"; echo "$custom_json"; } \
-    | jq -r 'fromjson? | .[] | "\(.name)\t\(.id)"' 2>/dev/null
+    | jq -r '.[] | "\(.name)\t\(.id)"' 2>/dev/null \
+    | sed -E 's/^__profile_max_energy_save__/Max Energy Save/; s/^__profile_silent__/Silent/; s/^__office__/Office/'
 )
 
 if [ ${#choices[@]} -eq 0 ]; then
@@ -42,7 +49,9 @@ for entry in "${choices[@]}"; do
   name="${entry%%$'\t'*}"
   id="${entry##*$'\t'}"
   if [ "$name" = "$selection" ]; then
-    busctl --system call "$BUS_DEST" "$BUS_PATH" "$BUS_IFACE" SetTempProfile s "$id" > /dev/null 2>&1
+    # SetTempProfile (by name) returns true but does nothing on tccd 3.0.9 --
+    # SetTempProfileById is the one that actually switches (verified 2026-09-15).
+    busctl --system call "$BUS_DEST" "$BUS_PATH" "$BUS_IFACE" SetTempProfileById s "$id" > /dev/null 2>&1
     notify-send -u low "Power profile" "Switched to $name"
     exit 0
   fi

@@ -2,3 +2,4 @@
 # plain files at ~/.ssh. Ignore it outright so it can never be re-added
 # by accident (e.g. a stray `git add .` or `stow .`).
 .ssh/
+__pycache__/

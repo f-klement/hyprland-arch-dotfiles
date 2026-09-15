@@ -1,15 +1,28 @@
 // Zed settings.
 //
-// Panels: only the file tree keeps a status-bar toggle, docked left.
-// Agent/threads, collaboration, outline, git and debugger panels are
-// switched off. Terminal and git are still reachable from the command palette
-// and their keybindings; only their status-bar buttons are hidden.
+// Panels: the file tree (docked left) and the terminal keep their
+// status-bar toggles. Agent/threads, collaboration, outline, git and
+// debugger panels are switched off. Git is still reachable from the command
+// palette and its keybindings; only its status-bar button is hidden.
 //
 // "theme" is "Omazed" rather than a fixed theme name: Omazed is regenerated
 // from the active Omarchy theme by the theme-set hook, so Zed follows
 // `omarchy theme set` instead of freezing on one palette.
 {
   // The file tree, and the only panel with a status-bar toggle.
+  "ssh_connections": [
+    {
+      "host": "pelican",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/francisdrake"
+          ]
+        }
+      ]
+    }
+  ],
   "project_panel": {
     "button": true,
     "dock": "left",
@@ -50,7 +63,8 @@
 
   "terminal": {
     "font_size": 13.0,
-    "button": false
+    // status-bar toggle restored (2026-09-15)
+    "button": true
   },
 
   "window_decorations": "client",
@@ -79,7 +93,7 @@
   "icon_theme": "Catppuccin Macchiato",
   "ui_font_size": 16,
   "buffer_font_size": 15,
-  "theme": "Omazed",
+  "theme": "Tokyo Night Moon",
 
   // Extensions Zed installs on its own at startup. TypeScript, TSX, JSX, JSON
   // and YAML are built in, so they need nothing here.

@@ -102,7 +102,10 @@ hl.bind("CTRL + ALT + W",              hl.dsp.exec_cmd(userScripts .. "/Wallpape
 hl.bind(combo(mainMod, "CTRL + D"),      hl.dsp.layout("removemaster"))
 hl.bind(combo(mainMod, "I"),             hl.dsp.layout("addmaster"))
 hl.bind(combo(mainMod, "J"),             hl.dsp.layout("cyclenext"))
-hl.bind(combo(mainMod, "K"),             hl.dsp.layout("cycleprev"))
+-- SUPER+K was `layout cycleprev` (mirror of SUPER+J); reassigned
+-- (2026-09-15) to the keybindings cheat sheet pane -- SUPER+J still cycles,
+-- and cycleprev is a rare enough action that the mnemonic K=keys wins.
+hl.bind(combo(mainMod, "K"),             hl.dsp.exec_cmd(userScripts .. "/KeybindsPane.py")) -- Keybindings cheat sheet
 hl.bind(combo(mainMod, "CTRL + Return"), hl.dsp.layout("swapwithmaster"))
 
 -- SUPER+M was bound TWICE in the old config: once to launch Thunderbird,

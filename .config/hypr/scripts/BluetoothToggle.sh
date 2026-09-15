@@ -19,6 +19,9 @@ if [ "$(bluetoothctl show | grep -oP 'Powered: \K\w+')" = "yes" ]; then
     bluetoothctl power off
     notify-send -u low -i "$notif" 'Bluetooth: OFF'
 else
+    # blueman's applet can leave an rfkill soft block behind, and BlueZ then
+    # refuses `power on` (org.bluez.Error.Failed) -- unblock first (2026-09-15).
+    rfkill unblock bluetooth
     bluetoothctl power on
     notify-send -u low -i "$notif" 'Bluetooth: ON'
 fi

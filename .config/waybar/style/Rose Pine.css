@@ -192,6 +192,11 @@ tooltip {
 	padding-left: 6px;
 }
 
+/* custom/weather: serving a stale cache (wttr.in unreachable) */
+#custom-weather.stale {
+    opacity: 0.6;
+}
+
 #temperature.critical {
   background-color: @red;
 }

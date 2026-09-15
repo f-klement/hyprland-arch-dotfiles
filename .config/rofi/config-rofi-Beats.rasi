@@ -8,11 +8,11 @@ configuration {
 @import "theme/base.rasi"
 
 window {
-    width:  500px;
+    width:  360px;
     height: 400px;
 }
 
 listview {
-    lines:         7;
+    lines:         20;
     fixed-columns: true;
 }

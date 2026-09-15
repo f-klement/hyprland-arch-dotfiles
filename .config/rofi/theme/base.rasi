@@ -36,7 +36,10 @@
  */
 
 configuration {
-    font:                "Fira Code SemiBold 14";
+    /* Was "Fira Code SemiBold 14" -- too big, too airy (2026-09-15):
+       smaller font, tighter rows, single column everywhere except the
+       wallpaper grid, so lists read as dense vertical lists. */
+    font:                "Fira Code SemiBold 9";
     show-icons:          true;
     display-drun:        "";
     display-run:         "";
@@ -146,9 +149,9 @@ button selected {
 listview {
     enabled:            true;
     columns:            1;
-    lines:              8;
+    lines:              20;
     fixed-columns:      false;
-    spacing:            6px;
+    spacing:            1px;
     padding:            0px;
     dynamic:            true;
     cycle:              true;
@@ -171,7 +174,7 @@ scrollbar {
 
 element {
     enabled:            true;
-    padding:            8px 10px;
+    padding:            2px 6px;
     margin:             0px;
     cursor:             pointer;
     background-color:   transparent;
@@ -203,7 +206,7 @@ element selected.urgent {
 element-icon {
     background-color:   transparent;
     text-color:         inherit;
-    size:               32px;
+    size:               16px;
     cursor:             inherit;
 }
 

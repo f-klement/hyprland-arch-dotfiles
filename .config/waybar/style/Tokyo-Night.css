@@ -187,6 +187,11 @@ tooltip label {
     padding-right: 10px;
 }
 
+/* custom/weather: serving a stale cache (wttr.in unreachable) */
+#custom-weather.stale {
+    opacity: 0.6;
+}
+
 #temperature.critical {
     background-color: #db4b4b; /* Tokyo Night red (error) */
 }

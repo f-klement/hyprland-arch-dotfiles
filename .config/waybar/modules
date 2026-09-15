@@ -192,15 +192,20 @@
     "format": "{icon} {capacity}%",
     "format-charging": " {capacity}%",
     "format-plugged": "󱘖 {capacity}%",
-	"format-alt-click": "click",
+    "format-alt-click": "click-middle",
     "format-full": "{icon} Full",
     "format-alt": "{icon} {time}",
     "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
     "format-time": "{H}h {M}min",
     "tooltip": true,
     "tooltip-format": "{timeTo} {power}w",
-    "on-click-middle": "~/.config/hypr/scripts/ChangeBlur.sh",
-    "on-click-right": "~/.config/hypr/scripts/Wlogout.sh",
+    // Any click: the power pane (charge, history, TCC profile, blur mode);
+    // middle: toggle the time-left format. The full TUXEDO Control Center
+    // sits on custom/power_mode's right-click instead (2026-09-15).
+    // (Right-click used to be wlogout, which custom/power and custom/lock
+    // already cover; middle-click was the blur toggle, now in QuickSettings.)
+    "on-click": "~/.config/hypr/UserScripts/PowerPane.py",
+    "on-click-right": "~/.config/hypr/UserScripts/PowerPane.py",
 },
       
 "bluetooth": {
@@ -243,50 +248,55 @@
     // module already shows more out of the box (connected count, per-device
     // battery %, adapter info on hover).
     //
-    // Left-click opens the full manager (safe, no side effect). The radio
-    // toggle used to be a bare left-click -- a single stray click disabled
-    // bluetooth outright with no confirmation, and combined with the format
-    // bug above, left no visible icon to click to undo it. Moved behind a
-    // real right-click menu (waybar's native menu/menu-file/menu-actions,
-    // see menus/bluetooth_menu.xml) instead, so toggling takes two
-    // deliberate actions -- open the menu, then pick the entry.
-    "on-click": "blueman-manager",
-    "menu": "on-click-right",
-    "menu-file": "$HOME/.config/waybar/menus/bluetooth_menu.xml",
-    "menu-actions": {
-        "toggle": "~/.config/hypr/scripts/BluetoothToggle.sh",
-        "manager": "blueman-manager"
-    },
+    // Clicks (2026-09-15): left = quick pane (power switch, known devices
+    // with connect/disconnect + battery, short scan), right = blueman-manager
+    // for pairing and everything else. The XML menu that used to sit on
+    // right-click (menus/bluetooth_menu.xml) is superseded by the pane.
+    "on-click": "~/.config/hypr/UserScripts/BluetoothPane.py",
+    "on-click-right": "blueman-manager",
 },
 
 "clock": {
     "interval": 1,
-    //"format": " {:%I:%M %p}", // AM PM format
-    "format": " {:%H:%M:%S}",
-    "format-alt": " {:%H:%M   %Y, %d %B, %A}",
-    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    //"format": " {:%I:%M %p}", // AM PM format
+    "format": " {:%H:%M:%S}",
+    "format-alt": " {:%H:%M   %Y, %d %B, %A}",
+    // tooltip is just the date now -- the flip-out calendar lives in the
+    // pane (2026-09-15); the "calendar" block below only feeds {calendar},
+    // which nothing shows any more, kept in case the tooltip is ever restored.
+    "tooltip-format": "{:%A, %d. %B %Y}",
     "calendar": {
-      "mode"          : "year",
-      "mode-mon-col"  : 3,
-      "weeks-pos"     : "right",
-      "on-scroll"     : 1,
-      "format": {
-      "months":     "<span color='#ffead3'><b>{}</b></span>",
-      "days":       "<span color='#ecc6d9'><b>{}</b></span>",
-      "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
-      "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
-      "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
-                }
-                }
-    },              
+        "mode"          : "year",
+        "mode-mon-col"  : 3,
+        "weeks-pos"     : "right",
+        "on-scroll"     : 1,
+        "format": {
+            "months":     "<span color='#ffead3'><b>{}</b></span>",
+            "days":       "<span color='#ecc6d9'><b>{}</b></span>",
+            "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
+            "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
+            "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+        }
+    },
+    // BUG FIXED (2026-09-15): the closing brace after "calendar" used to be
+    // "}," one level too many, closing the clock module itself -- so the
+    // "actions" block (with its on-click-right: "mode") and anything after
+    // it were top-level keys waybar silently ignored. Re-indented and fixed.
+    //
+    // left: toggle the full-date format (format-alt); right: calendar pane
+    // (month grid + the day's events read from Thunderbird's calendar
+    // cache, UserScripts/CalendarPane.py) -- Thunderbird itself is a button
+    // in there.
+    "format-alt-click": "click",
+    "on-click-right": "~/.config/hypr/UserScripts/CalendarPane.py",
     "actions":  {
-      "on-click-right": "mode",
-      "on-click-forward": "tz_up",
-      "on-click-backward": "tz_down",
-      "on-scroll-up": "shift_up",
-      "on-scroll-down": "shift_down"
+        "on-click-forward": "tz_up",
+        "on-click-backward": "tz_down",
+        "on-scroll-up": "shift_up",
+        "on-scroll-down": "shift_down"
+    },
 },
-   
+
 "cpu": {
     "format": "{usage}% 󰍛",  
     "interval": 1,
@@ -459,9 +469,17 @@
 },
       
 "pulseaudio": {
+    // The one audio/quick-settings entry point (2026-09-15): the separate
+    // backlight + pulseaudio#microphone modules were dropped from the bar
+    // (no mic indicator at all now -- its state is in the tooltip and in the
+    // pane) and their sliders live in UserScripts/QuickSettings.py, which
+    // is the left-click here. Right-click stays pavucontrol (the detailed
+    // app), scroll changes volume, middle-click mutes.
     "format": "{icon} {volume}%",
     "format-bluetooth": "{icon} 󰂰 {volume}%",
     "format-muted": "󰖁",
+    "format-source": "",
+    "format-source-muted": "",
     "format-icons": {
         "headphone": "",
         "hands-free": "",
@@ -473,11 +491,12 @@
     "ignored-sinks": ["Easy Effects Sink"],
     },
     "scroll-step": 5.0,
-    "on-click": "~/.config/hypr/scripts/Volume.sh --toggle",
+    "on-click": "~/.config/hypr/UserScripts/QuickSettings.py",
+    "on-click-middle": "~/.config/hypr/scripts/Volume.sh --toggle",
     "on-click-right": "pavucontrol -t 3",
     "on-scroll-up": "~/.config/hypr/scripts/Volume.sh --inc",
     "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --dec",
-	"tooltip-format": "{icon} {desc} | {volume}%",
+    "tooltip-format": "{icon} {desc} | {volume}%\nmic: {source_desc} | {source_volume}%",
     "smooth-scrolling-threshold": 1,
 },
       
@@ -589,7 +608,7 @@
     "return-type": "json",
     "exec": "~/.config/hypr/scripts/PowerMode.sh --status",
     "on-click": "~/.config/hypr/scripts/PowerMode.sh --cycle",
-    "on-click-right": "~/.config/hypr/scripts/powerprofiles.sh",
+    "on-click-right": "tuxedo-control-center",  // the detailed app; the pane itself is on the battery module
     "signal": 8,
     "interval": 15, // fallback poll, in case AC/battery changes while nothing else triggers a redraw
     "tooltip": true
@@ -668,14 +687,19 @@
 },
     
 "custom/weather": {
+    // Open-Meteo via hypr/UserScripts/Weather.py (was wttr.in until 2026-09-15).
+    // The script caches for 15 min, hides itself when there's no usable
+    // data and shows old data dimmed (class "stale") while the API is down.
     "format": "{}",
-    "format-alt": "{alt}: {}",
-    "format-alt-click": "click",
-    "interval": 3600,
     "return-type": "json",
-    "exec": "~/.config/hypr/UserScripts/Weather.sh",
-    //"exec": "~/.config/hypr/UserScripts/Weather.py",
-    "exec-if": "ping wttr.in -c1",
+    "exec": "~/.config/hypr/UserScripts/Weather.py",
+    "interval": 900,
+    // left + right: forecast pane (toggles: a 2nd launch closes it); middle:
+    // force a refresh. windy.com is only reachable from the pane's button.
+    "signal": 9,
+    "on-click": "~/.config/hypr/UserScripts/Weather.py --pane",
+    "on-click-right": "~/.config/hypr/UserScripts/Weather.py --pane",
+    "on-click-middle": "~/.config/hypr/UserScripts/Weather.py -f >/dev/null; pkill -RTMIN+9 waybar",
     "tooltip" : true,
 },
   
