@@ -17,12 +17,17 @@ apply_blur_off() {
     hyprctl eval 'hl.config({ decoration = { blur = { enabled = false } } })' >/dev/null 2>&1
 }
 
+# `read` builtins instead of $(cat ...): no fork for a one-line file
 is_on_battery() {
-    [ "$(cat /sys/class/power_supply/AC0/online 2>/dev/null)" = "0" ]
+    local online
+    read -r online 2>/dev/null < /sys/class/power_supply/AC0/online
+    [ "$online" = "0" ]
 }
 
 get_mode() {
-    case "$(cat "$MODE_FILE" 2>/dev/null)" in
+    local mode
+    read -r mode 2>/dev/null < "$MODE_FILE"
+    case "$mode" in
         performance) echo "performance" ;;
         powersave)   echo "powersave" ;;
         *)           echo "auto" ;;

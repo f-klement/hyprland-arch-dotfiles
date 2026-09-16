@@ -38,6 +38,13 @@ hl.on("hyprland.start", function()
     -- this plain (non-UWSM) session, where that target is never reached.
     hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
 
+    -- hyprpanes: the resident host for the waybar dropdown panes
+    -- (UserScripts/hyprpanes.py; enabled for graphical-session.target,
+    -- started here for the same reason as the polkit agent above). Started
+    -- before waybar so the first click already hits the daemon rather
+    -- than the standalone fallback.
+    hl.exec_cmd("systemctl --user start hyprpanes.service")
+
     -- Bar, tray, notifications
     hl.exec_cmd("waybar -c " .. os.getenv("HOME") .. "/.dotfiles/.config/waybar/config")
     -- Same-day back-and-forth on this one (2026-09-11):

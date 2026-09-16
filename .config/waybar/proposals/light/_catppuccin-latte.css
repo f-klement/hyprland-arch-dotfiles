@@ -1,0 +1,19 @@
+/* ---- Catppuccin Latte mapped onto the Solid role names. Cool, high
+   contrast, the most "generic light desktop" of the six. The old
+   style/Catppuccin-Latte.css and style/catppuccin-themes/ show it was in
+   the running once; no GTK/kvantum/rofi Latte assets are installed now. */
+@define-color base     #eff1f5;  /* base      */
+@define-color surface  #e6e9ef;  /* mantle    */
+@define-color overlay  #dce0e8;  /* crust     */
+@define-color muted    #9ca0b0;  /* overlay0  */
+@define-color subtle   #6c6f85;  /* subtext0  */
+@define-color text     #4c4f69;  /* text      */
+@define-color love     #d20f39;  /* red       */
+@define-color gold     #df8e1d;  /* yellow    */
+@define-color rose     #8839ef;  /* mauve (signature) */
+@define-color pine     #1e66f5;  /* blue      */
+@define-color foam     #179299;  /* teal      */
+@define-color iris     #7287fd;  /* lavender  */
+@define-color hl-low   #ccd0da;  /* surface0  */
+@define-color hl-med   #bcc0cc;  /* surface1  */
+@define-color hl-high  #acb0be;  /* surface2  */

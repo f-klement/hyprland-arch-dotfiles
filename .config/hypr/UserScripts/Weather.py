@@ -13,10 +13,22 @@ empty tooltip until the cache expired. A rofi -dmenu forecast was tried in
 between and looked like a list of file names, hence the GTK pane.
 
 Usage:
-  Weather.py          bar output (waybar json)
+  Weather.py          bar output (waybar json); also written to BAR_FILE
   Weather.py -f       force a refresh (ignore the cache age), then bar output
+  Weather.py --refresh
+                      what the systemd user timer runs (weather.timer, every
+                      15 min): fetch if the cache is about to expire, write
+                      BAR_FILE, poke waybar (signal 9). Exit 1 when the
+                      fetch failed so the unit's Restart=on-failure retries.
   Weather.py --pane   forecast pane (see pane.py for the shared scaffold):
                       current details, next 12 h, 7 days
+
+Since 2026-09-16 the waybar module no longer runs this script on its
+interval: with three monitors that was three python starts (~50 ms CPU
+each) every 15 min, all racing for the same cache. The timer refreshes
+once, and the module's exec just cats BAR_FILE (falling back to this
+script only if the file is missing or older than 20 min, i.e. the timer
+is not running).
 
 Failure behaviour: a failed fetch never overwrites the cache. With a cache
 younger than STALEAGE the old values are shown dimmed (class "stale", reason
@@ -47,6 +59,7 @@ PLACE = "Vienna"
 LAT, LON = 48.21, 16.37
 
 CACHE = os.path.expanduser("~/.cache/rbn/weather.json")
+BAR_FILE = os.path.expanduser("~/.cache/rbn/weather.bar.json")   # what the waybar module cats
 MAXAGE = 900        # s; Open-Meteo refreshes "current" every 15 min
 STALEAGE = 21600    # s; keep showing old data this long while the API is unreachable, then hide
 
@@ -219,16 +232,23 @@ def load(force=False):
 HIDDEN = json.dumps({"text": "", "alt": "", "tooltip": "", "class": "hidden"})
 
 
-def bar(force):
+def write_bar(payload):
+    """Atomically write the module's JSON line to BAR_FILE."""
+    os.makedirs(os.path.dirname(BAR_FILE), exist_ok=True)
+    with open(BAR_FILE + ".tmp", "w") as f:
+        f.write(payload + "\n")
+    os.replace(BAR_FILE + ".tmp", BAR_FILE)
+
+
+def bar_payload(force):
+    """(json line for waybar, fetch error or None)."""
     data, error, stale = load(force)
     if data is None:
         print(f"Weather.py: {error}", file=sys.stderr)
-        print(HIDDEN)   # waybar hides a custom module whose text is empty
-        return
+        return HIDDEN, error   # waybar hides a custom module whose text is empty
     if error and cache_age() > STALEAGE:
         print(f"Weather.py: cache too old, hiding ({error})", file=sys.stderr)
-        print(HIDDEN)
-        return
+        return HIDDEN, error
 
     c, d = data["current"], data["daily"]
     code, day = c["weather_code"], bool(c["is_day"])
@@ -241,19 +261,35 @@ def bar(force):
         f"  ·  humidity {c['relative_humidity_2m']} %",
         f"Rain today {round(d['precipitation_sum'][0], 1)} mm ({d['precipitation_probability_max'][0] or 0} %)"
         f"  ·  sunrise {hhmm(d['sunrise'][0])}, sunset {hhmm(d['sunset'][0])}",
-        f"Updated {hhmm(c['time'])}  ·  click: refresh, right-click: forecast",
+        f"Updated {hhmm(c['time'])}  ·  click: forecast, middle-click: refresh",
     ] + ([f"({stale})"] if stale else []))
-    print(json.dumps({
+    return json.dumps({
         "text": f"{round(c['temperature_2m'])} °C {icon(code, day)}",
         "alt": cond,
         "tooltip": tooltip,
         "class": "stale" if stale else css_class(code, day),
-    }, ensure_ascii=False))
+    }, ensure_ascii=False), error
+
+
+def bar(force):
+    payload, _ = bar_payload(force)
+    write_bar(payload)
+    print(payload)
+
+
+def refresh():
+    """Timer entry point: refresh a little early so a 15-min timer never
+    lands just inside MAXAGE and skips a whole period."""
+    payload, error = bar_payload(force=cache_age() > MAXAGE - 120)
+    write_bar(payload)
+    subprocess.run(["pkill", "-RTMIN+9", "waybar"])
+    return 1 if error else 0
 
 
 # --------------------------------------------------------------- pane ----
 
-def pane_main():
+def make_pane():
+    """(Pane, build) -- run standalone via pane_main(), or hosted by hyprpanes.py."""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from pane import Pane, spawn, poke_waybar
 
@@ -296,6 +332,7 @@ def pane_main():
         Gtk, L = pn.Gtk, pn.label
         data, error, stale = load(force)
         if force:
+            write_bar(bar_payload(False)[0])   # the module cats this file, so refresh it before the poke
             poke_waybar(9)
         if data is None:
             root.append(L(f"Weather unavailable: {error}", "warm"))
@@ -368,6 +405,11 @@ def pane_main():
         foot.append(pn.button("windy.com", lambda: (spawn(["xdg-open", BROWSER_URL]), pn.close())))
         root.append(foot)
 
+    return pn, build
+
+
+def pane_main():
+    pn, build = make_pane()
     pn.run(build)
 
 
@@ -377,5 +419,7 @@ if __name__ == "__main__":
     arg = sys.argv[1] if len(sys.argv) > 1 else ""
     if arg == "--pane":
         pane_main()
+    elif arg == "--refresh":
+        sys.exit(refresh())
     else:
         bar(force=(arg == "-f"))

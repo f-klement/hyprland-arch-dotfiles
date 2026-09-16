@@ -1,0 +1,18 @@
+/* ---- Gruvbox Light (hard contrast) mapped onto the Solid role names.
+   Warm paper ground, earthy accents; the only draft with a warm-yellow
+   base rather than white/grey. No matching desktop assets installed. */
+@define-color base     #fbf1c7;  /* bg0        */
+@define-color surface  #f9f5d7;  /* bg0_h      */
+@define-color overlay  #ebdbb2;  /* bg1        */
+@define-color muted    #928374;  /* gray       */
+@define-color subtle   #665c54;  /* fg3        */
+@define-color text     #3c3836;  /* fg1        */
+@define-color love     #9d0006;  /* red        */
+@define-color gold     #b57614;  /* yellow     */
+@define-color rose     #af3a03;  /* orange (signature) */
+@define-color pine     #076678;  /* blue       */
+@define-color foam     #427b58;  /* aqua       */
+@define-color iris     #8f3f71;  /* purple     */
+@define-color hl-low   #f2e5bc;  /* bg0_s      */
+@define-color hl-med   #d5c4a1;  /* bg2        */
+@define-color hl-high  #bdae93;  /* bg3        */

@@ -1,0 +1,18 @@
+/* ---- Everforest Light (medium) mapped onto the Solid role names. Soft
+   cream ground, muted green/teal accents -- the calmest of the six and the
+   closest in *mood* to Rose Pine. No matching desktop assets installed. */
+@define-color base     #fdf6e3;  /* bg0     */
+@define-color surface  #f4f0d9;  /* bg1     */
+@define-color overlay  #efebd4;  /* bg2     */
+@define-color muted    #a6b0a0;  /* grey0   */
+@define-color subtle   #829181;  /* grey2   */
+@define-color text     #5c6a72;  /* fg      */
+@define-color love     #f85552;  /* red     */
+@define-color gold     #dfa000;  /* yellow  */
+@define-color rose     #8da101;  /* green (signature) */
+@define-color pine     #3a94c5;  /* blue    */
+@define-color foam     #35a77c;  /* aqua    */
+@define-color iris     #df69ba;  /* purple  */
+@define-color hl-low   #e6e2cc;  /* bg3     */
+@define-color hl-med   #e0dcc7;  /* bg4     */
+@define-color hl-high  #bdc3af;  /* bg5     */

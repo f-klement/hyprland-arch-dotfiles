@@ -1,0 +1,111 @@
+/* Proposal 3 — "Semantic"
+   Layout unchanged; the three blocks become outlined (1px border, darker
+   fill) and colour now carries meaning: every module has a fixed Rose Pine
+   accent (foam = connectivity, gold = power/energy, iris = actions, rose =
+   time, love = danger), and state changes (charging, muted, connected,
+   playing, low battery) switch the colour rather than the glyph alone. */
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    font-size: 97%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+}
+
+window#waybar { background: transparent; color: @text; }
+
+tooltip {
+    background: @base;
+    color: @text;
+    border: 1px solid @hl-med;
+    border-radius: 8px;
+}
+
+.modules-left, .modules-center, .modules-right {
+    background: rgba(25, 23, 36, 0.92);
+    border: 1px solid @hl-med;
+    border-radius: 9px;
+    padding: 0 3px;
+}
+.modules-left   { border-color: rgba(49, 116, 143, 0.55); }  /* pine  */
+.modules-center { border-color: rgba(196, 167, 231, 0.40); } /* iris  */
+.modules-right  { border-color: rgba(235, 188, 186, 0.35); } /* rose  */
+
+/* ---- workspaces: gold active pill ---- */
+#workspaces button {
+    padding: 0 6px;
+    margin: 3px 1px;
+    color: @subtle;
+    background: transparent;
+    border-radius: 6px;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.25s ease;
+}
+#workspaces button.active { color: @base; background: @gold; padding: 0 9px; }
+#workspaces button:hover  { color: @text; background: @hl-med; }
+#workspaces button.urgent { color: @base; background: @love; }
+
+/* ---- taskbar ---- */
+#taskbar button {
+    padding: 0 5px;
+    margin: 3px 1px;
+    color: @subtle;
+    background: transparent;
+    border-radius: 6px;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.25s ease;
+}
+#taskbar button.active { background: rgba(49, 116, 143, 0.55); color: @foam; }
+#taskbar button:hover  { background: @hl-med; color: @text; }
+
+/* ---- base rule for every module ---- */
+#backlight, #backlight-slider, #battery, #bluetooth, #clock, #cpu, #disk,
+#idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network,
+#pulseaudio, #pulseaudio-slider, #temperature, #tray, #window, #wireplumber,
+#custom-backlight, #custom-cycle_wall, #custom-keybinds, #custom-keyboard,
+#custom-light_dark, #custom-lock, #custom-menu, #custom-power_vertical,
+#custom-power, #custom-power_mode, #custom-swaync, #custom-updater,
+#custom-cava_mviz, #custom-weather {
+    color: @text;
+    background: transparent;
+    padding: 0 7px;
+}
+
+/* ---- fixed accents ---- */
+#custom-weather    { color: @foam; }
+#custom-menu       { color: @iris; }
+#idle_inhibitor    { color: @subtle; }
+#clock             { color: @rose; }
+#custom-light_dark { color: @gold; }
+#custom-lock       { color: @iris; }
+#custom-swaync     { color: @foam; }
+#mpris             { color: @iris; }
+#bluetooth         { color: @subtle; }
+#battery           { color: @gold; }
+#pulseaudio        { color: @rose; }
+#custom-power      { color: @love; padding-right: 4px; }
+
+/* ---- state accents ---- */
+#idle_inhibitor.activated { color: @gold; }
+#bluetooth.connected      { color: @foam; }
+#bluetooth.off, #bluetooth.disabled, #bluetooth.no-controller { color: @muted; }
+#mpris.playing            { color: @foam; }
+#mpris.paused             { color: @subtle; }
+#battery.charging, #battery.plugged { color: @foam; }
+#battery.warning:not(.charging)  { color: @love; }
+#battery.critical:not(.charging) {
+    color: @base;
+    background: @love;
+    border-radius: 6px;
+    margin: 3px 1px;
+}
+#pulseaudio.muted         { color: @muted; }
+#pulseaudio.bluetooth     { color: @foam; }
+
+#custom-separator { color: @hl-high; padding: 0 1px; }

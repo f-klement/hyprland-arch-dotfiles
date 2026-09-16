@@ -2,17 +2,33 @@
 KeybindsPane.py, BluetoothPane.py, QuickSettings.py, CalendarPane.py).
 
 A pane is a GTK4 window turned into a wlr-layer-shell surface (the same
-protocol waybar uses), anchored under the top bar. Each pane script calls
-`Pane(...).run(build)` where build(pane, root) fills the content box.
+protocol waybar uses), anchored under the top bar. Each pane script has
+make_pane() -> (Pane, build), where build(pane, root) fills the content box.
+
+Normally the panes are hosted by the hyprpanes daemon (hyprpanes.py,
+systemd --user hyprpanes.service): the bar runs `hyprpanes.py toggle NAME`
+and the daemon calls Pane.open() inside its long-lived Gtk.Application
+(~50-150 ms to a visible pane). Running a script directly still works and
+is what the client falls back to when the daemon is down: pane_main() ->
+Pane.run(build) makes the process itself the pane (~350 ms).
 
 What every pane gets from here:
   * LD_PRELOAD re-exec: gtk4-layer-shell must be loaded before
     libwayland-client, which the python binary already links -- the
     documented fix is LD_PRELOAD (gtk4-layer-shell/linking.md).
-  * toggle: Gtk.Application is single-instance per id, so launching the
-    same pane again calls activate() in the running one, which quits it.
+  * toggle: a pidfile in $XDG_RUNTIME_DIR/hypr-panes/ is checked before
+    anything GTK is imported -- if that pane is already up, the launcher
+    just SIGTERMs it and exits (~15 ms instead of a second full
+    python + GTK start, measured 2026-09-16). Gtk.Application's
+    single-instance behaviour (a second launch calls activate() in the
+    running one, which quits it) stays as the fallback for a stale pidfile.
     (Never use `pkill -f` for this from waybar -- the pattern also matches
     waybar's own `sh -c` wrapper and kills the launcher itself.)
+  * GSK_RENDERER=cairo: GTK 4.22 picks the Vulkan renderer by default and
+    initialises it once per surface (shade + pane). Measured 2026-09-16 on
+    this machine: ~700 ms CPU and ~120 MB per open with Vulkan, ~570 ms /
+    ~90 MB with cairo, and idle CPU while open drops from ~1 % to ~0.2 %.
+    Nothing here needs a GPU renderer (flat colours, text, cairo bars).
   * closing: Esc; a click anywhere outside; or the pointer resting outside
     the pane for LEAVE_MS. "Outside" is detected on an invisible full-screen
     "shade" layer surface underneath the pane (the rofi/wofi approach) --
@@ -30,22 +46,28 @@ Nerd Font (fontTools). See NetworkMenu.sh on why nothing here is guessed.
 """
 
 import os
+import signal
 import subprocess
 import sys
 
 LAYER_SHELL_LIB = "/usr/lib/libgtk4-layer-shell.so"
 LEAVE_MS = 1000   # pointer outside the pane this long -> close
+PID_DIR = os.path.join(os.environ.get("XDG_RUNTIME_DIR") or "/tmp", "hypr-panes")
 THEME_STATE = os.path.expanduser("~/.cache/.theme_mode")
 
-# Matching the two desktop themes DarkLight.sh toggles between
-# (Rose Pine Moon / Tokyo Night); see waybar/style/*.css.
+# Matching the desktop themes DarkLight.sh rotates through (Tokyo Night /
+# Rose Pine Moon / Rose Pine Dawn, keyed by ~/.cache/.theme_mode); see
+# hypr/themes/<mode>/ and waybar/style/*.css.
 PALETTES = {
-    "tokyo-night": dict(bg="#1a1b26", surface="#24283b", overlay="#3b4261", fg="#c0caf5",
-                        muted="#565f89", accent="#7aa2f7", accent2="#bb9af7", warm="#e0af68",
-                        cold="#7dcfff", good="#9ece6a", bad="#f7768e"),
-    "rose-pine":   dict(bg="#232136", surface="#2a273f", overlay="#44415a", fg="#e0def4",
-                        muted="#908caa", accent="#c4a7e7", accent2="#9ccfd8", warm="#f6c177",
-                        cold="#9ccfd8", good="#3e8fb0", bad="#eb6f92"),
+    "tokyo-night":    dict(bg="#1a1b26", surface="#24283b", overlay="#3b4261", fg="#c0caf5",
+                           muted="#565f89", accent="#7aa2f7", accent2="#bb9af7", warm="#e0af68",
+                           cold="#7dcfff", good="#9ece6a", bad="#f7768e"),
+    "rose-pine":      dict(bg="#232136", surface="#2a273f", overlay="#44415a", fg="#e0def4",
+                           muted="#908caa", accent="#c4a7e7", accent2="#9ccfd8", warm="#f6c177",
+                           cold="#9ccfd8", good="#3e8fb0", bad="#eb6f92"),
+    "rose-pine-dawn": dict(bg="#faf4ed", surface="#fffaf3", overlay="#dfdad9", fg="#575279",
+                           muted="#797593", accent="#907aa9", accent2="#56949f", warm="#ea9d34",
+                           cold="#56949f", good="#286983", bad="#b4637a"),
 }
 
 
@@ -152,9 +174,11 @@ class Pane:
         self.width = width
         self.margin_top, self.margin_side = margin_top, margin_side
         self.p = palette()
-        self.win = self.root = None
+        self.win = self.root = self.shade = None
         self._build = None
+        self._on_closed = None
         self._timeouts = []
+        self._ticking = False
 
     # ---- widget helpers (usable once run() has imported Gtk) -------------
 
@@ -240,111 +264,206 @@ class Pane:
         self.clear(self.root)
         self._build(self, self.root)
 
-    def close(self):
-        if self.win:
-            self.win.get_application().quit()
-
     # ---- lifecycle ---------------------------------------------------------
+    #
+    # Two ways to run a pane:
+    #   run(build)        standalone process: re-exec with LD_PRELOAD, own
+    #                     Gtk.Application, exits when the pane closes.
+    #   open(app, build)  inside an already running Gtk.Application -- the
+    #                     hyprpanes daemon (hyprpanes.py), which keeps GTK
+    #                     warm and shows panes in tens of ms instead of ~500.
+    # Both end up in open(); close() tears the windows down and cancels the
+    # pane's timeouts (every()), so a daemon never leaks a rebuild timer.
 
-    def run(self, build):
-        if LAYER_SHELL_LIB not in os.environ.get("LD_PRELOAD", ""):
-            os.execve(sys.executable, [sys.executable] + [os.path.abspath(sys.argv[0])] + sys.argv[1:],
-                      {**os.environ, "LD_PRELOAD": LAYER_SHELL_LIB})
+    def _pidfile(self):
+        return os.path.join(PID_DIR, self.app_id + ".pid")
+
+    def _toggle_running(self):
+        """If this pane is already open (live pidfile, same script), terminate it
+        and return True. Runs before the re-exec and before any GTK import."""
+        try:
+            with open(self._pidfile()) as f:
+                pid = int(f.read().strip())
+            with open(f"/proc/{pid}/cmdline", "rb") as f:
+                cmdline = f.read()
+        except (OSError, ValueError):
+            return False
+        if os.path.basename(sys.argv[0]).encode() not in cmdline:
+            return False   # pid reused by something else: stale file
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            return False
+        try:
+            os.unlink(self._pidfile())
+        except OSError:
+            pass
+        return True
+
+    def _write_pidfile(self):
+        os.makedirs(PID_DIR, exist_ok=True)
+        with open(self._pidfile(), "w") as f:
+            f.write(str(os.getpid()))
+
+    def _remove_pidfile(self):
+        try:
+            with open(self._pidfile()) as f:
+                if int(f.read().strip()) == os.getpid():
+                    os.unlink(self._pidfile())
+        except (OSError, ValueError):
+            pass
+
+    def bind_gtk(self):
+        """Import GTK (needs LD_PRELOAD already in place) and keep the modules on self."""
         import gi
         gi.require_version("Gtk", "4.0")
         gi.require_version("Gtk4LayerShell", "1.0")
-        from gi.repository import Gtk, Gdk, GLib, Gtk4LayerShell as LayerShell
-        self.Gtk, self.Gdk, self.GLib = Gtk, Gdk, GLib
-        self._build = build
+        from gi.repository import Gtk, Gdk, GLib, Gio, Gtk4LayerShell as LayerShell
+        self.Gtk, self.Gdk, self.GLib, self.Gio, self.LayerShell = Gtk, Gdk, GLib, Gio, LayerShell
 
-        provider = Gtk.CssProvider()
-        provider.load_from_string(base_css(self.p) + self.extra_css)
-        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
+    def _install_css(self):
+        Gtk, Gdk = self.Gtk, self.Gdk
+        self._provider = Gtk.CssProvider()
+        self._provider.load_from_string(base_css(self.p) + self.extra_css)
+        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), self._provider,
                                                   Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-        def restyle(*_):
-            """~/.cache/.theme_mode changed: reload the palette CSS and redraw
-            (cairo-drawn bits read pn.p, so a rebuild is needed too)."""
-            p = palette()
-            if p == self.p:
-                return
-            self.p = p
-            provider.load_from_string(base_css(p) + self.extra_css)
-            if self.root is not None:
-                self.rebuild()
-        from gi.repository import Gio
-        self._theme_mon = Gio.File.new_for_path(THEME_STATE).monitor_file(Gio.FileMonitorFlags.NONE, None)
-        self._theme_mon.connect("changed", restyle)
+    def _remove_css(self):
+        if getattr(self, "_provider", None) is not None:
+            self.Gtk.StyleContext.remove_provider_for_display(self.Gdk.Display.get_default(), self._provider)
+            self._provider = None
 
-        app = Gtk.Application(application_id=self.app_id)
+    def restyle(self):
+        """~/.cache/.theme_mode changed: reload the palette CSS and redraw
+        (cairo-drawn bits read pn.p, so a rebuild is needed too)."""
+        p = palette()
+        if p == self.p:
+            return
+        self.p = p
+        if getattr(self, "_provider", None) is not None:
+            self._provider.load_from_string(base_css(p) + self.extra_css)
+        if self.root is not None:
+            self.rebuild()
+
+    def watch_theme(self):
+        """Gio file monitor on the theme state file -> restyle(). Returns the monitor (keep a ref)."""
+        mon = self.Gio.File.new_for_path(THEME_STATE).monitor_file(self.Gio.FileMonitorFlags.NONE, None)
+        mon.connect("changed", lambda *_: self.restyle())
+        return mon
+
+    def open(self, app, build, on_closed=None):
+        """Create the shade + pane windows in `app` and fill them with build()."""
+        Gtk, Gdk, GLib, LayerShell = self.Gtk, self.Gdk, self.GLib, self.LayerShell
+        self._build = build
+        self._on_closed = on_closed
+        self.p = palette()
+        self._install_css()
+
+        # shade: covers the whole output (exclusive zones ignored, so the
+        # bar too); any click on it closes the pane. Created first so the
+        # pane, on the same layer, stacks above it.
+        shade = self.shade = Gtk.Window(application=app, title=self.app_id + "-shade", decorated=False)
+        shade.add_css_class("shade")
+        LayerShell.init_for_window(shade)
+        LayerShell.set_namespace(shade, self.app_id + "-shade")
+        LayerShell.set_layer(shade, LayerShell.Layer.TOP)
+        for edge in (LayerShell.Edge.TOP, LayerShell.Edge.BOTTOM, LayerShell.Edge.LEFT, LayerShell.Edge.RIGHT):
+            LayerShell.set_anchor(shade, edge, True)
+        LayerShell.set_exclusive_zone(shade, -1)
+        LayerShell.set_keyboard_mode(shade, LayerShell.KeyboardMode.NONE)
+        click = Gtk.GestureClick(button=0)
+        click.connect("pressed", lambda *_: self.close())
+        shade.add_controller(click)
+        # pointer outside the pane (= over the shade) for LEAVE_MS closes;
+        # coming back into the pane cancels
+        leave_timer = [None]
+
+        def arm():
+            if os.environ.get("PANE_KEEP_OPEN"):   # PANE_KEEP_OPEN=1: screenshots/debugging
+                return
+            if leave_timer[0] is None:
+                leave_timer[0] = GLib.timeout_add(LEAVE_MS, lambda: self.close() or False)
+                self._timeouts.append(leave_timer[0])
+
+        def disarm(*_):
+            if leave_timer[0] is not None:
+                GLib.source_remove(leave_timer[0])
+                if leave_timer[0] in self._timeouts:
+                    self._timeouts.remove(leave_timer[0])
+                leave_timer[0] = None
+        smotion = Gtk.EventControllerMotion()
+        smotion.connect("enter", lambda *_: arm())
+        smotion.connect("motion", lambda *_: arm())
+        shade.add_controller(smotion)
+        shade.present()
+
+        win = self.win = Gtk.Window(application=app, title=self.app_id, resizable=False, decorated=False)
+        win.add_css_class("pane")
+        LayerShell.init_for_window(win)
+        LayerShell.set_namespace(win, self.app_id)
+        LayerShell.set_layer(win, LayerShell.Layer.TOP)
+        LayerShell.set_anchor(win, LayerShell.Edge.TOP, True)
+        if self.anchor in ("left", "right"):
+            LayerShell.set_anchor(win, getattr(LayerShell.Edge, self.anchor.upper()), True)
+            LayerShell.set_margin(win, getattr(LayerShell.Edge, self.anchor.upper()), self.margin_side)
+        LayerShell.set_margin(win, LayerShell.Edge.TOP, self.margin_top)
+        LayerShell.set_keyboard_mode(win, LayerShell.KeyboardMode.ON_DEMAND)
+
+        self.root = self.box(vertical=True, cls="pane")
+        if self.width:
+            self.root.set_size_request(self.width, -1)
+        win.set_child(self.root)
+        build(self, self.root)
+
+        pmotion = Gtk.EventControllerMotion()
+        pmotion.connect("enter", disarm)
+        pmotion.connect("motion", disarm)
+        pmotion.connect("leave", lambda *_: arm())
+        win.add_controller(pmotion)
+
+        keys = Gtk.EventControllerKey()
+        keys.connect("key-pressed", lambda _c, kv, *_: (self.close(), True)[1] if kv == Gdk.KEY_Escape else False)
+        win.add_controller(keys)
+        win.present()
+
+    def close(self):
+        if self.win is None:
+            return
+        ctx = self.GLib.MainContext.default()
+        for t in self._timeouts:          # skip ones that already returned False
+            src = ctx.find_source_by_id(t)
+            if src is not None and not src.is_destroyed():
+                self.GLib.source_remove(t)
+        self._timeouts = []
+        self._ticking = False
+        self._remove_css()
+        win, shade = self.win, self.shade
+        self.win = self.root = self.shade = None
+        win.destroy()
+        shade.destroy()
+        if self._on_closed:
+            self._on_closed()
+
+    def run(self, build):
+        """Standalone: this process is the pane."""
+        if self._toggle_running():
+            return
+        if LAYER_SHELL_LIB not in os.environ.get("LD_PRELOAD", ""):
+            os.execve(sys.executable, [sys.executable] + [os.path.abspath(sys.argv[0])] + sys.argv[1:],
+                      {**os.environ, "LD_PRELOAD": LAYER_SHELL_LIB,
+                       "GSK_RENDERER": os.environ.get("GSK_RENDERER", "cairo")})
+        self.bind_gtk()
+        self._theme_mon = self.watch_theme()
+
+        app = self.Gtk.Application(application_id=self.app_id)
+        app.connect("shutdown", lambda *_: self._remove_pidfile())
 
         def activate(app):
             if self.win is not None:      # second launch -> toggle off
                 app.quit()
                 return
-            # shade: covers the whole output (exclusive zones ignored, so the
-            # bar too); any click on it closes the pane. Created first so the
-            # pane, on the same layer, stacks above it.
-            shade = Gtk.Window(application=app, title=self.app_id + "-shade", decorated=False)
-            shade.add_css_class("shade")
-            LayerShell.init_for_window(shade)
-            LayerShell.set_namespace(shade, self.app_id + "-shade")
-            LayerShell.set_layer(shade, LayerShell.Layer.TOP)
-            for edge in (LayerShell.Edge.TOP, LayerShell.Edge.BOTTOM, LayerShell.Edge.LEFT, LayerShell.Edge.RIGHT):
-                LayerShell.set_anchor(shade, edge, True)
-            LayerShell.set_exclusive_zone(shade, -1)
-            LayerShell.set_keyboard_mode(shade, LayerShell.KeyboardMode.NONE)
-            click = Gtk.GestureClick(button=0)
-            click.connect("pressed", lambda *_: app.quit())
-            shade.add_controller(click)
-            # pointer outside the pane (= over the shade) for LEAVE_MS closes;
-            # coming back into the pane cancels
-            leave_timer = [None]
-
-            def arm():
-                if os.environ.get("PANE_KEEP_OPEN"):   # PANE_KEEP_OPEN=1: screenshots/debugging
-                    return
-                if leave_timer[0] is None:
-                    leave_timer[0] = GLib.timeout_add(LEAVE_MS, lambda: app.quit() or False)
-
-            def disarm(*_):
-                if leave_timer[0] is not None:
-                    GLib.source_remove(leave_timer[0])
-                    leave_timer[0] = None
-            smotion = Gtk.EventControllerMotion()
-            smotion.connect("enter", lambda *_: arm())
-            smotion.connect("motion", lambda *_: arm())
-            shade.add_controller(smotion)
-            shade.present()
-
-            win = self.win = Gtk.Window(application=app, title=self.app_id, resizable=False, decorated=False)
-            win.add_css_class("pane")
-            LayerShell.init_for_window(win)
-            LayerShell.set_namespace(win, self.app_id)
-            LayerShell.set_layer(win, LayerShell.Layer.TOP)
-            LayerShell.set_anchor(win, LayerShell.Edge.TOP, True)
-            if self.anchor in ("left", "right"):
-                LayerShell.set_anchor(win, getattr(LayerShell.Edge, self.anchor.upper()), True)
-                LayerShell.set_margin(win, getattr(LayerShell.Edge, self.anchor.upper()), self.margin_side)
-            LayerShell.set_margin(win, LayerShell.Edge.TOP, self.margin_top)
-            LayerShell.set_keyboard_mode(win, LayerShell.KeyboardMode.ON_DEMAND)
-
-            self.root = self.box(vertical=True, cls="pane")
-            if self.width:
-                self.root.set_size_request(self.width, -1)
-            win.set_child(self.root)
-            build(self, self.root)
-
-            pmotion = Gtk.EventControllerMotion()
-            pmotion.connect("enter", disarm)
-            pmotion.connect("motion", disarm)
-            pmotion.connect("leave", lambda *_: arm())
-            win.add_controller(pmotion)
-
-            keys = Gtk.EventControllerKey()
-            keys.connect("key-pressed", lambda _c, kv, *_: (app.quit(), True)[1] if kv == Gdk.KEY_Escape else False)
-            win.add_controller(keys)
-            win.present()
+            self._write_pidfile()
+            self.open(app, build, on_closed=app.quit)
 
         app.connect("activate", activate)
         app.run(None)

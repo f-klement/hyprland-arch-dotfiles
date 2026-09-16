@@ -1,0 +1,18 @@
+/* ---- Solarized Light mapped onto the Solid role names. The classic; the
+   yellow-tinted base3 ground with blue as the signature. No matching
+   desktop assets installed. */
+@define-color base     #fdf6e3;  /* base3   */
+@define-color surface  #eee8d5;  /* base2   */
+@define-color overlay  #eee8d5;  /* base2   */
+@define-color muted    #93a1a1;  /* base1   */
+@define-color subtle   #657b83;  /* base00  */
+@define-color text     #586e75;  /* base01  */
+@define-color love     #dc322f;  /* red     */
+@define-color gold     #b58900;  /* yellow  */
+@define-color rose     #268bd2;  /* blue (signature) */
+@define-color pine     #2aa198;  /* cyan    */
+@define-color foam     #2aa198;  /* cyan    */
+@define-color iris     #6c71c4;  /* violet  */
+@define-color hl-low   #eee8d5;  /* base2   */
+@define-color hl-med   #d3cbb7;  /* between base2 and base1 */
+@define-color hl-high  #93a1a1;  /* base1   */

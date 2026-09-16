@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh the waybar weather cache (Open-Meteo) once for all bars
+Documentation=file://%h/.config/hypr/UserScripts/Weather.py
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/hypr/UserScripts/Weather.py --refresh
+# a failed fetch (no network yet after login/resume, API hiccup) exits 1:
+# retry every minute until it works, then the timer takes over again
+Restart=on-failure
+RestartSec=60

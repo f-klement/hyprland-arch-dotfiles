@@ -29,6 +29,11 @@
     "format": "{icon}",
     "show-special": false,
     "on-click": "activate",
+    // With the external monitors docked (2026-09-16), plain "activate" ran
+    // `workspace N`, which just moves focus to whichever monitor N already
+    // lives on. This makes a click pull the workspace onto the monitor the
+    // bar was clicked on instead (focusworkspaceoncurrentmonitor).
+    "move-to-monitor": true,
     "on-scroll-up": "hyprctl dispatch workspace e+1",
     "on-scroll-down": "hyprctl dispatch workspace e-1",
     "persistent-workspaces":{
@@ -204,8 +209,10 @@
     // sits on custom/power_mode's right-click instead (2026-09-15).
     // (Right-click used to be wlogout, which custom/power and custom/lock
     // already cover; middle-click was the blur toggle, now in QuickSettings.)
-    "on-click": "~/.config/hypr/UserScripts/PowerPane.py",
-    "on-click-right": "~/.config/hypr/UserScripts/PowerPane.py",
+    // via hyprpanes (2026-09-16): resident daemon, ~75 ms to open instead of
+    // ~500; falls back to the standalone script if the daemon is down.
+    "on-click": "~/.config/hypr/UserScripts/hyprpanes.py toggle power",
+    "on-click-right": "~/.config/hypr/UserScripts/hyprpanes.py toggle power",
 },
       
 "bluetooth": {
@@ -252,14 +259,19 @@
     // with connect/disconnect + battery, short scan), right = blueman-manager
     // for pairing and everything else. The XML menu that used to sit on
     // right-click (menus/bluetooth_menu.xml) is superseded by the pane.
-    "on-click": "~/.config/hypr/UserScripts/BluetoothPane.py",
+    "on-click": "~/.config/hypr/UserScripts/hyprpanes.py toggle bluetooth",
     "on-click-right": "blueman-manager",
 },
 
 "clock": {
-    "interval": 1,
+    // 60, not 1 (2026-09-16): with seconds in the format, three bars redrew
+    // every second -- measured 0.2-0.4 % CPU steady, more than every
+    // script hooked into the bar combined, and it kept the SoC from
+    // idling. waybar aligns the tick to the minute boundary, so the
+    // minute still flips on time.
+    "interval": 60,
     //"format": " {:%I:%M %p}", // AM PM format
-    "format": " {:%H:%M:%S}",
+    "format": " {:%H:%M}",
     "format-alt": " {:%H:%M   %Y, %d %B, %A}",
     // tooltip is just the date now -- the flip-out calendar lives in the
     // pane (2026-09-15); the "calendar" block below only feeds {calendar},
@@ -288,7 +300,7 @@
     // cache, UserScripts/CalendarPane.py) -- Thunderbird itself is a button
     // in there.
     "format-alt-click": "click",
-    "on-click-right": "~/.config/hypr/UserScripts/CalendarPane.py",
+    "on-click-right": "~/.config/hypr/UserScripts/hyprpanes.py toggle calendar",
     "actions":  {
         "on-click-forward": "tz_up",
         "on-click-backward": "tz_down",
@@ -490,12 +502,17 @@
     "default": ["", "", "󰕾", ""], 
     "ignored-sinks": ["Easy Effects Sink"],
     },
+    // Scroll is the module's own (scroll-step, in-process, zero spawns).
+    // The on-scroll-up/down overrides to Volume.sh were removed 2026-09-16:
+    // each tick spawned bash + 6x pamixer + notify-send (~40 ms CPU) only
+    // to get an OSD popup the bar icon already shows. The keybinds
+    // (XF86Audio*) still go through Volume.sh, which now does it in one
+    // pamixer call.
     "scroll-step": 5.0,
-    "on-click": "~/.config/hypr/UserScripts/QuickSettings.py",
+    "max-volume": 100,
+    "on-click": "~/.config/hypr/UserScripts/hyprpanes.py toggle quick",
     "on-click-middle": "~/.config/hypr/scripts/Volume.sh --toggle",
     "on-click-right": "pavucontrol -t 3",
-    "on-scroll-up": "~/.config/hypr/scripts/Volume.sh --inc",
-    "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --dec",
     "tooltip-format": "{icon} {desc} | {volume}%\nmic: {source_desc} | {source_volume}%",
     "smooth-scrolling-threshold": 1,
 },
@@ -692,13 +709,19 @@
     // data and shows old data dimmed (class "stale") while the API is down.
     "format": "{}",
     "return-type": "json",
-    "exec": "~/.config/hypr/UserScripts/Weather.py",
+    // The fetch runs once for all bars in the systemd user timer
+    // (weather.timer -> Weather.py --refresh, every 15 min), which writes
+    // ~/.cache/rbn/weather.bar.json and raises signal 9. This exec just
+    // cats that file; only if it is missing or older than 20 min (timer
+    // not running) does it fall back to running the script itself
+    // (2026-09-16 -- before, each of the three bars ran the script).
+    "exec": "f=~/.cache/rbn/weather.bar.json; if [ -n \"$(find \"$f\" -mmin -20 2>/dev/null)\" ]; then cat \"$f\"; else ~/.config/hypr/UserScripts/Weather.py; fi",
     "interval": 900,
     // left + right: forecast pane (toggles: a 2nd launch closes it); middle:
     // force a refresh. windy.com is only reachable from the pane's button.
     "signal": 9,
-    "on-click": "~/.config/hypr/UserScripts/Weather.py --pane",
-    "on-click-right": "~/.config/hypr/UserScripts/Weather.py --pane",
+    "on-click": "~/.config/hypr/UserScripts/hyprpanes.py toggle weather",
+    "on-click-right": "~/.config/hypr/UserScripts/hyprpanes.py toggle weather",
     "on-click-middle": "~/.config/hypr/UserScripts/Weather.py -f >/dev/null; pkill -RTMIN+9 waybar",
     "tooltip" : true,
 },

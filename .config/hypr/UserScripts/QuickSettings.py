@@ -97,6 +97,9 @@ def hypr_bool(opt):
         return False
 
 
+THEME_LABELS = {"tokyo-night": "Tokyo Night", "rose-pine": "Rosé Pine Moon", "rose-pine-dawn": "Rosé Pine Dawn"}
+
+
 def theme_mode():
     try:
         with open(THEME_STATE) as f:
@@ -108,7 +111,9 @@ def theme_mode():
 def wifi():
     on = sh(["nmcli", "radio", "wifi"]).strip() == "enabled"
     ssid = ""
-    for line in sh(["nmcli", "-t", "-f", "active,ssid", "dev", "wifi"]).splitlines():
+    # --rescan no: without it nmcli kicks off a Wi-Fi scan whenever the last
+    # one is stale and blocks for it -- the pane took 4-5 s to appear (2026-09-16)
+    for line in sh(["nmcli", "-t", "-f", "active,ssid", "dev", "wifi", "list", "--rescan", "no"]).splitlines():
         if line.startswith("yes:"):
             ssid = line[4:]
     return on, ssid
@@ -121,7 +126,8 @@ def bluetooth():
 
 # ---------------------------------------------------------------- pane ---
 
-def pane_main():
+def make_pane():
+    """(Pane, build) -- run standalone via pane_main(), or hosted by hyprpanes.py."""
     css = """
     .tiles button.tile { min-width: 0; }
     dropdown button { padding: 2px 8px; font-size: 12px; }
@@ -202,7 +208,7 @@ def pane_main():
             pn.GLib.timeout_add(delay, lambda: (pn.rebuild(), False)[1])
 
         tiles = [
-            (THEME, "Theme", True, "Tokyo Night" if mode == "tokyo-night" else "Rose Pine",
+            (THEME, "Theme", True, THEME_LABELS.get(mode, "Rose Pine"),
              lambda: after([f"{SCRIPTS}/DarkLight.sh"], 1500)),
             (NIGHTLIGHT, "Night light", night, "hyprsunset on" if night else "off",
              lambda: after([f"{SCRIPTS}/NightlightToggle.sh"])),
@@ -225,6 +231,11 @@ def pane_main():
         foot.append(pn.button("pavucontrol", lambda: (spawn(["pavucontrol"]), pn.close())))
         root.append(foot)
 
+    return pn, build
+
+
+def pane_main():
+    pn, build = make_pane()
     pn.run(build)
 
 

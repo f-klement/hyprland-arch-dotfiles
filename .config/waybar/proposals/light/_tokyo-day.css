@@ -1,0 +1,20 @@
+/* ---- Tokyo Day (folke/tokyonight "day" style) mapped onto the role names
+   the Solid body is written against. This is Tokyo Night's own light
+   variant, and its GTK theme (Tokyonight-Light-B-LB), icon set
+   (Tokyonight-Light), Kvantum (Tokyo-Day), qt5ct (Tokyo-Day.conf) and rofi
+   (tokyo-day.rasi) are ALREADY installed -- the cheapest third identity. */
+@define-color base     #e1e2e7;  /* bg            */
+@define-color surface  #d0d5e3;  /* bg_dark       */
+@define-color overlay  #c4c8da;  /* bg_highlight  */
+@define-color muted    #848cb5;  /* comment       */
+@define-color subtle   #6172b0;  /* fg_dark       */
+@define-color text     #3760bf;  /* fg            */
+@define-color love     #f52a65;  /* red           */
+@define-color gold     #8c6c3e;  /* yellow        */
+@define-color rose     #2e7de9;  /* blue (signature) */
+@define-color pine     #7890dd;  /* blue0         */
+@define-color foam     #007197;  /* cyan          */
+@define-color iris     #9854f1;  /* magenta       */
+@define-color hl-low   #d5d6db;  /* bg_visual-ish */
+@define-color hl-med   #b6bfe2;  /* selection     */
+@define-color hl-high  #a1a6c5;  /* terminal black*/

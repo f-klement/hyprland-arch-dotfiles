@@ -142,7 +142,8 @@ def power_mode():
 
 # ------------------------------------------------------------------ pane --
 
-def pane_main():
+def make_pane():
+    """(Pane, build) -- run standalone via pane_main(), or hosted by hyprpanes.py."""
     css = """
     .hero-icon { font-size: 56px; margin-right: 4px; }
     .hero-pct  { font-size: 40px; font-weight: bold; }
@@ -304,6 +305,11 @@ def pane_main():
             pn._ticking = True
             pn.every(10000, lambda: (pn.rebuild(), True)[1])
 
+    return pn, build
+
+
+def pane_main():
+    pn, build = make_pane()
     pn.run(build)
 
 

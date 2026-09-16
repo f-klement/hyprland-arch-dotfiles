@@ -1,0 +1,18 @@
+/* ---- Tokyo Night palette, mapped onto the Rose Pine role names the body
+   below is written against, so both theme files share one stylesheet body
+   (proposals/1-solid/body.css) and only this header differs. ---- */
+@define-color base     #1a1b26;  /* bg            (Rose Pine base)      */
+@define-color surface  #16161e;  /* bg_dark       (surface)             */
+@define-color overlay  #24283b;  /* storm bg      (overlay)             */
+@define-color muted    #565f89;  /* comment       (muted)               */
+@define-color subtle   #a9b1d6;  /* fg_dark       (subtle)              */
+@define-color text     #c0caf5;  /* fg            (text)                */
+@define-color love     #f7768e;  /* red           (love)                */
+@define-color gold     #e0af68;  /* yellow        (gold)                */
+@define-color rose     #7aa2f7;  /* blue          (rose: the signature) */
+@define-color pine     #3d59a1;  /* blue0         (pine)                */
+@define-color foam     #7dcfff;  /* cyan          (foam)                */
+@define-color iris     #bb9af7;  /* magenta       (iris)                */
+@define-color hl-low   #1f2335;  /* bg_highlight  (hl-low)              */
+@define-color hl-med   #3b4261;  /* selection     (hl-med)              */
+@define-color hl-high  #414868;  /* terminal black(hl-high)             */

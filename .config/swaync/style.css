@@ -1,20 +1,16 @@
 /* ----------- 💫 https://github.com/JaKooLit 💫 -------- */
 
-/* Was importing ../../.cache/wal/colors-waybar.css (pywal-generated) --
-   that file has never existed on this system (pywal has never actually
-   run here), so @color1/@color2/@color7 below were undefined this whole
-   time. Fixed Tokyo Night colors instead. */
-@define-color color1 #bb9af7; /* Tokyo Night magenta */
-@define-color color2 #7aa2f7; /* Tokyo Night blue */
-@define-color color7 #c0caf5; /* Tokyo Night fg */
+/* Colours come from hypr/themes/<theme>/swaync.css through the colors.css
+   symlink next to this file, which scripts/DarkLight.sh re-points on every
+   theme change (2026-09-16 -- replaces the fixed Tokyo Night values and the
+   two sed'd noti-bg lines the toggle used to patch in place). Defines
+   color1/color2/color7, noti-bg, noti-bg-alt, text-color-disabled. */
+@import url("colors.css");
 
 @define-color noti-border-color @color2;
-@define-color noti-bg rgba(38, 35, 58, 0.85);
-@define-color noti-bg-alt #26233a;
 @define-color noti-bg-hover @color2;
 @define-color text-color @color2;
 @define-color text-color-alt @color7;
-@define-color text-color-disabled rgba(150, 150, 150, 0.8);
 
 * {
     font-family: FiraCode;

@@ -2,6 +2,27 @@
 -- See https://wiki.hypr.land/Configuring/Basics/Variables/
 -- Replaces UserConfigs/UserSettings.conf
 
+-- Window border colours follow the desktop theme (2026-09-16): read from
+-- themes/<mode>/theme.sh, the same file scripts/DarkLight.sh sources, with
+-- <mode> from ~/.cache/.theme_mode. DarkLight.sh also applies them live via
+-- `hyprctl keyword`; this only matters on a (re)load. Tokyo Night values
+-- are the fallback if either file is unreadable.
+local function theme_borders()
+    local active, inactive = "rgba(7aa2f7aa)", "rgba(414868aa)"
+    local ok = pcall(function()
+        local home = os.getenv("HOME")
+        local f = io.open(home .. "/.cache/.theme_mode"); if not f then return end
+        local mode = f:read("*l"); f:close()
+        if not mode or mode == "" then return end
+        local t = io.open(home .. "/.config/hypr/themes/" .. mode .. "/theme.sh"); if not t then return end
+        local src = t:read("*a"); t:close()
+        active = src:match('border_active="([^"]+)"') or active
+        inactive = src:match('border_inactive="([^"]+)"') or inactive
+    end)
+    return active, inactive
+end
+local border_active, border_inactive = theme_borders()
+
 hl.config({
     general = {
         gaps_in = 1,
@@ -10,12 +31,8 @@ hl.config({
         resize_on_border = true,
 
         col = {
-            -- Tokyo Night blue (unchanged -- this one was already correct)
-            active_border = "rgba(7aa2f7aa)",
-            -- Was Catppuccin's "overlay0" grey (rgb(6c7086)) -- swapped for
-            -- Tokyo Night's own muted blue-grey so focused/unfocused
-            -- borders read as one palette instead of two different themes.
-            inactive_border = "rgba(414868aa)",
+            active_border = border_active,
+            inactive_border = border_inactive,
         },
 
         -- NOTE: was "dwindles" in the old config -- a typo for "dwindle".

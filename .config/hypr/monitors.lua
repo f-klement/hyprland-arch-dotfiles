@@ -10,6 +10,16 @@ hl.monitor({ output = "eDP-1", mode = "1920x1200@90.0", position = "1920x0", sca
 hl.monitor({ output = "desc:Dell Inc. DELL P2319H 9K41KM3", mode = "1920x1080@60", position = "1920x1200", scale = 1 })
 hl.monitor({ output = "desc:HP Inc. HP E24i G4 CNK2470DJB", mode = "1920x1200@59.950", position = "0x1080", scale = 1 })
 
+-- Work (Dell WD19S dock on the Thunderbolt port): two identical Samsung
+-- LF24T450G panels, told apart by serial. Physical row, left to right:
+-- laptop -> ...2934 in portrait -> ...2924 landscape. Positions are absolute
+-- and keyed by desc:, so these simply stay inert at home and vice versa
+-- (eDP-1 keeps its 1920x0 from the home layout in both). Geometry measured
+-- with nwg-displays: portrait panel's bottom edge is flush with the laptop's,
+-- the landscape one sits 232px below the portrait panel's top edge.
+hl.monitor({ output = "desc:Samsung Electric Company LF24T450G HNMX502934", mode = "1920x1200@74.94", position = "3840x-720", scale = 1, transform = 1 })
+hl.monitor({ output = "desc:Samsung Electric Company LF24T450G HNMX502924", mode = "1920x1200@74.94", position = "5040x-232", scale = 1 })
+
 -- Fallback for any other/unlisted monitor.
 -- NOTE: the old line was `monitor = ,prefered, auto, 1` -- "prefered" is
 -- misspelled (one r). Hyprland's magic keyword is "preferred"; the typo'd

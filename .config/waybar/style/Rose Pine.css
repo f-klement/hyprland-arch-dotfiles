@@ -1,260 +1,166 @@
-/* ---- 💫 https://github.com/JaKooLit 💫 ---- */
-/* Rose Pine */
-
-
-@define-color bar-bg rgba(0, 0, 0, 0);
-@define-color main-bg #26233a;
-@define-color main-fg #ebbcba;
-@define-color wb-act-bg #31748f;
-@define-color wb-act-fg #9ccfd8;
-@define-color wb-hvr-bg #eb6f92;
-@define-color wb-hvr-fg #f6c177;
+/* Rose Pine (Moon) -- "Solid" layout (2026-09-16), see proposals/README.md */
+/* ---- Rosé Pine Moon palette (the "rose-pine" theme state). Was Rosé Pine
+   main (#191724 base) until 2026-09-16; switched to Moon so the bar uses
+   the exact values kitty, GTK, Kvantum, kdeglobals and the panes already
+   use for this identity. Role names are what 1-solid/body.css is written
+   against; every other theme file just swaps this header. ---- */
+@define-color base     #232136;
+@define-color surface  #2a273f;
+@define-color overlay  #393552;
+@define-color muted    #6e6a86;
+@define-color subtle   #908caa;
+@define-color text     #e0def4;
+@define-color love     #eb6f92;
+@define-color gold     #f6c177;
+@define-color rose     #ea9a97;
+@define-color pine     #3e8fb0;
+@define-color foam     #9ccfd8;
+@define-color iris     #c4a7e7;
+@define-color hl-low   #2a283e;
+@define-color hl-med   #44415a;
+@define-color hl-high  #56526e;
+/* Proposal 1 — "Solid"
+   One continuous panel across the whole top edge, Rose Pine base colour,
+   a 1px hairline under it. No pills, no rounded corners. Workspaces and
+   taskbar entries are marked by a coloured underline instead of a filled
+   pill (rose = active workspace, foam = active window). */
 
 * {
-	font-family: "JetBrainsMono Nerd Font";
-	font-weight: bold;
-	/* min-height/padding added (2026-09-11) to match Tokyo-Night.css --
-	   this rule was missing them entirely, so nothing reset GTK's default
-	   widget min-height and the bar rendered visibly taller switching to
-	   Rose Pine than Tokyo Night's explicit "min-height: 0; padding: 1px;"
-	   reset gave it. Unified on Tokyo Night's slimmer value. */
-	min-height: 0;
-	padding: 1px;
-	/* Small nudge to land on exactly the same rendered height as
-	   Tokyo-Night.css (both target 28, matching config's own configured
-	   "height") rather than two different "close enough" values -- see
-	   that file's own * rule for the full story. */
-	margin: -1px 0px;
-	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
-	font-size: 97%;
-	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
-	border-radius: 12px;
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    /* absolute, not 97%: a percentage is relative to the GTK default font,
+       which is read from the environment at startup and gave the bar a
+       different width from one launch to the next (2026-09-16) */
+    font-size: 13px;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    min-height: 0;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    /* border/outline/shadow reset too: the *GTK theme* (Tokyonight-Dark vs
+       oomox-rose-pine-moon, swapped by DarkLight.sh) styles waybar's
+       buttons as well, and its button border was what made the workspace
+       row 13px wider under Rose Pine than under Tokyo Night (2026-09-16). */
+    border: none;
+    outline: none;
+    box-shadow: none;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+    border-radius: 0;
 }
 
 window#waybar {
-    background: @bar-bg;
+    /* from the palette header, so the same body serves light themes too */
+    background: alpha(@base, 0.96);
+    border-bottom: 1px solid @hl-med;
+    color: @text;
 }
 
 tooltip {
-    background: @main-bg;
-    color: @main-fg;
-    border-radius: 8px;
-    border-width: 0px;
+    background: @surface;
+    color: @text;
+    border: 1px solid @hl-med;
+    border-radius: 6px;
 }
 
-/*-----module groups----*/
-/* Rose Pine had no group containers at all -- every module carried its own
-   background/border below, which is what made each icon read as its own
-   floating pill instead of the fused three-block look Tokyo Night and Light
-   already have. Added to match. */
-.modules-right {
-    background-color: rgba(38, 35, 58, 0.8);
-    border: 0px solid @wb-act-bg;
-    border-radius: 10px;
-    padding-right: 2px;
-    padding-left: 2px;
+.modules-left, .modules-center, .modules-right {
+    background: transparent;
+    padding: 0 6px;
 }
 
-.modules-center {
-    background-color: rgba(38, 35, 58, 0.8);
-    border: 0px solid @wb-act-bg;
-    border-radius: 10px;
-    padding-right: 2px;
-    padding-left: 2px;
-}
-
-.modules-left {
-    background-color: rgba(38, 35, 58, 0.8);
-    border: 0px solid @wb-act-bg;
-    border-radius: 10px;
-    padding-right: 2px;
-    padding-left: 2px;
-}
-
+/* ---- workspaces: underline marker ---- */
+/* Each numeral hugs its own glyphs with the same 5px either side, so the
+   *gap* between neighbours is constant (I|II|III) -- a fixed-width slot
+   was tried first and made the gaps around "I" visibly wider than around
+   "III". Everything is in px (font too) so the width is the same on a
+   fresh start and after a theme hot-reload. */
 #workspaces button {
+    min-width: 0;
+    padding: 0 5px;
+    margin: 3px 0;
+    color: @subtle;
+    background: transparent;
+    border-bottom: 2px solid transparent;
     box-shadow: none;
-	text-shadow: none;
-    padding: 0px;
-	border-bottom: 2px;
-	border-color: #2B5D34;
-	border-style: solid;
-	border-radius: 10px;
-    padding-left: 3px;
-    padding-right: 3px;
-	background: @main-bg;
-    color: @main-fg;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    text-shadow: none;
+    transition: all 0.2s ease;
 }
-
 #workspaces button.active {
-    background: @wb-act-bg;
-    color: @wb-act-fg;
-    padding-left: 8px;
-    padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @text;
+    border-bottom-color: @rose;
 }
-
 #workspaces button:hover {
-    background: @wb-hvr-bg;
-    color: @wb-hvr-fg;
-    padding-left: 2px;
-    padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @text;
+    background: @hl-low;
+}
+#workspaces button.urgent {
+    color: @love;
+    border-bottom-color: @love;
 }
 
+/* ---- taskbar: same idea, foam underline for the focused window ---- */
 #taskbar button {
+    padding: 0 6px;
+    margin: 3px 1px;
+    color: @subtle;
+    background: transparent;
+    border-bottom: 2px solid transparent;
     box-shadow: none;
-	text-shadow: none;
-    padding: 0px;
-	border-bottom: 2px;
-	border-color: #2B5D34;
-	border-style: solid;
-	border-radius: 10px;
-    padding-left: 3px;
-    padding-right: 3px;
-    color: @wb-color;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    text-shadow: none;
+    transition: all 0.2s ease;
 }
-
 #taskbar button.active {
-    background: @wb-act-bg;
-    color: @wb-act-color;
-    padding-left: 8px;
-    padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @text;
+    border-bottom-color: @foam;
 }
-
 #taskbar button:hover {
-    background: @wb-hvr-bg;
-    color: @wb-hvr-color;
-    padding-left: 3px;
-    padding-right: 3px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @text;
+    background: @hl-low;
 }
 
-#backlight,
-#backlight-slider,
-#battery,
-#bluetooth,
-#clock,
-#cpu,
-#disk,
-#idle_inhibitor,
-#keyboard-state,
-#memory,
-#mode,
-#mpris,
-#network,
-#pulseaudio,
-#pulseaudio-slider,
-#temperature,
-#tray,
-#window,
-#wireplumber,
-#custom-backlight,
-#custom-cycle_wall,
-#custom-keybinds,
-#custom-keyboard,
-#custom-light_dark,
-#custom-lock,
-#custom-menu,
-#custom-power_vertical,
-#custom-power,
-#custom-power_mode,
-#custom-swaync,
-#custom-updater,
-#custom-swaync,
-#custom-cava_mviz,
-#custom-weather,
-#custom-weather.clearNight,
-#custom-weather.cloudyFoggyDay,
-#custom-weather.cloudyFoggyNight,
-#custom-weather.default, 
-#custom-weather.rainyDay,
-#custom-weather.rainyNight,
-#custom-weather.severe,
-#custom-weather.showyIcyDay,
-#custom-weather.snowyIcyNight,
-#custom-weather.sunnyDay {
-    color: @main-fg;
-    background-color: transparent;
-    opacity: 1;
-	border-radius: 10px;
-	padding-top: 3px;
-	padding-bottom: 3px;
-	padding-right: 6px;
-	padding-left: 6px;
+/* ---- everything else: plain text on the panel ---- */
+#backlight, #backlight-slider, #battery, #bluetooth, #clock, #cpu, #disk,
+#idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network,
+#pulseaudio, #pulseaudio-slider, #temperature, #tray, #window, #wireplumber,
+#custom-backlight, #custom-cycle_wall, #custom-keybinds, #custom-keyboard,
+#custom-light_dark, #custom-lock, #custom-menu, #custom-power_vertical,
+#custom-power, #custom-power_mode, #custom-swaync, #custom-updater,
+#custom-cava_mviz, #custom-weather {
+    color: @text;
+    background: transparent;
+    padding: 0 9px;
 }
 
-/* custom/weather: serving a stale cache (wttr.in unreachable) */
-#custom-weather.stale {
-    opacity: 0.6;
+#clock { color: @rose; }
+#custom-power { color: @love; padding-right: 6px; }
+#idle_inhibitor.activated { color: @gold; }
+#battery.warning:not(.charging) { color: @gold; }
+#battery.critical:not(.charging) { color: @love; }
+#pulseaudio.muted { color: @muted; }
+#bluetooth.connected { color: @foam; }
+#mpris.playing { color: @foam; }
+
+#custom-separator {
+    color: @hl-high;
+    padding: 0 2px;
 }
 
-#temperature.critical {
-  background-color: @red;
-}
+/* ---- state classes shared by every proposal ---- */
+/* custom/weather: serving a stale cache (API unreachable) */
+#custom-weather.stale { opacity: 0.6; }
 
 /* DND states: dimmed, not crossed out */
 #custom-swaync.dnd-none,
 #custom-swaync.dnd-notification,
 #custom-swaync.dnd-inhibited-none,
-#custom-swaync.dnd-inhibited-notification {
-    opacity: 0.5;
-}
+#custom-swaync.dnd-inhibited-notification { opacity: 0.5; }
 
-#custom-power {
-	padding-right: 1px;
-}
-#group-motherboard,
-#group-laptop,
-#group-audio {
-    color: @main-fg;
-    background-color: @main-bg;
-}
-
-#pulseaudio-slider slider {
-	min-width: 0px;
-	min-height: 0px;
-	opacity: 0;
-	background-image: none;
-	border: none;
-	box-shadow: none;
-}
-
-#pulseaudio-slider trough {
-	min-width: 80px;
-	min-height: 5px;
-	border-radius: 5px;
-}
-
-#pulseaudio-slider highlight {
-	min-height: 10px;
-	border-radius: 5px;
-}
-
+#pulseaudio-slider slider,
 #backlight-slider slider {
-	min-width: 0px;
-	min-height: 0px;
-	opacity: 0;
-	background-image: none;
-	border: none;
-	box-shadow: none;
+    min-width: 0px; min-height: 0px; opacity: 0;
+    background-image: none; border: none; box-shadow: none;
 }
-
-#backlight-slider trough {
-	min-width: 80px;
-	min-height: 10px;
-	border-radius: 5px;
-}
-
-#backlight-slider highlight {
-	min-width: 10px;
-	border-radius: 5px;
-}
+#pulseaudio-slider trough,
+#backlight-slider trough { min-width: 80px; min-height: 5px; border-radius: 5px; }
+#pulseaudio-slider highlight,
+#backlight-slider highlight { min-height: 10px; border-radius: 5px; }

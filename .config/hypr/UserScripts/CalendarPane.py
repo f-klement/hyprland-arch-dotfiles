@@ -206,7 +206,8 @@ def by_day(evs):
 
 # ---------------------------------------------------------------- pane ---
 
-def pane_main():
+def make_pane():
+    """(Pane, build) -- run standalone via pane_main(), or hosted by hyprpanes.py."""
     css = """
     .month { font-size: 16px; font-weight: bold; }
     .dow { font-size: 10px; letter-spacing: 1px; }
@@ -350,6 +351,11 @@ def pane_main():
         foot.append(pn.button("Open in Thunderbird", lambda: (spawn(["thunderbird", "-calendar"]), pn.close())))
         root.append(foot)
 
+    return pn, build
+
+
+def pane_main():
+    pn, build = make_pane()
     pn.run(build)
 
 

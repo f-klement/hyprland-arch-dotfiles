@@ -1,0 +1,25 @@
+/*
+ * Rose Pine (Dawn variant) color scheme for rofi -- the third state of the
+ * waybar theme-toggle rotation (see scripts/DarkLight.sh), matched to
+ * waybar/style/Rose Pine Dawn.css so both surfaces agree.
+ *
+ * Same shape as rose-pine.rasi (Moon): slightly transparent + frosted, blur
+ * applied via a Hyprland layer rule (see windowrules.lua), not here. Accent
+ * is iris (#907aa9), the same accent gtk-4.0/rose-pine-dawn-accent.css and
+ * Kvantum/rose-pine-dawn-pine use, with the Dawn base (#faf4ed) as the
+ * text drawn on top of it.
+ */
+
+* {
+    background:                    rgba(250, 244, 237, 0.92);
+    background90:                  rgba(250, 244, 237, 0.92);
+    background-alt:                #f2e9e1;
+    foreground:                    #575279;
+    foreground-alt:                #9893a5;
+    selected-normal-background:    #907aa9;
+    selected-normal-foreground:    #faf4ed;
+    active-background:             #907aa9;
+    active-foreground:             #faf4ed;
+    urgent-background:             #b4637a;
+    urgent-foreground:             #faf4ed;
+}

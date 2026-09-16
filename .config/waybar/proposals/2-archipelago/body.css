@@ -1,0 +1,94 @@
+/* Proposal 2 — "Archipelago"
+   The three big blocks are broken into eight small islands, each a bordered
+   pill floating on a transparent bar. Single-purpose islands (launcher,
+   lock, power) are tinted so they read as buttons; the multi-module islands
+   stay neutral. */
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    font-size: 97%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+}
+
+window#waybar { background: transparent; color: @text; }
+
+tooltip {
+    background: @surface;
+    color: @text;
+    border: 1px solid @hl-med;
+    border-radius: 10px;
+}
+
+.modules-left, .modules-center, .modules-right { background: transparent; }
+
+/* ---- the islands ---- */
+#island-ws, #island-apps, #island-core, #island-notify, #island-hw,
+#custom-menu, #custom-lock, #custom-power {
+    background: rgba(31, 29, 46, 0.90);
+    border: 1px solid @hl-med;
+    border-radius: 11px;
+    margin: 1px 0;
+    padding: 0 4px;
+}
+#custom-menu  { color: @iris; border-color: rgba(196, 167, 231, 0.45); padding: 0 9px; }
+#custom-lock  { color: @foam; border-color: rgba(156, 207, 216, 0.45); padding: 0 9px; }
+#custom-power { color: @love; border-color: rgba(235, 111, 146, 0.45); padding: 0 9px 0 10px; }
+
+/* separators are the water between islands */
+#custom-separator { color: transparent; padding: 0 2px; }
+
+/* ---- workspaces ---- */
+#workspaces button {
+    padding: 0 6px;
+    margin: 3px 1px;
+    color: @subtle;
+    background: transparent;
+    border-radius: 7px;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.25s ease;
+}
+#workspaces button.active { color: @foam; background: @pine; padding: 0 9px; }
+#workspaces button:hover  { color: @text; background: @hl-med; }
+#workspaces button.urgent { color: @base; background: @love; }
+
+/* ---- taskbar ---- */
+#taskbar button {
+    padding: 0 5px;
+    margin: 3px 1px;
+    color: @subtle;
+    background: transparent;
+    border-radius: 7px;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.25s ease;
+}
+#taskbar button.active { background: @hl-med; color: @text; }
+#taskbar button:hover  { background: @hl-high; color: @text; }
+
+/* ---- modules inside islands ---- */
+#backlight, #backlight-slider, #battery, #bluetooth, #clock, #cpu, #disk,
+#idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network,
+#pulseaudio, #pulseaudio-slider, #temperature, #tray, #window, #wireplumber,
+#custom-backlight, #custom-cycle_wall, #custom-keybinds, #custom-keyboard,
+#custom-light_dark, #custom-power_vertical, #custom-power_mode,
+#custom-swaync, #custom-updater, #custom-cava_mviz, #custom-weather {
+    color: @text;
+    background: transparent;
+    padding: 0 7px;
+}
+
+#clock { color: @rose; }
+#custom-weather { color: @foam; }
+#idle_inhibitor.activated { color: @gold; }
+#battery.charging, #battery.plugged { color: @foam; }
+#battery.warning:not(.charging)  { color: @gold; }
+#battery.critical:not(.charging) { color: @love; }
+#pulseaudio.muted { color: @muted; }
+#bluetooth.connected { color: @foam; }
+#mpris.playing { color: @foam; }

@@ -1,0 +1,164 @@
+/* everforest-light -- "Solid" layout light draft (2026-09-16), see proposals/README.md */
+/* ---- Everforest Light (medium) mapped onto the Solid role names. Soft
+   cream ground, muted green/teal accents -- the calmest of the six and the
+   closest in *mood* to Rose Pine. No matching desktop assets installed. */
+@define-color base     #fdf6e3;  /* bg0     */
+@define-color surface  #f4f0d9;  /* bg1     */
+@define-color overlay  #efebd4;  /* bg2     */
+@define-color muted    #a6b0a0;  /* grey0   */
+@define-color subtle   #829181;  /* grey2   */
+@define-color text     #5c6a72;  /* fg      */
+@define-color love     #f85552;  /* red     */
+@define-color gold     #dfa000;  /* yellow  */
+@define-color rose     #8da101;  /* green (signature) */
+@define-color pine     #3a94c5;  /* blue    */
+@define-color foam     #35a77c;  /* aqua    */
+@define-color iris     #df69ba;  /* purple  */
+@define-color hl-low   #e6e2cc;  /* bg3     */
+@define-color hl-med   #e0dcc7;  /* bg4     */
+@define-color hl-high  #bdc3af;  /* bg5     */
+/* Proposal 1 — "Solid"
+   One continuous panel across the whole top edge, Rose Pine base colour,
+   a 1px hairline under it. No pills, no rounded corners. Workspaces and
+   taskbar entries are marked by a coloured underline instead of a filled
+   pill (rose = active workspace, foam = active window). */
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    /* absolute, not 97%: a percentage is relative to the GTK default font,
+       which is read from the environment at startup and gave the bar a
+       different width from one launch to the next (2026-09-16) */
+    font-size: 13px;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    min-height: 0;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    /* border/outline/shadow reset too: the *GTK theme* (Tokyonight-Dark vs
+       oomox-rose-pine-moon, swapped by DarkLight.sh) styles waybar's
+       buttons as well, and its button border was what made the workspace
+       row 13px wider under Rose Pine than under Tokyo Night (2026-09-16). */
+    border: none;
+    outline: none;
+    box-shadow: none;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+    border-radius: 0;
+}
+
+window#waybar {
+    /* from the palette header, so the same body serves light themes too */
+    background: alpha(@base, 0.96);
+    border-bottom: 1px solid @hl-med;
+    color: @text;
+}
+
+tooltip {
+    background: @surface;
+    color: @text;
+    border: 1px solid @hl-med;
+    border-radius: 6px;
+}
+
+.modules-left, .modules-center, .modules-right {
+    background: transparent;
+    padding: 0 6px;
+}
+
+/* ---- workspaces: underline marker ---- */
+/* Each numeral hugs its own glyphs with the same 5px either side, so the
+   *gap* between neighbours is constant (I|II|III) -- a fixed-width slot
+   was tried first and made the gaps around "I" visibly wider than around
+   "III". Everything is in px (font too) so the width is the same on a
+   fresh start and after a theme hot-reload. */
+#workspaces button {
+    min-width: 0;
+    padding: 0 5px;
+    margin: 3px 0;
+    color: @subtle;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.2s ease;
+}
+#workspaces button.active {
+    color: @text;
+    border-bottom-color: @rose;
+}
+#workspaces button:hover {
+    color: @text;
+    background: @hl-low;
+}
+#workspaces button.urgent {
+    color: @love;
+    border-bottom-color: @love;
+}
+
+/* ---- taskbar: same idea, foam underline for the focused window ---- */
+#taskbar button {
+    padding: 0 6px;
+    margin: 3px 1px;
+    color: @subtle;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.2s ease;
+}
+#taskbar button.active {
+    color: @text;
+    border-bottom-color: @foam;
+}
+#taskbar button:hover {
+    color: @text;
+    background: @hl-low;
+}
+
+/* ---- everything else: plain text on the panel ---- */
+#backlight, #backlight-slider, #battery, #bluetooth, #clock, #cpu, #disk,
+#idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network,
+#pulseaudio, #pulseaudio-slider, #temperature, #tray, #window, #wireplumber,
+#custom-backlight, #custom-cycle_wall, #custom-keybinds, #custom-keyboard,
+#custom-light_dark, #custom-lock, #custom-menu, #custom-power_vertical,
+#custom-power, #custom-power_mode, #custom-swaync, #custom-updater,
+#custom-cava_mviz, #custom-weather {
+    color: @text;
+    background: transparent;
+    padding: 0 9px;
+}
+
+#clock { color: @rose; }
+#custom-power { color: @love; padding-right: 6px; }
+#idle_inhibitor.activated { color: @gold; }
+#battery.warning:not(.charging) { color: @gold; }
+#battery.critical:not(.charging) { color: @love; }
+#pulseaudio.muted { color: @muted; }
+#bluetooth.connected { color: @foam; }
+#mpris.playing { color: @foam; }
+
+#custom-separator {
+    color: @hl-high;
+    padding: 0 2px;
+}
+
+/* ---- state classes shared by every proposal ---- */
+/* custom/weather: serving a stale cache (API unreachable) */
+#custom-weather.stale { opacity: 0.6; }
+
+/* DND states: dimmed, not crossed out */
+#custom-swaync.dnd-none,
+#custom-swaync.dnd-notification,
+#custom-swaync.dnd-inhibited-none,
+#custom-swaync.dnd-inhibited-notification { opacity: 0.5; }
+
+#pulseaudio-slider slider,
+#backlight-slider slider {
+    min-width: 0px; min-height: 0px; opacity: 0;
+    background-image: none; border: none; box-shadow: none;
+}
+#pulseaudio-slider trough,
+#backlight-slider trough { min-width: 80px; min-height: 5px; border-radius: 5px; }
+#pulseaudio-slider highlight,
+#backlight-slider highlight { min-height: 10px; border-radius: 5px; }

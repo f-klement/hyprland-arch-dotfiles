@@ -1,0 +1,104 @@
+/* Proposal 5 — "Dock"
+   The bar moves to the bottom and is re-sorted by purpose: the centre
+   island is a dock (launcher + workspaces + running apps, bigger icons,
+   raised look with a shadow); the corners are two quieter capsules for
+   time/context (left) and status/session (right). */
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    font-size: 97%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+}
+
+window#waybar { background: transparent; color: @text; }
+
+tooltip {
+    background: @surface;
+    color: @text;
+    border: 1px solid @hl-med;
+    border-radius: 10px;
+}
+
+/* corner capsules */
+.modules-left, .modules-right {
+    background: rgba(25, 23, 36, 0.82);
+    border: 1px solid @hl-low;
+    border-radius: 12px;
+    padding: 0 6px;
+    margin: 4px 0 0 0;
+}
+
+/* the dock itself: taller, brighter, lifted */
+.modules-center {
+    background: rgba(31, 29, 46, 0.94);
+    border: 1px solid @hl-med;
+    border-radius: 14px;
+    padding: 0 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* ---- workspaces: roman numerals in the dock ---- */
+#workspaces button {
+    padding: 0 7px;
+    margin: 4px 1px;
+    color: @subtle;
+    background: transparent;
+    border-radius: 9px;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.25s cubic-bezier(.55,-0.3,.48,1.3);
+}
+#workspaces button.active { color: @foam; background: @pine; padding: 0 11px; }
+#workspaces button:hover  { color: @text; background: @hl-med; }
+#workspaces button.urgent { color: @base; background: @love; }
+
+/* ---- taskbar: icon tiles, active one gets a foam dot under it ---- */
+#taskbar button {
+    padding: 0 6px;
+    margin: 4px 1px;
+    color: @subtle;
+    background: transparent;
+    border-radius: 9px;
+    border-bottom: 2px solid transparent;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.25s ease;
+}
+#taskbar button.active { background: @hl-low; color: @text; border-bottom-color: @foam; }
+#taskbar button:hover  { background: @hl-med; color: @text; }
+
+/* ---- modules ---- */
+#backlight, #backlight-slider, #battery, #bluetooth, #clock, #cpu, #disk,
+#idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network,
+#pulseaudio, #pulseaudio-slider, #temperature, #tray, #window, #wireplumber,
+#custom-backlight, #custom-cycle_wall, #custom-keybinds, #custom-keyboard,
+#custom-light_dark, #custom-lock, #custom-menu, #custom-power_vertical,
+#custom-power, #custom-power_mode, #custom-swaync, #custom-updater,
+#custom-cava_mviz, #custom-weather {
+    color: @text;
+    background: transparent;
+    padding: 0 7px;
+}
+
+#custom-menu {
+    color: @iris;
+    font-size: 115%;
+    padding: 0 9px;
+}
+#clock { color: @rose; }
+#custom-weather { color: @foam; }
+#custom-power { color: @love; padding-right: 5px; }
+#idle_inhibitor.activated { color: @gold; }
+#bluetooth.connected { color: @foam; }
+#mpris.playing { color: @foam; }
+#battery.charging, #battery.plugged { color: @foam; }
+#battery.warning:not(.charging)  { color: @gold; }
+#battery.critical:not(.charging) { color: @love; }
+#pulseaudio.muted { color: @muted; }
+
+#custom-separator { color: @hl-high; padding: 0 2px; }

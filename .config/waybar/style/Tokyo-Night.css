@@ -1,293 +1,164 @@
-/* Tokyo Night -- written for the Hyprland theme consolidation.
-   Same structure/selectors as style/Dark.css (which was actually a
-   Catppuccin Mocha palette despite the generic name -- that mismatch was
-   part of what made the whole desktop look inconsistent), values swapped
-   to the real Tokyo Night palette so it matches the icon theme, GTK theme,
-   kvantum theme and Hyprland border colors. */
+/* Tokyo Night -- "Solid" layout (2026-09-16), see proposals/README.md */
+/* ---- Tokyo Night palette, mapped onto the Rose Pine role names the body
+   below is written against, so both theme files share one stylesheet body
+   (proposals/1-solid/body.css) and only this header differs. ---- */
+@define-color base     #1a1b26;  /* bg            (Rose Pine base)      */
+@define-color surface  #16161e;  /* bg_dark       (surface)             */
+@define-color overlay  #24283b;  /* storm bg      (overlay)             */
+@define-color muted    #565f89;  /* comment       (muted)               */
+@define-color subtle   #a9b1d6;  /* fg_dark       (subtle)              */
+@define-color text     #c0caf5;  /* fg            (text)                */
+@define-color love     #f7768e;  /* red           (love)                */
+@define-color gold     #e0af68;  /* yellow        (gold)                */
+@define-color rose     #7aa2f7;  /* blue          (rose: the signature) */
+@define-color pine     #3d59a1;  /* blue0         (pine)                */
+@define-color foam     #7dcfff;  /* cyan          (foam)                */
+@define-color iris     #bb9af7;  /* magenta       (iris)                */
+@define-color hl-low   #1f2335;  /* bg_highlight  (hl-low)              */
+@define-color hl-med   #3b4261;  /* selection     (hl-med)              */
+@define-color hl-high  #414868;  /* terminal black(hl-high)             */
+/* Proposal 1 — "Solid"
+   One continuous panel across the whole top edge, Rose Pine base colour,
+   a 1px hairline under it. No pills, no rounded corners. Workspaces and
+   taskbar entries are marked by a coloured underline instead of a filled
+   pill (rose = active workspace, foam = active window). */
 
 * {
-font-family: "JetBrainsMono Nerd Font";
-font-weight: bold;
-min-height: 0;
-/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
-font-size: 98%;
-font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
-padding: 1px;
-/* Hard override (2026-09-11): this theme was rendering at height 34 vs
-   Rose Pine's 29 -- fixed two real contributors along the way (Rose
-   Pine's missing min-height/padding reset; #mpris/#custom-swaync here
-   silently falling through to unstyled GTK defaults) without fully
-   closing the gap, and chasing the rest blind (no visual feedback to
-   bisect against) wasn't worth more time. A negative margin on the outer
-   window had no effect at all (GTK layer-shell windows don't collapse
-   their own margin) -- this one, on every widget via the global rule,
-   does: confirmed empirically to bring it from 34 down to 28, matching
-   config's own configured "height". Rose Pine gets the equivalent small
-   nudge (see its own * rule) so both land on exactly the same number
-   instead of two different "close enough" values. Re-measure
-   (`waybar -l info`, watch for "Bar configured") if this theme's content
-   ever changes enough to need the number adjusted. */
-margin: -3px 0px;
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    /* absolute, not 97%: a percentage is relative to the GTK default font,
+       which is read from the environment at startup and gave the bar a
+       different width from one launch to the next (2026-09-16) */
+    font-size: 13px;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    min-height: 0;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    /* border/outline/shadow reset too: the *GTK theme* (Tokyonight-Dark vs
+       oomox-rose-pine-moon, swapped by DarkLight.sh) styles waybar's
+       buttons as well, and its button border was what made the workspace
+       row 13px wider under Rose Pine than under Tokyo Night (2026-09-16). */
+    border: none;
+    outline: none;
+    box-shadow: none;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+    border-radius: 0;
 }
 
 window#waybar {
-    background: rgba(0, 0, 0, 0);
-}
-
-window#waybar.hidden {
-    opacity: 0.5;
-}
-
-window#waybar.empty {
-    background-color: transparent;
-}
-
-window#waybar.empty #window {
-    padding: 0px;
-    margin: 0px;
-    border: 0px;
-    background-color: transparent;
+    /* from the palette header, so the same body serves light themes too */
+    background: alpha(@base, 0.96);
+    border-bottom: 1px solid @hl-med;
+    color: @text;
 }
 
 tooltip {
-    background: rgba(22, 22, 30, 0.9); /* Tokyo Night bg_dark */
-    border-radius: 10px;
+    background: @surface;
+    color: @text;
+    border: 1px solid @hl-med;
+    border-radius: 6px;
 }
 
-tooltip label {
-    color: #bb9af7; /* Tokyo Night magenta */
-    margin-right: 2px;
-    margin-left: 2px;
+.modules-left, .modules-center, .modules-right {
+    background: transparent;
+    padding: 0 6px;
 }
 
-/*-----module groups----*/
-.modules-right {
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 0px solid #7aa2f7;
-    border-radius: 10px;
-    padding-right: 2px;
-    padding-left: 2px;
-}
-
-.modules-center {
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 0px solid #7aa2f7;
-    border-radius: 10px;
-    padding-right: 2px;
-    padding-left: 2px;
-}
-
-.modules-left {
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 0px solid #7aa2f7;
-    border-radius: 10px;
-    padding-right: 2px;
-    padding-left: 2px;
-
-}
-
+/* ---- workspaces: underline marker ---- */
+/* Each numeral hugs its own glyphs with the same 5px either side, so the
+   *gap* between neighbours is constant (I|II|III) -- a fixed-width slot
+   was tried first and made the gaps around "I" visibly wider than around
+   "III". Everything is in px (font too) so the width is the same on a
+   fresh start and after a theme hot-reload. */
 #workspaces button {
-    color: #565f89; /* Tokyo Night comment/muted */
+    min-width: 0;
+    padding: 0 5px;
+    margin: 3px 0;
+    color: @subtle;
+    background: transparent;
+    border-bottom: 2px solid transparent;
     box-shadow: none;
-	text-shadow: none;
-    padding: 0px;
-    border-bottom: 2px;
-    border-color: #7aa2f7; /* Tokyo Night blue -- Rose Pine's thickness, this theme's accent */
-    border-style: solid;
-    border-radius: 9px;
-    padding-left: 3px;
-    padding-right: 3px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+    text-shadow: none;
+    transition: all 0.2s ease;
 }
-
 #workspaces button.active {
-    color: #bb9af7; /* Tokyo Night magenta */
-    border-radius: 15px 15px 15px 15px;
-    padding-left: 12px;
-    padding-right: 12px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @text;
+    border-bottom-color: @rose;
 }
-
-#workspaces button.focused {
-    color: #c0caf5; /* Tokyo Night fg */
-}
-
-#workspaces button.urgent {
-    color: #16161e; /* Tokyo Night bg_dark */
-    border-radius: 10px;
-}
-
 #workspaces button:hover {
-    color: #7dcfff; /* Tokyo Night cyan */
-    border-radius: 15px;
- 	padding-left: 3px;
-    padding-right: 3px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    color: @text;
+    background: @hl-low;
+}
+#workspaces button.urgent {
+    color: @love;
+    border-bottom-color: @love;
 }
 
-#backlight,
-#backlight-slider,
-#battery,
-#bluetooth,
-#cava,
-#clock,
-#cpu,
-#disk,
-#idle_inhibitor,
-#keyboard-state label,
-#keyboard-state label.locked,
-#keyboard-state,
-#memory,
-#mode,
-#mpd,
-#mpris,
-#network,
-#pulseaudio,
-#pulseaudio-slider,
-#taskbar button,
-#taskbar,
-#temperature,
-#tray,
-#window,
-#wireplumber,
-#workspaces,
-#custom-backlight,
-#custom-cycle_wall,
-#custom-keybinds,
-#custom-light_dark,
-#custom-lock,
-#custom-menu,
-#custom-power_vertical,
-#custom-power,
-#custom-power_mode,
-#custom-speaker,
-#custom-swaync,
-#custom-updater,
-#custom-weather,
-#custom-weather.clearNight,
-#custom-weather.cloudyFoggyDay,
-#custom-weather.cloudyFoggyNight,
-#custom-weather.default,
-#custom-weather.rainyDay,
-#custom-weather.rainyNight,
-#custom-weather.severe,
-#custom-weather.showyIcyDay,
-#custom-weather.snowyIcyNight,
-#custom-weather.sunnyDay {
-    color: #bb9af7; /* Tokyo Night magenta */
-    background-color: transparent;
-    padding: 3px 6px;
-    border-radius: 10px;
+/* ---- taskbar: same idea, foam underline for the focused window ---- */
+#taskbar button {
+    padding: 0 6px;
+    margin: 3px 1px;
+    color: @subtle;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    box-shadow: none;
+    text-shadow: none;
+    transition: all 0.2s ease;
+}
+#taskbar button.active {
+    color: @text;
+    border-bottom-color: @foam;
+}
+#taskbar button:hover {
+    color: @text;
+    background: @hl-low;
 }
 
-#custom-lock {
-    padding-right: 10px;
+/* ---- everything else: plain text on the panel ---- */
+#backlight, #backlight-slider, #battery, #bluetooth, #clock, #cpu, #disk,
+#idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network,
+#pulseaudio, #pulseaudio-slider, #temperature, #tray, #window, #wireplumber,
+#custom-backlight, #custom-cycle_wall, #custom-keybinds, #custom-keyboard,
+#custom-light_dark, #custom-lock, #custom-menu, #custom-power_vertical,
+#custom-power, #custom-power_mode, #custom-swaync, #custom-updater,
+#custom-cava_mviz, #custom-weather {
+    color: @text;
+    background: transparent;
+    padding: 0 9px;
 }
 
-/* custom/weather: serving a stale cache (wttr.in unreachable) */
-#custom-weather.stale {
-    opacity: 0.6;
+#clock { color: @rose; }
+#custom-power { color: @love; padding-right: 6px; }
+#idle_inhibitor.activated { color: @gold; }
+#battery.warning:not(.charging) { color: @gold; }
+#battery.critical:not(.charging) { color: @love; }
+#pulseaudio.muted { color: @muted; }
+#bluetooth.connected { color: @foam; }
+#mpris.playing { color: @foam; }
+
+#custom-separator {
+    color: @hl-high;
+    padding: 0 2px;
 }
 
-#temperature.critical {
-    background-color: #db4b4b; /* Tokyo Night red (error) */
-}
+/* ---- state classes shared by every proposal ---- */
+/* custom/weather: serving a stale cache (API unreachable) */
+#custom-weather.stale { opacity: 0.6; }
 
 /* DND states: dimmed, not crossed out */
 #custom-swaync.dnd-none,
 #custom-swaync.dnd-notification,
 #custom-swaync.dnd-inhibited-none,
-#custom-swaync.dnd-inhibited-notification {
-    opacity: 0.5;
-}
+#custom-swaync.dnd-inhibited-notification { opacity: 0.5; }
 
-@keyframes blink {
-    to {
-        color: #16161e;
-    }
-}
-
-/* Was missing entirely -- Rose Pine has a base #taskbar button rule with
-   this same border/padding/radius, Tokyo Night only had .active/:hover, so
-   taskbar buttons fell back to unstyled default chrome (part of the
-   "different thickness" between the two themes). Added to match. */
-#taskbar button {
-    box-shadow: none;
-    text-shadow: none;
-    padding: 0px;
-    border-bottom: 2px;
-    border-color: #7aa2f7; /* Tokyo Night blue -- Rose Pine's thickness, this theme's accent */
-    border-style: solid;
-    border-radius: 10px;
-    padding-left: 3px;
-    padding-right: 3px;
-    color: #565f89; /* Tokyo Night comment/muted, matches workspace button */
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
-}
-
-#taskbar button.active {
-    background-color: #3b4261; /* Tokyo Night selection */
-    padding-left: 12px;
-    padding-right: 12px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
-}
-
-#taskbar button:hover {
-    padding-left: 3px;
-    padding-right: 3px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
-}
-
-#battery.critical:not(.charging) {
-    color: #db4b4b; /* Tokyo Night red (error) */
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-}
-#pulseaudio-slider slider {
-	min-width: 0px;
-	min-height: 0px;
-	opacity: 0;
-	background-image: none;
-	border: none;
-	box-shadow: none;
-}
-
-#pulseaudio-slider trough {
-	min-width: 80px;
-	min-height: 5px;
-	border-radius: 5px;
-}
-
-#pulseaudio-slider highlight {
-	min-height: 10px;
-	border-radius: 5px;
-}
-
+#pulseaudio-slider slider,
 #backlight-slider slider {
-	min-width: 0px;
-	min-height: 0px;
-	opacity: 0;
-	background-image: none;
-	border: none;
-	box-shadow: none;
+    min-width: 0px; min-height: 0px; opacity: 0;
+    background-image: none; border: none; box-shadow: none;
 }
-
-#backlight-slider trough {
-	min-width: 80px;
-	min-height: 10px;
-	border-radius: 5px;
-}
-
-#backlight-slider highlight {
-	min-width: 10px;
-	border-radius: 5px;
-}
+#pulseaudio-slider trough,
+#backlight-slider trough { min-width: 80px; min-height: 5px; border-radius: 5px; }
+#pulseaudio-slider highlight,
+#backlight-slider highlight { min-height: 10px; border-radius: 5px; }

@@ -1,0 +1,7 @@
+/* Rosé Pine Moon colours for swaync */
+@define-color color1 #c4a7e7; /* iris */
+@define-color color2 #9ccfd8; /* foam */
+@define-color color7 #e0def4; /* text */
+@define-color noti-bg rgba(38, 35, 58, 0.85);
+@define-color noti-bg-alt #26233a;
+@define-color text-color-disabled rgba(110, 106, 134, 0.9); /* muted */

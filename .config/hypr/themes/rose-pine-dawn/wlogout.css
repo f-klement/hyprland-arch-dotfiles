@@ -1,0 +1,6 @@
+/* Rosé Pine Dawn colours for wlogout */
+@define-color wl-fg #575279;                      /* text */
+@define-color wl-bg rgba(250, 244, 237, 0.7);     /* base */
+@define-color wl-hover-bg #907aa9;                /* iris */
+@define-color wl-hover-fg #faf4ed;                /* base */
+@define-color wl-glow rgba(144, 122, 169, 0.6);   /* iris glow */

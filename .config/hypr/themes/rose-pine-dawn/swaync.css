@@ -1,0 +1,7 @@
+/* Rosé Pine Dawn colours for swaync */
+@define-color color1 #907aa9; /* iris */
+@define-color color2 #286983; /* pine -- dark enough to be text on the light ground */
+@define-color color7 #575279; /* text */
+@define-color noti-bg rgba(250, 244, 237, 0.92);
+@define-color noti-bg-alt #f2e9e1;
+@define-color text-color-disabled rgba(152, 147, 165, 0.9); /* muted */

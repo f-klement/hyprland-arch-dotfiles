@@ -1,0 +1,6 @@
+/* Rosé Pine Moon colours for wlogout */
+@define-color wl-fg #e0def4;                      /* text */
+@define-color wl-bg rgba(35, 33, 54, 0.6);        /* base */
+@define-color wl-hover-bg #c4a7e7;                /* iris */
+@define-color wl-hover-fg #232136;                /* base */
+@define-color wl-glow rgba(196, 167, 231, 0.6);   /* iris glow */

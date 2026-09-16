@@ -97,6 +97,9 @@ CMD_DESC = {
     "BrightnessKbd.sh --dec": "Keyboard light down", "TouchPad.sh": "Toggle touchpad",
     "WallpaperSelect.sh": "Wallpaper picker", "WallpaperRandom.sh": "Random wallpaper",
     "KeybindsPane.py": "This cheat sheet", "PowerPane.py": "Power pane", "QuickSettings.py": "Quick settings",
+    "hyprpanes.py toggle keybinds": "This cheat sheet", "hyprpanes.py toggle power": "Power pane",
+    "hyprpanes.py toggle quick": "Quick settings", "hyprpanes.py toggle weather": "Weather pane",
+    "hyprpanes.py toggle bluetooth": "Bluetooth pane", "hyprpanes.py toggle calendar": "Calendar pane",
 }
 
 
@@ -231,7 +234,8 @@ def load():
     return {name: collapse(rows) for name, rows in sections.items()}
 
 
-def pane_main():
+def make_pane():
+    """(Pane, build) -- run standalone via pane_main(), or hosted by hyprpanes.py."""
     css = """
     .kbd { font-size: 11px; }
     .kbd.mod { font-weight: bold; }
@@ -305,6 +309,11 @@ def pane_main():
         entry.connect("search-changed", lambda e: render(e.get_text()))
         entry.grab_focus()
 
+    return pn, build
+
+
+def pane_main():
+    pn, build = make_pane()
     pn.run(build)
 
 

@@ -1,0 +1,293 @@
+/* Tokyo Night -- written for the Hyprland theme consolidation.
+   Same structure/selectors as style/Dark.css (which was actually a
+   Catppuccin Mocha palette despite the generic name -- that mismatch was
+   part of what made the whole desktop look inconsistent), values swapped
+   to the real Tokyo Night palette so it matches the icon theme, GTK theme,
+   kvantum theme and Hyprland border colors. */
+
+* {
+font-family: "JetBrainsMono Nerd Font";
+font-weight: bold;
+min-height: 0;
+/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+font-size: 98%;
+font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+padding: 1px;
+/* Hard override (2026-09-11): this theme was rendering at height 34 vs
+   Rose Pine's 29 -- fixed two real contributors along the way (Rose
+   Pine's missing min-height/padding reset; #mpris/#custom-swaync here
+   silently falling through to unstyled GTK defaults) without fully
+   closing the gap, and chasing the rest blind (no visual feedback to
+   bisect against) wasn't worth more time. A negative margin on the outer
+   window had no effect at all (GTK layer-shell windows don't collapse
+   their own margin) -- this one, on every widget via the global rule,
+   does: confirmed empirically to bring it from 34 down to 28, matching
+   config's own configured "height". Rose Pine gets the equivalent small
+   nudge (see its own * rule) so both land on exactly the same number
+   instead of two different "close enough" values. Re-measure
+   (`waybar -l info`, watch for "Bar configured") if this theme's content
+   ever changes enough to need the number adjusted. */
+margin: -3px 0px;
+}
+
+window#waybar {
+    background: rgba(0, 0, 0, 0);
+}
+
+window#waybar.hidden {
+    opacity: 0.5;
+}
+
+window#waybar.empty {
+    background-color: transparent;
+}
+
+window#waybar.empty #window {
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    background-color: transparent;
+}
+
+tooltip {
+    background: rgba(22, 22, 30, 0.9); /* Tokyo Night bg_dark */
+    border-radius: 10px;
+}
+
+tooltip label {
+    color: #bb9af7; /* Tokyo Night magenta */
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+/*-----module groups----*/
+.modules-right {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 0px solid #7aa2f7;
+    border-radius: 10px;
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+.modules-center {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 0px solid #7aa2f7;
+    border-radius: 10px;
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+.modules-left {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 0px solid #7aa2f7;
+    border-radius: 10px;
+    padding-right: 2px;
+    padding-left: 2px;
+
+}
+
+#workspaces button {
+    color: #565f89; /* Tokyo Night comment/muted */
+    box-shadow: none;
+	text-shadow: none;
+    padding: 0px;
+    border-bottom: 2px;
+    border-color: #7aa2f7; /* Tokyo Night blue -- Rose Pine's thickness, this theme's accent */
+    border-style: solid;
+    border-radius: 9px;
+    padding-left: 3px;
+    padding-right: 3px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#workspaces button.active {
+    color: #bb9af7; /* Tokyo Night magenta */
+    border-radius: 15px 15px 15px 15px;
+    padding-left: 12px;
+    padding-right: 12px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#workspaces button.focused {
+    color: #c0caf5; /* Tokyo Night fg */
+}
+
+#workspaces button.urgent {
+    color: #16161e; /* Tokyo Night bg_dark */
+    border-radius: 10px;
+}
+
+#workspaces button:hover {
+    color: #7dcfff; /* Tokyo Night cyan */
+    border-radius: 15px;
+ 	padding-left: 3px;
+    padding-right: 3px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#cava,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state label,
+#keyboard-state label.locked,
+#keyboard-state,
+#memory,
+#mode,
+#mpd,
+#mpris,
+#network,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar button,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-cycle_wall,
+#custom-keybinds,
+#custom-light_dark,
+#custom-lock,
+#custom-menu,
+#custom-power_vertical,
+#custom-power,
+#custom-power_mode,
+#custom-speaker,
+#custom-swaync,
+#custom-updater,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default,
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    color: #bb9af7; /* Tokyo Night magenta */
+    background-color: transparent;
+    padding: 3px 6px;
+    border-radius: 10px;
+}
+
+#custom-lock {
+    padding-right: 10px;
+}
+
+/* custom/weather: serving a stale cache (wttr.in unreachable) */
+#custom-weather.stale {
+    opacity: 0.6;
+}
+
+#temperature.critical {
+    background-color: #db4b4b; /* Tokyo Night red (error) */
+}
+
+/* DND states: dimmed, not crossed out */
+#custom-swaync.dnd-none,
+#custom-swaync.dnd-notification,
+#custom-swaync.dnd-inhibited-none,
+#custom-swaync.dnd-inhibited-notification {
+    opacity: 0.5;
+}
+
+@keyframes blink {
+    to {
+        color: #16161e;
+    }
+}
+
+/* Was missing entirely -- Rose Pine has a base #taskbar button rule with
+   this same border/padding/radius, Tokyo Night only had .active/:hover, so
+   taskbar buttons fell back to unstyled default chrome (part of the
+   "different thickness" between the two themes). Added to match. */
+#taskbar button {
+    box-shadow: none;
+    text-shadow: none;
+    padding: 0px;
+    border-bottom: 2px;
+    border-color: #7aa2f7; /* Tokyo Night blue -- Rose Pine's thickness, this theme's accent */
+    border-style: solid;
+    border-radius: 10px;
+    padding-left: 3px;
+    padding-right: 3px;
+    color: #565f89; /* Tokyo Night comment/muted, matches workspace button */
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#taskbar button.active {
+    background-color: #3b4261; /* Tokyo Night selection */
+    padding-left: 12px;
+    padding-right: 12px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#taskbar button:hover {
+    padding-left: 3px;
+    padding-right: 3px;
+    animation: gradient_f 20s ease-in infinite;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#battery.critical:not(.charging) {
+    color: #db4b4b; /* Tokyo Night red (error) */
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+#pulseaudio-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+	box-shadow: none;
+}
+
+#pulseaudio-slider trough {
+	min-width: 80px;
+	min-height: 5px;
+	border-radius: 5px;
+}
+
+#pulseaudio-slider highlight {
+	min-height: 10px;
+	border-radius: 5px;
+}
+
+#backlight-slider slider {
+	min-width: 0px;
+	min-height: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+	box-shadow: none;
+}
+
+#backlight-slider trough {
+	min-width: 80px;
+	min-height: 10px;
+	border-radius: 5px;
+}
+
+#backlight-slider highlight {
+	min-width: 10px;
+	border-radius: 5px;
+}

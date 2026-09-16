@@ -3,6 +3,91 @@
  * WebExtension theme (manifest.json right here, installed but inactive --
  * never actually rendered despite correct addon-manager state). */
 
+/* ---- Rosé Pine Moon: Thunderbird's own design tokens (2026-09-16) ----------------
+   Thunderbird 115+ derives nearly every surface from a few semantic
+   variables (see omni.ja messenger/skin/layout.css, shared/variables.css,
+   shared/tree-listbox.css, colors.css). Overriding those on :root -- which
+   userChrome.css reaches in every chrome document, about:3pane included --
+   restyles the thread pane, cards, folder pane, today pane, buttons and
+   popups in one go, instead of chasing element ids. color-scheme is pinned
+   so light-dark() inside Thunderbird resolves to this theme's side
+   regardless of what the WebExtension theme / GTK happen to say. The
+   element rules further down predate this block and are kept as belt and
+   braces. */
+:root {
+    color-scheme: dark !important;
+
+    --layout-background-0: #2a273f !important;   /* lists, cards, fields   */
+    --layout-background-1: #232136 !important;   /* toolbars, sidebars     */
+    --layout-background-2: #393552 !important;
+    --layout-background-3: #2a283e !important;   /* buttons                */
+    --layout-background-4: #44415a !important;
+    --layout-color-0: #e0def4 !important;
+    --layout-color-1: #e0def4 !important;
+    --layout-color-2: #908caa !important;
+    --layout-color-3: #6e6a86 !important;
+    --layout-border-0: #393552 !important;
+    --layout-border-1: #44415a !important;
+    --layout-border-2: #56526e !important;
+
+    --color-surface-base: #2a273f !important;
+    --color-surface-raised: #2a273f !important;
+    --color-surface-lower: #232136 !important;
+    --color-surface-deep: #393552 !important;
+    --color-surface-border: #393552 !important;
+    --color-surface-border-intense: #44415a !important;
+    --color-text-base: #e0def4 !important;
+    --color-text-secondary: #908caa !important;
+    --color-text-muted: #6e6a86 !important;
+    --color-text-brand: #c4a7e7 !important;
+    --color-text-highlight: #9ccfd8 !important;
+    --color-primary-default: #c4a7e7 !important;
+    --color-primary-hover: #d3bdf0 !important;
+    --color-primary-pressed: #d3bdf0 !important;
+    --color-text-success: #3e8fb0 !important;
+    --color-text-warning: #f6c177 !important;
+    --color-text-critical: #eb6f92 !important;
+
+    --selected-item-color: #c4a7e7 !important;
+    --selected-item-text-color: #232136 !important;
+    --sidebar-highlight-background-color: #c4a7e7 !important;
+    --sidebar-highlight-text-color: #232136 !important;
+    --tree-view-bg: #232136 !important;
+    --tree-view-color: #e0def4 !important;
+    --tree-pane-background: #232136 !important;
+    --tree-card-background: #2a273f !important;
+    --tree-card-border: #393552 !important;
+    --unread-color: #e0def4 !important;
+    --listbox-selected-bg: #44415a !important;
+    --tree-view-header-hover-bg: #393552 !important;
+    --tree-view-header-hover-active-bg: #44415a !important;
+    --button-primary-background-color: #c4a7e7 !important;
+    --button-primary-hover-background-color: #d3bdf0 !important;
+    --button-primary-text-color: #232136 !important;
+    --toolbar-field-background-color: #2a273f !important;
+    --toolbar-field-color: #e0def4 !important;
+    --search-bar-background: #2a273f !important;
+    --search-bar-focus-background: #2a273f !important;
+    --arrowpanel-background: #232136 !important;
+    --arrowpanel-color: #e0def4 !important;
+    --arrowpanel-border-color: #393552 !important;
+    --lwt-accent-color: #232136 !important;
+    --lwt-text-color: #e0def4 !important;
+    --toolbar-bgcolor: #232136 !important;
+    --toolbar-color: #e0def4 !important;
+    --tabs-toolbar-background-color: #232136 !important;
+    --tab-selected-background: #2a273f !important;
+    --in-content-page-background: #232136 !important;
+    --in-content-page-color: #e0def4 !important;
+    --in-content-box-background: #2a273f !important;
+    --in-content-box-border-color: #393552 !important;
+    --in-content-primary-button-background: #c4a7e7 !important;
+    --in-content-primary-button-text-color: #232136 !important;
+    --in-content-accent-color: #c4a7e7 !important;
+    --in-content-text-color: #e0def4 !important;
+    --in-content-focus-outline-color: #c4a7e7 !important;
+}
+
 :root {
     background-color: #232136 !important;
     color: #e0def4 !important;
@@ -68,18 +153,18 @@ textbox,
 }
 
 button {
-    background: #2a273f !important;
+    background-color: #2a273f !important;
     color: #e0def4 !important;
     border-color: #393552 !important;
 }
 
 button:hover {
-    background: #393552 !important;
+    background-color: #393552 !important;
 }
 
 button.primary,
 button[default="true"] {
-    background: #c4a7e7 !important;
+    background-color: #c4a7e7 !important;
     color: #232136 !important;
 }
 
@@ -90,4 +175,88 @@ button[default="true"] {
 #threadPaneHeaderBar > * {
     background: #232136 !important;
     color: #e0def4 !important;
+}
+
+/* ---- pane headers (2026-09-16): confirmed by the bright-colour method --
+   the folder-pane header row (New Message + Get Messages + more), the
+   Today-pane "Events" header and its New Event button were the last
+   pieces still reading a stale colour after the token block above. */
+#folderPaneHeaderBar {
+    background-color: #232136 !important;
+    color: #e0def4 !important;
+    border-color: #393552 !important;
+}
+#folderPaneHeaderBar button,
+#folderPaneWriteMessage,
+#folderPaneGetMessages,
+#folderPaneMoreButton,
+#todaypane-new-event-button {
+    background-color: #2a283e !important;
+    color: #e0def4 !important;
+    border-color: #393552 !important;
+}
+#folderPaneHeaderBar button:hover,
+#folderPaneWriteMessage:hover,
+#folderPaneGetMessages:hover,
+#folderPaneMoreButton:hover,
+#todaypane-new-event-button:hover {
+    background-color: #44415a !important;
+}
+.sidebar-header,
+#today-pane-header {
+    background-color: #232136 !important;
+    color: #e0def4 !important;
+    border-color: #393552 !important;
+}
+
+/* The 4px strip under the folder-pane header / above the folder tree is
+   containers.css's .sidebar-panel-scroll::after (a scroll-shadow mask
+   painted in var(--sidebar-background)), which kept resolving to the old
+   dark value -- pinned to this theme's sidebar colour. */
+.sidebar-panel-scroll::after {
+    background-color: #232136 !important;
+}
+
+/* ---- context menus / popups (2026-09-16) ----------------------------
+   toolkit's popup.css paints menupopup/panel through ::part(content) with
+   --panel-background-color / --panel-text-color (defaulting to the system
+   Menu / MenuText colours, "color-scheme: light dark"), and draws the
+   native GTK menu look on top via appearance:auto -- so a plain
+   `menupopup { background }` rule never showed. Pin the scheme, the
+   variables, the part, and drop the native appearance. */
+menupopup,
+panel {
+    color-scheme: dark !important;
+    appearance: none !important;
+    --panel-background-color: #232136 !important;
+    --panel-text-color: #e0def4 !important;
+    --panel-border-color: #393552 !important;
+    --arrowpanel-background: #232136 !important;
+    --arrowpanel-color: #e0def4 !important;
+    --arrowpanel-border-color: #393552 !important;
+    background-color: #232136 !important;
+    color: #e0def4 !important;
+}
+menupopup::part(content),
+panel::part(content) {
+    background: #232136 !important;
+    color: #e0def4 !important;
+    border-color: #393552 !important;
+}
+menupopup > menuitem,
+menupopup > menu,
+menupopup > menucaption {
+    color: #e0def4 !important;
+}
+menupopup > menuitem[_moz-menuactive]:not([disabled]),
+menupopup > menu[_moz-menuactive]:not([disabled]) {
+    background-color: #c4a7e7 !important;
+    color: #232136 !important;
+}
+menupopup > menuitem[disabled],
+menupopup > menu[disabled] {
+    opacity: 0.5;
+}
+menuseparator {
+    border-color: #393552 !important;
 }

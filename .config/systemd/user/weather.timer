@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh the waybar weather cache every 15 min
+Documentation=file://%h/.config/hypr/UserScripts/Weather.py
+
+[Timer]
+OnStartupSec=20s
+OnUnitActiveSec=15min
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,53 @@
+{
+    "manifest_version": 2,
+    "name": "Rose Pine Dawn",
+    "version": "1.0.0",
+    "description": "Matches this system's Rose Pine Dawn identity (kitty, waybar, GTK, Kvantum, kdeglobals -- see ~/.dotfiles).",
+    "author": "florian",
+    "applications": {
+        "gecko": {
+            "id": "rose-pine-dawn@florian.theme",
+            "strict_min_version": "78.0"
+        }
+    },
+    "theme": {
+        "colors": {
+            "frame": "#faf4ed",
+            "frame_inactive": "#faf4ed",
+            "button_background_active": "#fffaf3",
+            "button_background_hover": "#fffaf3",
+            "icons": "",
+            "icons_attention": "#b4637a",
+            "popup": "#faf4ed",
+            "popup_border": "#f2e9e1",
+            "popup_highlight": "#907aa9",
+            "popup_highlight_text": "#faf4ed",
+            "popup_text": "#575279",
+            "sidebar": "#fffaf3",
+            "sidebar_border": "#f2e9e1",
+            "sidebar_highlight": "#907aa9",
+            "sidebar_highlight_border": "#907aa9",
+            "sidebar_highlight_text": "#faf4ed",
+            "sidebar_text": "#575279",
+            "tab_background_separator": "rgba(255, 255, 255, 0.06)",
+            "tab_background_text": "#9893a5",
+            "tab_line": "#907aa9",
+            "tab_loading": "#907aa9",
+            "tab_selected": "#fffaf3",
+            "tab_text": "#575279",
+            "toolbar": "#faf4ed",
+            "toolbar_bottom_separator": "#f2e9e1",
+            "toolbar_field": "#fffaf3",
+            "toolbar_field_border": "#f2e9e1",
+            "toolbar_field_border_focus": "#907aa9",
+            "toolbar_field_focus": "#faf4ed",
+            "toolbar_field_highlight": "#907aa9",
+            "toolbar_field_highlight_text": "#faf4ed",
+            "toolbar_field_text": "#575279",
+            "toolbar_field_text_focus": "#575279",
+            "toolbar_text": "#575279",
+            "toolbar_top_separator": "#f2e9e1",
+            "toolbar_vertical_separator": "#f2e9e1"
+        }
+    }
+}

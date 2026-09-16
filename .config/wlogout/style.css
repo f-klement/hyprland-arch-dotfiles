@@ -4,14 +4,16 @@
 /* Was importing ../../.cache/wal/colors-waybar.css (pywal-generated) --
    that file has never existed on this system (pywal has never actually
    run here), so @color2/@color7 below were undefined this whole time and
-   the hover background/glow never rendered. Fixed Tokyo Night colors
-   instead, also replacing the hardcoded Catppuccin text/base colors. */
+   the hover background/glow never rendered. Colours now come from
+   hypr/themes/<theme>/wlogout.css through the colors.css symlink next to
+   this file, re-pointed by scripts/DarkLight.sh (2026-09-16). */
+@import url("colors.css");
 
 window {
     font-family: Fira Code Medium;
     font-size: 16pt;
-    color: #c0caf5; /* Tokyo Night fg */
-    background-color: rgba(26, 27, 38, 0.6); /* Tokyo Night bg */
+    color: @wl-fg;
+    background-color: @wl-bg;
 }
 
 button {
@@ -30,13 +32,13 @@ button:focus {
 }
 
 button:hover {
-    background-color: #7aa2f7; /* Tokyo Night blue */
-    color: #16161e; /* Tokyo Night bg_dark */
+    background-color: @wl-hover-bg;
+    color: @wl-hover-fg;
     background-size: 50%;
     margin: 30px;
     border-radius: 80px;
     transition: all 0.3s cubic-bezier(.55, 0.0, .28, 1.682), box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
-    box-shadow: 0 0 20px rgba(122, 162, 247, 0.6); /* Tokyo Night blue glow */
+    box-shadow: 0 0 20px @wl-glow;
 
 }
 

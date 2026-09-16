@@ -1,0 +1,127 @@
+/* ---- shared tail: Rose Pine palette + bits every proposal needs ---- */
+@define-color base     #191724;
+@define-color surface  #1f1d2e;
+@define-color overlay  #26233a;
+@define-color muted    #6e6a86;
+@define-color subtle   #908caa;
+@define-color text     #e0def4;
+@define-color love     #eb6f92;
+@define-color gold     #f6c177;
+@define-color rose     #ebbcba;
+@define-color pine     #31748f;
+@define-color foam     #9ccfd8;
+@define-color iris     #c4a7e7;
+@define-color hl-low   #21202e;
+@define-color hl-med   #403d52;
+@define-color hl-high  #524f67;
+/* Proposal 4 — "Quiet"
+   A 24px strip that tries to disappear: regular (not bold) weight, one
+   dim colour for everything, no boxes, no pills. Only three things get the
+   full text colour by default -- the active workspace, the clock, the
+   focused window -- and only real state changes (charging, low battery,
+   muted, connected, playing, caffeine on) get an accent colour. */
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: normal;
+    font-size: 93%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+}
+
+window#waybar {
+    background: rgba(25, 23, 36, 0.72);
+    color: @subtle;
+}
+
+tooltip {
+    background: @base;
+    color: @text;
+    border: 1px solid @hl-low;
+    border-radius: 4px;
+}
+
+.modules-left, .modules-center, .modules-right {
+    background: transparent;
+    padding: 0 8px;
+}
+
+/* ---- workspaces: text only, active is just brighter + rose ---- */
+#workspaces button {
+    padding: 0 5px;
+    margin: 0 1px;
+    color: @muted;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    text-shadow: none;
+    transition: color 0.2s ease;
+}
+#workspaces button.active { color: @rose; font-weight: bold; }
+#workspaces button:hover  { color: @text; background: transparent; }
+#workspaces button.urgent { color: @love; }
+
+/* ---- taskbar ---- */
+#taskbar button {
+    padding: 0 4px;
+    margin: 0 1px;
+    color: @muted;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    text-shadow: none;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+#taskbar button.active { color: @text; opacity: 1; }
+#taskbar button:hover  { color: @text; opacity: 1; background: transparent; }
+
+/* ---- everything dim by default ---- */
+#backlight, #backlight-slider, #battery, #bluetooth, #clock, #cpu, #disk,
+#idle_inhibitor, #keyboard-state, #memory, #mode, #mpris, #network,
+#pulseaudio, #pulseaudio-slider, #temperature, #tray, #window, #wireplumber,
+#custom-backlight, #custom-cycle_wall, #custom-keybinds, #custom-keyboard,
+#custom-light_dark, #custom-lock, #custom-menu, #custom-power_vertical,
+#custom-power, #custom-power_mode, #custom-swaync, #custom-updater,
+#custom-cava_mviz, #custom-weather {
+    color: @subtle;
+    background: transparent;
+    padding: 0 5px;
+}
+
+#clock { color: @text; }
+
+/* ---- the only colour: state ---- */
+#idle_inhibitor.activated { color: @gold; }
+#bluetooth.connected      { color: @foam; }
+#mpris.playing            { color: @foam; }
+#battery.charging, #battery.plugged { color: @foam; }
+#battery.warning:not(.charging)  { color: @gold; }
+#battery.critical:not(.charging) { color: @love; }
+#pulseaudio.muted         { color: @muted; }
+#custom-weather.stale     { color: @muted; }
+
+#custom-separator { color: @hl-med; padding: 0; }
+
+/* ---- state classes shared by every proposal ---- */
+/* custom/weather: serving a stale cache (API unreachable) */
+#custom-weather.stale { opacity: 0.6; }
+
+/* DND states: dimmed, not crossed out */
+#custom-swaync.dnd-none,
+#custom-swaync.dnd-notification,
+#custom-swaync.dnd-inhibited-none,
+#custom-swaync.dnd-inhibited-notification { opacity: 0.5; }
+
+#pulseaudio-slider slider,
+#backlight-slider slider {
+    min-width: 0px; min-height: 0px; opacity: 0;
+    background-image: none; border: none; box-shadow: none;
+}
+#pulseaudio-slider trough,
+#backlight-slider trough { min-width: 80px; min-height: 5px; border-radius: 5px; }
+#pulseaudio-slider highlight,
+#backlight-slider highlight { min-height: 10px; border-radius: 5px; }

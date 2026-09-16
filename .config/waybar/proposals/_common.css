@@ -1,0 +1,20 @@
+/* ---- Rosé Pine Moon palette (the "rose-pine" theme state). Was Rosé Pine
+   main (#191724 base) until 2026-09-16; switched to Moon so the bar uses
+   the exact values kitty, GTK, Kvantum, kdeglobals and the panes already
+   use for this identity. Role names are what 1-solid/body.css is written
+   against; every other theme file just swaps this header. ---- */
+@define-color base     #232136;
+@define-color surface  #2a273f;
+@define-color overlay  #393552;
+@define-color muted    #6e6a86;
+@define-color subtle   #908caa;
+@define-color text     #e0def4;
+@define-color love     #eb6f92;
+@define-color gold     #f6c177;
+@define-color rose     #ea9a97;
+@define-color pine     #3e8fb0;
+@define-color foam     #9ccfd8;
+@define-color iris     #c4a7e7;
+@define-color hl-low   #2a283e;
+@define-color hl-med   #44415a;
+@define-color hl-high  #56526e;

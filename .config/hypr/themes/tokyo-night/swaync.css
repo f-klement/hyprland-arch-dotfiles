@@ -1,0 +1,8 @@
+/* Tokyo Night colours for swaync (imported by swaync/style.css through the
+   colors.css symlink that scripts/DarkLight.sh points here) */
+@define-color color1 #bb9af7; /* magenta */
+@define-color color2 #7aa2f7; /* blue */
+@define-color color7 #c0caf5; /* fg */
+@define-color noti-bg rgba(26, 27, 38, 0.85);
+@define-color noti-bg-alt #16161e;
+@define-color text-color-disabled rgba(86, 95, 137, 0.9); /* comment */

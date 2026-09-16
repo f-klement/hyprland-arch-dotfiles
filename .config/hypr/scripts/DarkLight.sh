@@ -1,20 +1,36 @@
 #!/bin/bash
-## Theme toggle (waybar's custom/light_dark module, left-click)
-## Tokyo Night <-> Rose Pine (Moon)
+## Theme rotation (waybar's custom/light_dark module, left-click; also the
+## "Theme" tile in UserScripts/QuickSettings.py)
+## Tokyo Night -> Rosé Pine Moon -> Rosé Pine Dawn -> Tokyo Night ...
 ##
-## Now a full identity switch: waybar, rofi, wallpaper mood, notification
-## tint, GTK3/GTK4 theme+accent, icon theme, Kvantum, and qt5ct/qt6ct
-## color scheme. Rose Pine assets were sourced straight from the official
-## rose-pine GitHub org (github.com/rose-pine/gtk, github.com/rose-pine/
-## kvantum) and installed to ~/.themes, ~/.icons, ~/.config/Kvantum,
-## ~/.config/gtk-4.0 -- no AUR/sudo needed, those ship plain theme files.
-## The one thing intentionally left alone: cursor stays Dracula in both
-## states, by request from earlier in this theming pass.
+## Rewritten 2026-09-16 from a two-way toggle into a rotation: every
+## per-theme value now lives in ~/.config/hypr/themes/<name>/theme.sh (plus
+## that directory's hyprlock.conf / swaync.css / wlogout.css colour files),
+## so adding a fourth theme is a new directory + one entry in THEMES below.
+## The state name is what ~/.cache/.theme_mode stores and what pane.py /
+## QuickSettings.py / settings.lua read; "rose-pine" still means Moon.
+##
+## A full identity switch: waybar, rofi, wallpaper mood, swaync, wlogout,
+## hyprlock, Hyprland window borders, kitty, GTK3/GTK4 theme+accent, icon
+## theme, Kvantum, qt5ct/qt6ct colour scheme, kdeglobals (Plasma colour
+## scheme), Thunderbird userChrome. Moon assets came straight from the
+## official rose-pine GitHub org (github.com/rose-pine/gtk, /kvantum,
+## /kitty) into ~/.themes, ~/.icons, ~/.config/Kvantum, ~/.config/gtk-4.0;
+## Dawn ones the same way (gtk release v2.2.0, kvantum dist, kitty dist),
+## with the hand-made pieces (rofi, qt5ct, Plasma, Thunderbird, gtk-4.0
+## accent, colour files) derived role-for-role from the Moon versions.
+## The one thing intentionally left alone: cursor stays Dracula in every
+## state, by request from earlier in this theming pass.
+##
+## Usage: DarkLight.sh            rotate to the next theme
+##        DarkLight.sh <name>     jump to that theme (tokyo-night | rose-pine | rose-pine-dawn)
+
+THEMES=(tokyo-night rose-pine rose-pine-dawn)
 
 wallpaper_base_path="$HOME/Pictures/wallpapers/Dynamic-Wallpapers"
 dark_wallpapers="$wallpaper_base_path/Dark"
 light_wallpapers="$wallpaper_base_path/Light"
-swaync_style="$HOME/.config/swaync/style.css"
+themes_dir="$HOME/.config/hypr/themes"
 SCRIPTSDIR="$HOME/.config/hypr/scripts"
 notif="$HOME/.config/swaync/images/bell.png"
 state_file="$HOME/.cache/.theme_mode"
@@ -27,71 +43,79 @@ setwallpaper() {
     hyprctl hyprpaper unload all > /dev/null
 }
 
-# Determine next state. Tokyo Night is the default: an empty/missing
-# state_file (fresh install, cache cleared) or anything other than an
-# explicit saved "tokyo-night" resolves to tokyo-night, not rose-pine.
+# Determine the next state. Tokyo Night is the default: an empty/missing
+# state_file (fresh install, cache cleared) or an unknown value resolves to
+# the first entry of THEMES.
 current=$(cat "$state_file" 2>/dev/null)
-if [ "$current" = "tokyo-night" ]; then
-    next="rose-pine"
+if [ -n "$1" ]; then
+    next="$1"
 else
-    next="tokyo-night"
+    next="${THEMES[0]}"
+    for i in "${!THEMES[@]}"; do
+        if [ "${THEMES[$i]}" = "$current" ]; then
+            next="${THEMES[$(( (i + 1) % ${#THEMES[@]} ))]}"
+            break
+        fi
+    done
 fi
-
-if [ "$next" = "tokyo-night" ]; then
-    waybar_style="$HOME/.config/waybar/style/Tokyo-Night.css"
-    rofi_theme="$HOME/.config/rofi/pywal-color/tokyo-night.rasi"
-    kitty_theme="tokyo-night.conf"
-    wallpaper_dir="$dark_wallpapers"
-    noti_bg="rgba(26, 27, 38, 0.85)"
-    noti_bg_alt="#16161e"
-    gtk_theme="Tokyonight-Dark-BL-LB"
-    # BUG FOUND (2026-09-11): "Tela-purple-dark" isn't installed anywhere on
-    # this system (not in ~/.icons, not in /usr/share/icons, not a package) --
-    # every app was silently falling back to its toolkit's default icon set
-    # (Adwaita/breeze) instead, which is very likely what read as "GTK/Qt
-    # apps don't match the theme": window chrome and colors were correct,
-    # but every icon was the wrong theme's. "Tokyonight-Dark" (an actual
-    # installed Suru-based icon set, ~/.icons/Tokyonight-Dark) is what's
-    # really there and is the correct counterpart to gtk_theme above.
-    icon_theme="Tokyonight-Dark"
-    kvantum_theme="Tokyo-Night"
-    qt_color_scheme="Tokyo-Night.conf"
-    gtk4_accent="$HOME/.config/gtk-4.0/tokyo-night-accent.css"
-    kde_color_scheme="TokyoNight"
-    tb_userchrome="$HOME/.dotfiles/.local/share/thunderbird-themes/tokyo-night/userChrome.css"
-    color_scheme="prefer-dark"
-else
-    waybar_style="$HOME/.config/waybar/style/Rose Pine.css"
-    rofi_theme="$HOME/.config/rofi/pywal-color/rose-pine.rasi"
-    kitty_theme="rose-pine-moon.conf"
-    wallpaper_dir="$light_wallpapers"
-    noti_bg="rgba(38, 35, 58, 0.85)"
-    noti_bg_alt="#26233a"
-    gtk_theme="oomox-rose-pine-moon"
-    icon_theme="oomox-rose-pine-moon"
-    kvantum_theme="rose-pine-moon-pine"
-    qt_color_scheme="Rose-Pine-Moon.conf"
-    gtk4_accent="$HOME/.config/gtk-4.0/rose-pine-moon-accent.css"
-    kde_color_scheme="RosePineMoon"
-    tb_userchrome="$HOME/.dotfiles/.local/share/thunderbird-themes/rose-pine-moon/userChrome.css"
-    color_scheme="prefer-dark" # both palettes are dark; there's no Rose Pine Dawn (light) asset installed
+theme_dir="$themes_dir/$next"
+if [ ! -f "$theme_dir/theme.sh" ]; then
+    notify-send -u critical -i "$notif" "Theme: unknown '$next'" "no $theme_dir/theme.sh"
+    exit 1
 fi
+# shellcheck source=/dev/null
+. "$theme_dir/theme.sh"
 
 # waybar/style.css: was `ln -sf` (symlink-swap). Changed to a content copy
-# (2026-09-11) -- waybar/config now has "reload_style_on_change": true,
-# which hot-reloads the bar without a restart (verified via
-# `waybar -l debug`: it watches the *resolved* target file, so swapping
-# which file the symlink points to was invisible to it -- neither file's
-# content ever changed. Overwriting style.css's own content in place is
-# what it actually detects, confirmed by "Reloading style, file changed"
-# in the debug log). This is also why the idle_inhibitor ("caffeine"
-# toggle) survives a theme switch now: no waybar restart means no
-# idle_inhibitor module getting recreated from scratch. See below for the
-# matching change to the final refresh (skips waybar entirely now).
-cp "$waybar_style" "$HOME/.config/waybar/style.css"
+# (2026-09-11) -- waybar/config has "reload_style_on_change": true, and
+# waybar watches the *resolved* target file, so swapping the symlink was
+# never detected; overwriting style.css's content is what it reacts to
+# ("Reloading style, file changed" in `waybar -l debug`). Written to a temp
+# file and mv'd into place so the watcher never sees a half-written file.
+# No waybar restart means the idle_inhibitor ("caffeine") survives a theme
+# switch. (The two theme stylesheets share one body -- only the palette
+# header differs -- so the bar's geometry is identical in every state; see
+# waybar/proposals/README.md.)
+cp "$waybar_style" "$HOME/.config/waybar/style.css.tmp" && mv "$HOME/.config/waybar/style.css.tmp" "$HOME/.config/waybar/style.css"
 ln -sf "$rofi_theme" "$HOME/.config/rofi/pywal-color/pywal-theme.rasi"
 ln -sf "$kitty_theme" "$HOME/.dotfiles/.config/kitty/theme.conf"
 ln -sf "$gtk4_accent" "$HOME/.config/gtk-4.0/gtk.css"
+
+# Per-theme colour files (2026-09-16): swaync/style.css and
+# wlogout/style.css @import a colors.css symlink next to them, hyprlock.conf
+# `source`s hyprlock-colors.conf -- all three re-pointed here.
+ln -sfn "$theme_dir/swaync.css"   "$HOME/.config/swaync/colors.css"
+ln -sfn "$theme_dir/wlogout.css"  "$HOME/.config/wlogout/colors.css"
+ln -sfn "$theme_dir/hyprlock.conf" "$HOME/.config/hypr/hyprlock-colors.conf"
+
+# Hyprland window borders: settings.lua reads border_active/border_inactive
+# from theme.sh on (re)load; this applies them to the running session.
+# (`hyprctl keyword` is refused under the Lua config -- "keyword can't work
+# with non-legacy parsers. Use eval." -- so it goes through hl.config.)
+hyprctl eval "hl.config({ general = { col = { active_border = \"$border_active\", inactive_border = \"$border_inactive\" } } })" > /dev/null
+
+# kitty reloads its config on SIGUSR1, so open terminals follow the switch.
+pkill -USR1 -x kitty 2>/dev/null
+
+# Claude Code keeps its UI theme ("dark"/"light"/...-daltonized/-ansi) in
+# ~/.claude.json alongside a lot of other state, so edit just that key,
+# atomically (Claude Code itself rewrites the file often). Sessions started
+# after the switch pick it up; a running one needs /config (or a restart).
+if [ -n "$claude_theme" ] && [ -f "$HOME/.claude.json" ]; then
+    python3 - "$claude_theme" <<'PY'
+import json, os, sys, tempfile
+p = os.path.expanduser("~/.claude.json")
+try:
+    with open(p) as f: d = json.load(f)
+except (OSError, ValueError):
+    sys.exit(0)
+if d.get("theme") != sys.argv[1]:
+    d["theme"] = sys.argv[1]
+    fd, tmp = tempfile.mkstemp(dir=os.path.dirname(p), prefix=".claude.json.")
+    with os.fdopen(fd, "w") as f: json.dump(d, f, indent=2)
+    os.chmod(tmp, 0o600); os.replace(tmp, p)
+PY
+fi
 
 # GTK (both the gsettings/dconf path GTK4+libadwaita apps read via the xdg
 # desktop portal, and gtk-3.0/settings.ini, which GTK3 apps read directly
@@ -102,6 +126,11 @@ gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
 gsettings set org.gnome.desktop.interface icon-theme "$icon_theme"
 sed -i "s/^gtk-theme-name=.*/gtk-theme-name=$gtk_theme/" "$HOME/.config/gtk-3.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
 sed -i "s/^gtk-icon-theme-name=.*/gtk-icon-theme-name=$icon_theme/" "$HOME/.config/gtk-3.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
+# GTK3 apps pick the dark variant of a theme from this key; the Dawn theme
+# ships no dark variant, so it stays plain there, but Tokyo Night / Moon
+# want it on.
+if [ "$color_scheme" = "prefer-dark" ]; then dark=true; else dark=false; fi
+sed -i "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$dark/" "$HOME/.config/gtk-3.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
 
 # Kvantum + qt5ct/qt6ct
 kvantummanager --set "$kvantum_theme"
@@ -114,58 +143,34 @@ sed -i "s/^icon_theme=.*/icon_theme=$icon_theme/" "$HOME/.config/qt5ct/qt5ct.con
 # KColorScheme, which is completely separate from qt6ct/Kvantum (Kvantum
 # controls widget *style* -- button shapes, scrollbars, menu chrome --
 # kdeglobals controls the actual color *palette* KDE-aware widgets use).
-# kdeglobals had never been touched by any of this system's theming: it
-# was still stock Breeze Dark defaults, with an [Icons] Theme= pointing at
-# the same phantom "Tela-purple-dark" fixed above for everything else --
-# very likely the main reason Dolphin specifically looked out of place
-# even with Kvantum/qt6ct otherwise correct. plasma-apply-colorscheme is
-# the proper tool (not hand-editing kdeglobals with sed): it applies every
-# relevant kdeglobals section from one of the two schemes in
-# ~/.local/share/color-schemes/ (TokyoNight.colors, RosePineMoon.colors --
-# built to match this system's established palette, same hex values as
-# kitty/gtk-4.0's accent files) and notifies running KDE apps live via
-# KGlobalSettings, no restart needed for most of them.
+# plasma-apply-colorscheme is the proper tool (not hand-editing kdeglobals
+# with sed): it applies every relevant kdeglobals section from one of the
+# schemes in ~/.local/share/color-schemes/ (TokyoNight, RosePineMoon,
+# RosePineDawn -- built to match this system's established palette, same
+# hex values as kitty/gtk-4.0's accent files) and notifies running KDE
+# apps live via KGlobalSettings, no restart needed for most of them.
 plasma-apply-colorscheme "$kde_color_scheme" >/dev/null 2>&1
 kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
 
-# Still wasn't enough on its own -- Dolphin's file list kept rendering an
-# unstyled light-gray row background (found via screenshot + pixel
-# sampling) despite kdeglobals now being correct. Root cause turned out to
-# be QT_QPA_PLATFORMTHEME=qt6ct itself: it's a solid generic Qt platform
-# theme but doesn't fully replicate the native KDEPlasmaPlatformTheme6
-# plugin's KColorScheme integration that KDE Frameworks widgets (like
-# Dolphin's KItemListView) actually read from. Dolphin is now launched via
-# scripts/KdeApp.sh, which sets QT_QPA_PLATFORMTHEME=kde instead -- but
-# that plugin looks at kdeglobals' [KDE] widgetStyle for which widget
-# *style* to use, and with none set it fell back to Breeze instead of
-# Kvantum. This is the other half: without it, Dolphin would have the
-# right colors but the wrong (unstyled Breeze) widget shapes.
+# Dolphin's file list kept rendering an unstyled light-gray row background
+# despite kdeglobals being correct. Root cause: QT_QPA_PLATFORMTHEME=qt6ct
+# doesn't fully replicate the native KDEPlasmaPlatformTheme6 plugin's
+# KColorScheme integration KDE Frameworks widgets read from. Dolphin is
+# launched via scripts/KdeApp.sh (QT_QPA_PLATFORMTHEME=kde) -- but that
+# plugin looks at kdeglobals' [KDE] widgetStyle for the widget *style*, and
+# with none set fell back to Breeze instead of Kvantum. This is the other
+# half.
 kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle kvantum
 
-# Thunderbird (2026-09-11): was still on "Purple Praline", a light AMO
-# theme, completely unrelated to the rest of this desktop's identity.
-# Tried building a proper WebExtension theme first (manifest.json in the
-# same directory as the userChrome.css files linked below) -- got it
-# fully, correctly installed and active per Thunderbird's own addon
-# database (extensions.json: active=true, userDisabled=false), confirmed
-# across multiple clean restarts and a startupCache wipe, and it still
-# never actually rendered. Left installed but inactive rather than
-# fighting it further. userChrome.css (toolkit.legacyUserProfileCustomizations
-# .stylesheets=true, set once in the profile's user.js) is what's real --
-# found the right selectors by launching Thunderbird repeatedly with
-# bright throwaway colors and screenshotting to see what lit up, same
-# approach as everything else fixed by actually looking this session.
-# Requires closing Thunderbird first -- it doesn't watch userChrome.css
-# for changes the way waybar now does for style.css.
+# Thunderbird (2026-09-11): a proper WebExtension theme (manifest.json next
+# to the userChrome.css files) installed fine but never rendered; the
+# userChrome.css (toolkit.legacyUserProfileCustomizations.stylesheets=true
+# in the profile's user.js) is what's real. Requires closing Thunderbird
+# first -- it doesn't watch userChrome.css for changes.
 tb_profile="$HOME/.thunderbird/uwfxwrvr.default-release"
 if [ -d "$tb_profile/chrome" ]; then
     ln -sf "$tb_userchrome" "$tb_profile/chrome/userChrome.css"
 fi
-
-# Notification tint (both palettes are dark-ish, so this is a color swap,
-# not a real light/dark contrast switch)
-sed -i "/@define-color noti-bg/s/rgba([0-9]*,\s*[0-9]*,\s*[0-9]*,\s*[0-9.]*);/${noti_bg};/" "${swaync_style}"
-sed -i "/@define-color noti-bg-alt/s/#.*;/${noti_bg_alt};/" "${swaync_style}"
 
 next_wallpaper="$(find "${wallpaper_dir}" -type f \( -iname "*.jpg" -o -iname "*.png" \) -print0 | shuf -n1 -z | xargs -0)"
 if [ -n "$next_wallpaper" ]; then
@@ -188,7 +193,10 @@ sleep 0.3
 pkill swaync 2>/dev/null
 sleep 0.5
 swaync > /dev/null 2>&1 &
+# wait until the new swaync owns org.freedesktop.Notifications, otherwise
+# the notify-send below races it and fails with NameHasNoOwner
+for _ in $(seq 1 30); do swaync-client --count > /dev/null 2>&1 && break; sleep 0.1; done
 
-notify-send -u normal -i "$notif" "Theme: $next"
+notify-send -u normal -i "$notif" "Theme: $label"
 
 exit 0

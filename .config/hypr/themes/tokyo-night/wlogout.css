@@ -1,0 +1,7 @@
+/* Tokyo Night colours for wlogout (imported by wlogout/style.css through
+   the colors.css symlink that scripts/DarkLight.sh points here) */
+@define-color wl-fg #c0caf5;                      /* fg */
+@define-color wl-bg rgba(26, 27, 38, 0.6);        /* bg */
+@define-color wl-hover-bg #7aa2f7;                /* blue */
+@define-color wl-hover-fg #16161e;                /* bg_dark */
+@define-color wl-glow rgba(122, 162, 247, 0.6);   /* blue glow */

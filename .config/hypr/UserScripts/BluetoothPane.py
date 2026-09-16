@@ -57,7 +57,8 @@ def devices():
     return devs
 
 
-def pane_main():
+def make_pane():
+    """(Pane, build) -- run standalone via pane_main(), or hosted by hyprpanes.py."""
     css = """
     .hero-icon { font-size: 44px; }
     .dev-icon { font-size: 22px; min-width: 30px; }
@@ -159,6 +160,11 @@ def pane_main():
         foot.append(pn.button("blueman", lambda: (spawn(["blueman-manager"]), pn.close())))
         root.append(foot)
 
+    return pn, build
+
+
+def pane_main():
+    pn, build = make_pane()
     pn.run(build)
 
 

@@ -1,0 +1,88 @@
+
+// ### DEFAULT Top -Laptop ### //
+{
+    "include": "~/.config/waybar/modules",
+    // Added (2026-09-11): waybar can watch style.css itself for changes
+    // and hot-reload without a restart. DarkLight.sh's theme toggle only
+    // ever swaps style.css's symlink target (never config/modules), so
+    // this should mean it no longer needs to kill+relaunch waybar at all --
+    // see scripts/DarkLight.sh for the other half of that fix. Restarting
+    // waybar was also what reset the idle_inhibitor ("caffeine" toggle) on
+    // every theme switch, same root cause as the wallpaper-rotation bug
+    // fixed earlier this session.
+    "reload_style_on_change": true,
+    "layer": "top",
+    //"mode": "dock",
+    "output":["eDP-1","Dell Inc. DELL P2319H 9K41KM3","Samsung Electric Company LF24T450G HNMX502934","Samsung Electric Company LF24T450G HNMX502924"],
+    "height": 28,
+    "exclusive": true,
+    "passthrough": false,
+    "position": "top",
+    "spacing": 0,
+    "fixed-center": true,
+    "ipc": true,
+    "margin-top": 1,
+    "margin-left": 3,
+    "margin-right": 3,
+    
+    "modules-left": [
+     "hyprland/workspaces#roman",
+     "custom/separator#dot-line",
+     "wlr/taskbar",
+     //"cpu",
+     //"custom/separator#dot-line", 
+     //"temperature",
+     //"custom/separator#dot-line", 
+     //"memory",
+     //"custom/separator#dot-line",
+     "custom/weather"
+     //"custom/separator#blank_3",
+     ],
+    
+    "modules-center": [
+     "custom/menu",
+     "custom/separator#dot-line",
+     "idle_inhibitor", 
+     "custom/separator#dot-line",
+     "clock",
+     "custom/separator#dot-line",
+     "custom/light_dark",
+     "custom/separator#dot-line",
+     // custom/power_mode dropped (2026-09-15): everything it did (auto /
+     // performance / power-saver blur mode, TCC profile override, opening
+     // TUXEDO Control Center) is in the battery module's power pane.
+     "custom/lock"
+     //],
+     //"custom/separator#dot-line"
+     //"custom/keybinds", 
+     ], 
+    
+    "modules-right": [
+     //"network#speed",
+     //"custom/separator#dot-line",
+     "custom/swaync",
+     "tray",
+     "mpris", 
+     //"custom/separator#dot-line",
+     // Reverted (2026-09-11): back to nm-applet as the sole network
+     // indicator/menu -- its own native dropdown (icons, signal bars,
+     // submenus) beat the custom rofi menu built to replace it, and that
+     // was worth accepting its tray icon back for. See autostart.lua.
+     //"network",
+     "bluetooth",
+     "custom/separator#dot-line", 
+     "battery",
+     "custom/separator#dot-line", 
+     // backlight + pulseaudio#microphone dropped (2026-09-15): brightness
+     // and mic live in the quick-settings pane behind "pulseaudio" now, and
+     // the mic mute state is shown inside that module's format.
+     "pulseaudio",
+     //"custom/separator#dot-line",
+     //"keyboard-state",
+     "custom/separator#dot-line",
+     //"custom/keyboard",
+     //"custom/separator#dot-line",
+     "custom/power"
+     ],
+    }
+    
