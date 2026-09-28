@@ -5,7 +5,7 @@ label="Tokyo Night"
 waybar_style="$HOME/.config/waybar/style/Tokyo-Night.css"
 rofi_theme="$HOME/.config/rofi/pywal-color/tokyo-night.rasi"
 kitty_theme="tokyo-night.conf"
-wallpaper_dir="$dark_wallpapers"
+wallpaper_dirs=("$dark_wallpapers")
 gtk_theme="Tokyonight-Dark-BL-LB"
 # "Tokyonight-Dark" is the icon set actually installed (~/.icons); see the
 # 2026-09-11 note in initial-boot.sh for the "Tela-purple-dark" bug it replaced.

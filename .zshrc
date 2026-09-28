@@ -1,6 +1,20 @@
 # ~/.zshrc
 # Sourced for INTERACTIVE shells. Use for aliases, functions, and tool init.
 
+# --- opencode free provider keys --------------------------------------------
+# Keys live in ~/.config/opencode/providers.env (chmod 600, not in dotfiles).
+# opencode auto-detects a provider from its env var, so empty ones are unset
+# to keep unconfigured providers from showing up as available.
+if [[ -r "$HOME/.config/opencode/providers.env" ]]; then
+    source "$HOME/.config/opencode/providers.env"
+    for _oc_var in NVIDIA_API_KEY ZHIPU_API_KEY MISTRAL_API_KEY \
+                   OPENROUTER_API_KEY GEMINI_API_KEY \
+                   GOOGLE_GENERATIVE_AI_API_KEY GROQ_API_KEY; do
+        [[ -z "${(P)_oc_var}" ]] && unset "$_oc_var"
+    done
+    unset _oc_var
+fi
+
 # --- Original Zsh config (from zsh-newuser-install) ---
 # Use the $HOME variable for portability
 zstyle :compinstall filename "$HOME/.zshrc"
@@ -115,6 +129,9 @@ eval "$(zoxide init --cmd cd zsh)"
 # This MUST be last to ensure it controls the prompt.
 eval "$(starship init zsh)"
 
+
+source <(kubectl completion zsh)
+
 work() {
     local vm=debian-work uri=qemu:///system
     case "$1" in
@@ -126,3 +143,12 @@ work() {
             ;;
     esac
 }
+
+export PATH=$PATH:$HOME/.local/opt/go/bin:$HOME/go/bin
+alias reload='source ~/.zshrc'
+
+alias worldbanc='/Storage/Projects/boot_dev_courses/linux/worldbanc/private/bin/worldbanc.sh'
+
+
+# Go toolchain's own GOPATH/bin (go install puts binaries here, e.g. bootdev)
+export PATH="$HOME/go/bin:$PATH"

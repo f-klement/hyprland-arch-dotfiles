@@ -1,23 +1,24 @@
-/* Rose Pine Dawn -- "Solid" layout, light (2026-09-16), see proposals/README.md */
-/* ---- Rose Pine Dawn: the official light variant of Rose Pine, same role
-   names as the Moon header (proposals/_common.css), so the bar's rose/foam/
-   iris accents keep their meaning across the dark<->light switch. Nothing
-   else on the desktop has a Dawn asset yet (GTK/icons/kvantum/rofi/kitty). */
-@define-color base     #faf4ed;
-@define-color surface  #fffaf3;
-@define-color overlay  #f2e9e1;
-@define-color muted    #9893a5;
-@define-color subtle   #797593;
-@define-color text     #575279;
-@define-color love     #b4637a;
-@define-color gold     #ea9d34;
-@define-color rose     #d7827e;
-@define-color pine     #286983;
-@define-color foam     #56949f;
-@define-color iris     #907aa9;
-@define-color hl-low   #f4ede8;
-@define-color hl-med   #dfdad9;
-@define-color hl-high  #cecacd;
+/* Rose Pine (Moon) -- "Solid" layout (2026-09-16), see proposals/README.md */
+/* ---- Rosé Pine Moon palette (the "rose-pine" theme state). Was Rosé Pine
+   main (#191724 base) until 2026-09-16; switched to Moon so the bar uses
+   the exact values kitty, GTK, Kvantum, kdeglobals and the panes already
+   use for this identity. Role names are what 1-solid/body.css is written
+   against; every other theme file just swaps this header. ---- */
+@define-color base     #232136;
+@define-color surface  #2a273f;
+@define-color overlay  #393552;
+@define-color muted    #6e6a86;
+@define-color subtle   #908caa;
+@define-color text     #e0def4;
+@define-color love     #eb6f92;
+@define-color gold     #f6c177;
+@define-color rose     #ea9a97;
+@define-color pine     #3e8fb0;
+@define-color foam     #9ccfd8;
+@define-color iris     #c4a7e7;
+@define-color hl-low   #2a283e;
+@define-color hl-med   #44415a;
+@define-color hl-high  #56526e;
 /* Proposal 1 — "Solid"
    One continuous panel across the whole top edge, Rose Pine base colour,
    a 1px hairline under it. No pills, no rounded corners. Workspaces and
@@ -143,6 +144,17 @@ tooltip {
     color: @hl-high;
     padding: 0 2px;
 }
+
+/* tray items (2026-09-16): waybar recolours "-symbolic" tray icons with the
+   item's *own* style context, and does the first load before the item is
+   packed into #tray -- at that moment `#tray { color }` isn't inherited yet
+   and the pixbuf bakes in the GTK theme's default fg (white on this light
+   bar). A screen-level rule does reach an unparented widget, so name the
+   item directly: a bare GtkEventBox (css node "widget") carrying waybar's
+   SNI status class. Needed for radiotray-ng's icon (~/.local/share/icons/
+   hicolor/scalable/apps/radiotray-custom-*-symbolic.svg); nm-applet gets
+   away without it because it re-sends its icon on every signal change. */
+widget.active, widget.passive, widget.needs-attention { color: @text; }
 
 /* ---- state classes shared by every proposal ---- */
 /* custom/weather: serving a stale cache (API unreachable) */

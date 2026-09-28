@@ -60,6 +60,7 @@ gnome-system-monitor
 gptfdisk
 grim
 grub
+grub-btrfs
 gsfonts
 gst-libav
 gst-plugin-pipewire
@@ -81,6 +82,7 @@ hyprpolkitagent
 hyprsunset
 imagemagick
 inetutils
+inotify-tools
 intel-media-driver
 intel-ucode
 iptables
@@ -196,6 +198,7 @@ sdl_ttf
 signon-kwallet-extension
 sl
 slurp
+snap-pac
 snapper
 solaar
 spectacle

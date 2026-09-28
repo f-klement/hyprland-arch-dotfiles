@@ -144,6 +144,17 @@ tooltip {
     padding: 0 2px;
 }
 
+/* tray items (2026-09-16): waybar recolours "-symbolic" tray icons with the
+   item's *own* style context, and does the first load before the item is
+   packed into #tray -- at that moment `#tray { color }` isn't inherited yet
+   and the pixbuf bakes in the GTK theme's default fg (white on this light
+   bar). A screen-level rule does reach an unparented widget, so name the
+   item directly: a bare GtkEventBox (css node "widget") carrying waybar's
+   SNI status class. Needed for radiotray-ng's icon (~/.local/share/icons/
+   hicolor/scalable/apps/radiotray-custom-*-symbolic.svg); nm-applet gets
+   away without it because it re-sends its icon on every signal change. */
+widget.active, widget.passive, widget.needs-attention { color: @text; }
+
 /* ---- state classes shared by every proposal ---- */
 /* custom/weather: serving a stale cache (API unreachable) */
 #custom-weather.stale { opacity: 0.6; }

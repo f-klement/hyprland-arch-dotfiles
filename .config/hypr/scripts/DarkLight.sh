@@ -30,6 +30,10 @@ THEMES=(tokyo-night rose-pine rose-pine-dawn)
 wallpaper_base_path="$HOME/Pictures/wallpapers/Dynamic-Wallpapers"
 dark_wallpapers="$wallpaper_base_path/Dark"
 light_wallpapers="$wallpaper_base_path/Light"
+# curated per-theme set (2026-09-16), listed by the Rosé Pine theme.sh files.
+# theme.sh sets wallpaper_dirs=(...) -- one or more of these; WallpaperRandom.sh
+# defines the same three variables and reads the same array.
+rose_pine_wallpapers="$HOME/Pictures/wallpapers/rose-pine"
 themes_dir="$HOME/.config/hypr/themes"
 SCRIPTSDIR="$HOME/.config/hypr/scripts"
 notif="$HOME/.config/swaync/images/bell.png"
@@ -138,6 +142,16 @@ sed -i "s|^color_scheme_path=.*$|color_scheme_path=$HOME/.config/qt5ct/colors/$q
 sed -i "s|^color_scheme_path=.*$|color_scheme_path=$HOME/.config/qt6ct/colors/$qt_color_scheme|" "$HOME/.config/qt6ct/qt6ct.conf"
 sed -i "s/^icon_theme=.*/icon_theme=$icon_theme/" "$HOME/.config/qt5ct/qt5ct.conf" "$HOME/.config/qt6ct/qt6ct.conf"
 
+# hyprpolkitagent (2026-09-16): the polkit password dialog is a Qt6/QML
+# window whose colours come from SystemPalette, i.e. the qt6ct palette Qt
+# reads once at process start. The agent is a long-lived systemd user
+# service started at login, so without this it keeps painting the palette
+# of whatever theme was active at login (seen: still Moon/Tokyo Night
+# after switching to Dawn). Restart is instant and harmless -- polkit
+# just re-registers the agent; nothing is lost unless a prompt is open
+# at this exact moment.
+systemctl --user restart hyprpolkitagent.service 2>/dev/null
+
 # KDE Frameworks apps (Dolphin, Ark, systemsettings, ...) -- added
 # (2026-09-11). These read ~/.config/kdeglobals for their color scheme via
 # KColorScheme, which is completely separate from qt6ct/Kvantum (Kvantum
@@ -172,7 +186,7 @@ if [ -d "$tb_profile/chrome" ]; then
     ln -sf "$tb_userchrome" "$tb_profile/chrome/userChrome.css"
 fi
 
-next_wallpaper="$(find "${wallpaper_dir}" -type f \( -iname "*.jpg" -o -iname "*.png" \) -print0 | shuf -n1 -z | xargs -0)"
+next_wallpaper="$(find "${wallpaper_dirs[@]}" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -print0 2>/dev/null | shuf -n1 -z | xargs -0)"
 if [ -n "$next_wallpaper" ]; then
     setwallpaper "${next_wallpaper}"
 fi
@@ -196,6 +210,25 @@ swaync > /dev/null 2>&1 &
 # wait until the new swaync owns org.freedesktop.Notifications, otherwise
 # the notify-send below races it and fails with NameHasNoOwner
 for _ in $(seq 1 30); do swaync-client --count > /dev/null 2>&1 && break; sleep 0.1; done
+
+# radiotray-ng (2026-09-16): its tray icon is a -symbolic SVG that waybar
+# recolours with the bar's CSS text colour -- but only when the item
+# (re)sends its icon, and radiotray-ng does that on play/stop alone, so
+# after the style swap above it would keep the old theme's colour. Nudge
+# it: a playing station gets a stop/play round-trip (a ~1 s gap, keeps the
+# sleep timer etc.), a stopped one is simply restarted.
+if pgrep -x radiotray-ng > /dev/null; then
+    rtng="busctl --user --timeout=3 call com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng"
+    if $rtng get_player_state 2>/dev/null | grep -q '\\"state\\" : \\"\(playing\|buffering\|connecting\)\\"'; then
+        $rtng stop > /dev/null 2>&1
+        sleep 0.3
+        $rtng play > /dev/null 2>&1
+    else
+        pkill -x radiotray-ng
+        sleep 0.3
+        setsid radiotray-ng > /dev/null 2>&1 &
+    fi
+fi
 
 notify-send -u normal -i "$notif" "Theme: $label"
 

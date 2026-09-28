@@ -42,7 +42,8 @@ INTERVAL=1800
 # place instead of two out-of-sync copies, and both the initial paint and
 # every rotation go through it.
 #
-# NOTE: WallpaperRandom.sh always reads from its own hardcoded
+# NOTE: WallpaperRandom.sh always reads from its own hardcoded (since
+# 2026-09-16 theme-aware: the active theme's Dark/Light mood subdir of)
 # $HOME/Pictures/wallpapers, not from $1 -- so as long as this script is
 # only ever invoked with that same directory (true today, see
 # autostart.lua), nothing changes. Pass a different directory and this

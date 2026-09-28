@@ -8,6 +8,8 @@
            NightlightToggle.sh), blur (PowerModeCommon.sh's apply_blur_on/off),
            Wi-Fi (nmcli radio), Bluetooth (BluetoothToggle.sh), game mode
            (GameMode.sh: animations/gaps off)
+  footer   wallpaper picker (WallpaperSelect.sh), random wallpaper
+           (WallpaperRandom.sh), pavucontrol
 
 Before this (2026-09-15) these were scattered across unrelated modules:
 nightlight on dark/light's right-click, blur on the battery's middle-click,
@@ -228,6 +230,10 @@ def make_pane():
         foot = pn.box(spacing=8, cls="footer")
         foot.append(L("", hexpand=True))
         foot.append(pn.button("Wallpaper", lambda: (spawn([os.path.expanduser("~/.config/hypr/UserScripts/WallpaperSelect.sh")]), pn.close())))
+        # same script as CTRL+ALT+W / the 30-min auto-change loop (picks from
+        # the whole wallpapers tree, not the theme's Dark/Light subset).
+        # Pane stays open so you can re-roll until one sticks.
+        foot.append(pn.button("Random wallpaper", lambda: spawn([os.path.expanduser("~/.config/hypr/UserScripts/WallpaperRandom.sh")])))
         foot.append(pn.button("pavucontrol", lambda: (spawn(["pavucontrol"]), pn.close())))
         root.append(foot)
 

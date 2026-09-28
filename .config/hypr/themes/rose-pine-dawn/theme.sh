@@ -9,7 +9,8 @@ label="Rosé Pine Dawn"
 waybar_style="$HOME/.config/waybar/style/Rose Pine Dawn.css"
 rofi_theme="$HOME/.config/rofi/pywal-color/rose-pine-dawn.rasi"
 kitty_theme="rose-pine-dawn.conf"
-wallpaper_dir="$light_wallpapers"
+# + the curated rose-pine set (2026-09-16), shared with Moon
+wallpaper_dirs=("$light_wallpapers" "$rose_pine_wallpapers")
 gtk_theme="rose-pine-dawn-gtk"
 icon_theme="rose-pine-dawn-icons"
 kvantum_theme="rose-pine-dawn-pine"

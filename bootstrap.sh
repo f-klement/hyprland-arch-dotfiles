@@ -79,6 +79,21 @@ fi
 sudo cp vconsole.conf /etc/vconsole.conf
 sudo cp 00-keyboard.conf /etc/X11/xorg.conf.d/
 
+# Automatic btrfs snapshots around every pacman transaction (snap-pac hooks
+# into snapper), plus grub-btrfs so snapshots show up as bootable GRUB
+# entries for easy rollback. Only makes sense if / is actually on btrfs --
+# a no-op otherwise so this stays safe to run on non-btrfs setups.
+# snap-pac, grub-btrfs and inotify-tools are pulled in via pkglist.txt above.
+if [ "$(findmnt -no FSTYPE /)" = "btrfs" ]; then
+    if ! snapper list-configs 2>/dev/null | grep -q "^root "; then
+        sudo snapper -c root create-config /
+        sudo snapper -c root set-config "ALLOW_USERS=$USER"
+    fi
+    sudo systemctl enable --now grub-btrfsd.service
+    sudo systemctl enable --now snapper-cleanup.timer snapper-timeline.timer
+else
+    echo "/ is not btrfs -- skipping snapper/grub-btrfs setup"
+fi
 
 echo "Migration complete! \n Use stow . to symlink the dotfiles once you are settled in"
  

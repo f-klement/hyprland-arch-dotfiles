@@ -42,8 +42,25 @@ float_rule("float-wine",              "wine")
 float_rule("float-proton",            "proton")
 float_rule("float-bottles",           "bottles")
 float_rule("float-laptop-mode-tool",  "laptop-mode-tool")
+float_rule("float-bootdevticker",     "dev\\.bootdevbot\\.Ticker")
 
 hl.window_rule({ name = "pavucontrol-center", match = { class = "^(pavucontrol)$" }, center = true })
+
+-- boot.dev scraper ticker (~/Storage/Projects/boot_dev_courses/scraper-ticker):
+-- a narrow GTK settings-style window, not something meant to fill a tile -
+-- it was inheriting whatever huge size its tile happened to be (even once
+-- floated), leaving big dead margins either side of its actual content.
+-- Give it a fixed, content-sized floating geometry instead.
+hl.window_rule({
+    name  = "size-bootdevticker",
+    match = { class = "^(dev\\.bootdevbot\\.Ticker)$" },
+    size  = "420 620",
+})
+hl.window_rule({
+    name  = "center-bootdevticker",
+    match = { class = "^(dev\\.bootdevbot\\.Ticker)$" },
+    center = true,
+})
 
 hl.window_rule({ name = "gamescope-noblur",     match = { class = "gamescope" }, no_blur = true })
 hl.window_rule({ name = "gamescope-fullscreen", match = { class = "gamescope" }, fullscreen = true })

@@ -5,7 +5,32 @@
 wallDIR="$HOME/Pictures/wallpapers"
 scriptsDir="$HOME/.config/hypr/scripts"
 
-PICS=($(find ${wallDIR} -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" \)))
+# Theme-aware (2026-09-16): pick from the active theme's directories --
+# wallpaper_dirs=(...) in its theme.sh, the same array DarkLight.sh uses:
+# the Dynamic-Wallpapers/Dark or /Light mood dir, plus the curated
+# rose-pine/ set for both Rosé Pine themes -- so a light theme doesn't get
+# a dark wallpaper every third roll. Falls back to the whole tree when the
+# state file / theme dir is missing or the dirs are empty. Applies to
+# CTRL+ALT+W, the 30-min WallpaperAutoChange.sh loop and the Quick
+# Settings "Random wallpaper" button alike.
+wallpaper_base_path="$wallDIR/Dynamic-Wallpapers"
+dark_wallpapers="$wallpaper_base_path/Dark"
+light_wallpapers="$wallpaper_base_path/Light"
+rose_pine_wallpapers="$wallDIR/rose-pine"
+wallpaper_dirs=()
+theme_sh="$HOME/.config/hypr/themes/$(cat "$HOME/.cache/.theme_mode" 2>/dev/null)/theme.sh"
+if [ -f "$theme_sh" ]; then
+    # shellcheck source=/dev/null
+    . "$theme_sh"
+fi
+if [ ${#wallpaper_dirs[@]} -eq 0 ]; then
+    wallpaper_dirs=("$wallDIR")
+fi
+
+PICS=($(find "${wallpaper_dirs[@]}" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" \) 2>/dev/null))
+if [ ${#PICS[@]} -eq 0 ]; then
+    PICS=($(find "${wallDIR}" -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" \)))
+fi
 RANDOMPICS=${PICS[ $RANDOM % ${#PICS[@]} ]}
 
 

@@ -7,7 +7,8 @@ rofi_theme="$HOME/.config/rofi/pywal-color/rose-pine.rasi"
 kitty_theme="rose-pine-moon.conf"
 # Was $light_wallpapers while this was the "other" theme of a two-way toggle;
 # with a real light theme in the rotation the dark themes share the Dark dir.
-wallpaper_dir="$dark_wallpapers"
+# + the curated rose-pine set (2026-09-16), shared with Dawn
+wallpaper_dirs=("$dark_wallpapers" "$rose_pine_wallpapers")
 gtk_theme="oomox-rose-pine-moon"
 icon_theme="oomox-rose-pine-moon"
 kvantum_theme="rose-pine-moon-pine"
