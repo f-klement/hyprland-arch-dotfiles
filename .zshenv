@@ -13,7 +13,7 @@ export CLUTTER_BACKEND=wayland
 export QT_QPA_PLATFORM="wayland;xcb"
 
 # --- Terminal ---
-export TERM=xterm-color
+# export TERM=xterm-color  # removed: forced 8 colors and crashed ranger previews; kitty sets TERM=xterm-kitty itself
 
 # --- NVM (Node Version Manager) ---
 export NVM_DIR="$HOME/.nvm"
