@@ -72,8 +72,10 @@ hl.config({
     dwindle = {
         -- "pseudotile" no longer exists as a dwindle config key in this
         -- Hyprland version (--verify-config rejects it outright); dropped.
-        preserve_split       = true,
-        special_scale_factor = 0.8,
+        -- "special_scale_factor" (was 0.8) is deprecated and a no-op since
+        -- Hyprland 0.57 (`hyprctl deprecated-config`); the special-workspace
+        -- shrink is now the hl.workspace_rule() for "special" below.
+        preserve_split = true,
     },
 
     input = {
@@ -141,6 +143,15 @@ hl.config({
         -- Helps with scaling/pixelation on fractional-scale setups
         force_zero_scaling = true,
     },
+})
+
+-- Special workspace (scratchpad, SUPER+U): replaces the deprecated
+-- dwindle.special_scale_factor = 0.8. Scaling by 0.8 left a 10% margin on
+-- every side; all monitors here are 1920 wide and 1080/1200 high, so these
+-- fixed outer gaps give the same inset (2026-11-01).
+hl.workspace_rule({
+    workspace = "special",
+    gaps_out  = { top = 120, bottom = 120, left = 192, right = 192 },
 })
 
 -- Touchscreen / 3-finger swipe workspace gesture
