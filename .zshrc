@@ -142,9 +142,3 @@ alias worldbanc='/Storage/Projects/boot_dev_courses/linux/worldbanc/private/bin/
 
 # Go toolchain's own GOPATH/bin (go install puts binaries here, e.g. bootdev)
 export PATH="$HOME/go/bin:$PATH"
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/florian/google-cloud-sdk/path.zsh.inc' ]; then . '/home/florian/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/florian/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/florian/google-cloud-sdk/completion.zsh.inc'; fi
