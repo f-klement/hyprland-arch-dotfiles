@@ -27,13 +27,24 @@ if [ -f "$HOME/.local/bin/env" ]; then
   . "$HOME/.local/bin/env"
 fi
 
-# --- Podman/docker compat ---
-# podman-docker's own DOCKER_HOST setup only runs via /etc/zsh/zprofile,
-# which is login-shell-only -- kitty launches zsh non-login, so DOCKER_HOST
-# was never set in normal terminals. .zshenv runs for every shell.
-if [ -f /etc/profile.d/podman-docker.sh ]; then
-  . /etc/profile.d/podman-docker.sh
+# --- Podman as the Docker engine ---
+# The docker CLI and `docker compose` talk to rootless podman's
+# Docker-compatible API socket (the podman.socket user unit) instead of a
+# Docker daemon. Set here directly rather than via podman-docker's
+# /etc/profile.d/podman-docker.sh: that file disappears whenever the real
+# docker package replaces podman-docker, and it only ran for login shells
+# anyway. GUI apps get the same value from
+# ~/.config/environment.d/10-podman-docker.conf. Respects a DOCKER_HOST
+# that's already set.
+if [ -z "${DOCKER_HOST:-}" ] && [ -n "${XDG_RUNTIME_DIR:-}" ]; then
+  export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
 fi
+# podman has no built-in BuildKit, so buildx builds in a BuildKit
+# container; the "podman" builder (`docker buildx create --name podman
+# --driver docker-container --driver-opt default-load=true`) loads every
+# result back into podman. Picked by env var because buildx ignores its
+# stored default builder whenever DOCKER_HOST is set.
+export BUILDX_BUILDER="${BUILDX_BUILDER:-podman}"
 
 # --- Zsh-native PATH management ---
 # 'typeset -U path' ensures each directory appears only once (Unique).

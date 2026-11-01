@@ -112,3 +112,6 @@ work() {
             ;;
     esac
 }
+
+# Go toolchain's own GOPATH/bin (go install puts binaries here, e.g. bootdev)
+export PATH="$HOME/go/bin:$PATH"

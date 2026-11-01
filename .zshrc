@@ -1,19 +1,9 @@
 # ~/.zshrc
 # Sourced for INTERACTIVE shells. Use for aliases, functions, and tool init.
 
-# --- opencode free provider keys --------------------------------------------
-# Keys live in ~/.config/opencode/providers.env (chmod 600, not in dotfiles).
-# opencode auto-detects a provider from its env var, so empty ones are unset
-# to keep unconfigured providers from showing up as available.
-if [[ -r "$HOME/.config/opencode/providers.env" ]]; then
-    source "$HOME/.config/opencode/providers.env"
-    for _oc_var in NVIDIA_API_KEY ZHIPU_API_KEY MISTRAL_API_KEY \
-                   OPENROUTER_API_KEY GEMINI_API_KEY \
-                   GOOGLE_GENERATIVE_AI_API_KEY GROQ_API_KEY; do
-        [[ -z "${(P)_oc_var}" ]] && unset "$_oc_var"
-    done
-    unset _oc_var
-fi
+# --- machine-local drop-ins -------------------------------------------------
+# Private, per-machine snippets that don't belong in this repo.
+for _f in "$HOME"/.config/zsh/local.d/*.zsh(N); do source "$_f"; done; unset _f
 
 # --- Original Zsh config (from zsh-newuser-install) ---
 # Use the $HOME variable for portability
@@ -152,3 +142,9 @@ alias worldbanc='/Storage/Projects/boot_dev_courses/linux/worldbanc/private/bin/
 
 # Go toolchain's own GOPATH/bin (go install puts binaries here, e.g. bootdev)
 export PATH="$HOME/go/bin:$PATH"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/florian/google-cloud-sdk/path.zsh.inc' ]; then . '/home/florian/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/florian/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/florian/google-cloud-sdk/completion.zsh.inc'; fi
