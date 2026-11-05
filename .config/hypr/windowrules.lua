@@ -170,3 +170,14 @@ hl.window_rule({
     },
     no_focus = true,
 })
+
+-- Handy's recording overlay runs under XWayland and would otherwise take
+-- keyboard focus, so dictated text never reaches the window it was meant for.
+hl.window_rule({
+    name  = "handy-overlay",
+    match = { class = "^Handy$", title = "^Recording$" },
+    float = true,
+    pin   = true,
+    no_focus = true,
+    no_initial_focus = true,
+})

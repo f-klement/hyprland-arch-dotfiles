@@ -55,6 +55,10 @@ hl.bind(combo(mainMod, "W"),         hl.dsp.exec_cmd(userScripts .. "/WallpaperS
 hl.bind("CTRL + Escape", hl.dsp.exec_cmd("stacer"))
 
 hl.bind(combo(mainMod, "ALT + Space"), hl.dsp.exec_cmd("pkill rofi || rofi -show drun -modi drun,filebrowser,run,window"))
+-- Handy dictation. Handy runs under XWayland, so its own global shortcut only
+-- fires while an X11 window has focus; Hyprland has to own the key instead.
+-- Hold to talk. The script stops recording once all of these keys are released.
+hl.bind(combo(mainMod, "CTRL + Y"), hl.dsp.exec_cmd(userScripts .. "/HandyHoldToTalk.py"))
 hl.bind("CTRL + ALT + Delete",         hl.dsp.exec_cmd("hyprctl dispatch exit 0"))
 hl.bind("CTRL + ALT + L",              hl.dsp.exec_cmd(scriptsDir .. "/LockScreen.sh"))
 hl.bind("CTRL + ALT + P",              hl.dsp.exec_cmd(scriptsDir .. "/Wlogout.sh"))
