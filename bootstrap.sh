@@ -54,6 +54,28 @@ if [ ! -d "$HOME/.bun" ]; then
     curl -fsSL https://bun.sh/install | bash
 fi
 
+# Handy dictation -- not in the official repos, shipped as an AppImage. Its
+# settings are stow-managed, and without the directory below stow would link
+# the whole folder, sending recordings and history into this repo.
+HANDY_VERSION=0.10.0
+if [ ! -f "$HOME/AppImages/handy.appimage" ]; then
+    mkdir -p "$HOME/AppImages"
+    curl -fL -o "$HOME/AppImages/handy.appimage.part" \
+        "https://github.com/cjpais/Handy/releases/download/v$HANDY_VERSION/Handy_${HANDY_VERSION}_amd64.AppImage" &&
+        chmod +x "$HOME/AppImages/handy.appimage.part" &&
+        mv "$HOME/AppImages/handy.appimage.part" "$HOME/AppImages/handy.appimage"
+fi
+mkdir -p "$HOME/.local/share/com.pais.handy" "$HOME/.local/bin"
+# handy-hold, the Ctrl+Super+Y hold-to-talk key, reads key state from evdev.
+sudo usermod -aG input "$USER"
+(cd .config/hypr/UserScripts/handy-hold && go build -o "$HOME/.local/bin/handy-hold" .) ||
+    echo "handy-hold failed to build -- Ctrl+Super+Y won't work"
+# This repo is public. .gitattributes runs this filter on Handy's settings, so
+# API keys stay on disk and never reach a commit. Git ignores it unless set here.
+git config filter.handy-secrets.clean "jq '.settings.post_process_api_keys |= map_values(\"\")'"
+git config filter.handy-secrets.smudge cat
+git config filter.handy-secrets.required true
+
 # Podman rootless + Docker CLI compat (podman/podman-docker are in pkglist.txt)
 grep -q "^$USER:" /etc/subuid || sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER"
 sudo loginctl enable-linger "$USER"

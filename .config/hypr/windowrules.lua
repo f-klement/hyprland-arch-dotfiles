@@ -180,4 +180,8 @@ hl.window_rule({
     pin   = true,
     no_focus = true,
     no_initial_focus = true,
+    -- only the pill inside this window is drawn; effects would fill the rest
+    no_blur     = true,
+    no_shadow   = true,
+    border_size = 0,
 })

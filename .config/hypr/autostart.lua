@@ -68,6 +68,9 @@ hl.on("hyprland.start", function()
     -- hicolor/scalable/apps): "-symbolic" so waybar tints it with the bar's
     -- text colour in every theme; DarkLight.sh nudges it after a switch.
     hl.exec_cmd("radiotray-ng")
+    -- Handy's own "Launch on Startup" only writes an XDG autostart entry, which
+    -- nothing runs here. Starts hidden, see its settings_store.json.
+    hl.exec_cmd(os.getenv("HOME") .. "/AppImages/handy.appimage")
 
     -- Misc daemons
     -- run_backup.sh autostart disabled by request (2026-09-06) -- was
